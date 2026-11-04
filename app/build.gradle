@@ -1,0 +1,49 @@
+plugins { id 'com.android.application' }
+
+// Secret values must come only from GitHub Actions environment variables.
+// Never put signing passwords or private keystore files in the repository.
+def pmmKeystorePath = System.getenv('PMM_KEYSTORE_PATH')
+def pmmKeystorePassword = System.getenv('PMM_KEYSTORE_PASSWORD')
+
+android {
+    namespace 'ir.nahj.towhidkarbordi'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'ir.nahj.towhidkarbordi'
+        minSdk 23
+        targetSdk 34
+        versionCode 14
+        versionName '1.12.1'
+    }
+
+    signingConfigs {
+        release {
+            // Debug builds work without release secrets.
+            if (pmmKeystorePath && pmmKeystorePassword) {
+                storeFile file(pmmKeystorePath)
+                storePassword pmmKeystorePassword
+                keyAlias 'payemenbaremola'
+                keyPassword pmmKeystorePassword
+                storeType 'pkcs12'
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            // Install next to the live signed app for safe testing.
+            applicationIdSuffix '.preview'
+            versionNameSuffix '-preview'
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

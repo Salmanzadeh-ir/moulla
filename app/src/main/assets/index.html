@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>پای منبر مولا</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+:root{--pmm-text-font:'Vazirmatn','Noto Sans Arabic',Tahoma,Arial,sans-serif}
+
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:var(--pmm-text-font)}body{color:#0d365c;background:radial-gradient(circle at 50% 35%,#273851,#0d1523 80%);direction:rtl;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 10px 30px}button,input,textarea{font:inherit}
+.headline{color:#fce9ac;text-align:center;font-weight:700;font-size:15px;letter-spacing:0;margin:0}.subhead{color:#d5d8e0;font-size:12px;text-align:center;margin:0 0 5px}
+.stage{position:relative;width:min(100%,calc((100dvh - 98px) * 941 / 1672),510px);aspect-ratio:941/1672;flex:0 0 auto;isolation:isolate;overflow:hidden;box-shadow:0 16px 45px #0009,0 0 0 1px #ffdf8d;border-radius:8px;background:#cf9125;container-type:inline-size;-webkit-tap-highlight-color:transparent}
+.stage>img.backdrop{width:100%;height:100%;position:absolute;inset:0;object-fit:fill;user-select:none;pointer-events:none;z-index:0}
+.pane{position:absolute;inset:0;z-index:1}.gone{display:none!important}button{cursor:pointer}
+.home-hit{position:absolute;border:0;background:transparent;color:transparent;z-index:2;border-radius:18% 18% 9% 9%;touch-action:manipulation;outline-offset:-4px;transition:filter .11s ease, transform .11s ease}
+.home-hit::after{content:'';position:absolute;inset:3%;border-radius:35% 35% 9% 9%;background:transparent;box-shadow:inset 0 0 0 0 transparent;transition:box-shadow .10s,background .10s}
+.home-hit:active{transform:translateY(3%) scale(.982);filter:brightness(.89)}.home-hit:active::after{box-shadow:inset 0 8px 25px rgba(49,26,7,.45);background:#8b521521}
+.home-hit:focus-visible{outline:3px solid #fff3bd;background:#fff6bb25}
+#hit-towhid{left:18.4%;top:49.0%;width:28.9%;height:18.9%}#hit-life{left:51.4%;top:49.0%;width:28.9%;height:18.9%}#hit-kafi{left:18.4%;top:68.8%;width:28.9%;height:19.2%}#hit-nahj{left:51.4%;top:68.8%;width:28.9%;height:19.2%}
+.top-action{position:absolute;top:35.6%;height:3.8%;width:20%;background:transparent;border:0;z-index:5;border-radius:40%;touch-action:manipulation}.top-action:active{background:#60401933;box-shadow:inset 0 4px 9px #613f1a55;transform:translateY(1px)}.top-action:focus-visible{outline:3px solid white}
+#search-button{left:10.7%;}#back-button{right:10.7%}
+.list-title{position:absolute;left:30.5%;width:39%;top:42.5%;height:4.9%;object-fit:contain;z-index:4;pointer-events:none}
+.content-view{position:absolute;top:48.5%;left:15.55%;width:67.3%;height:38.8%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#a96b20 transparent;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:3;direction:ltr;mask-image:linear-gradient(to bottom,transparent 0,black 1.5%,black 97%,transparent 100%)}
+.content-view::-webkit-scrollbar{width:4px}.content-view::-webkit-scrollbar-thumb{background:#c48a36aa;border-radius:2px}
+.row-list{direction:rtl;display:flex;flex-direction:column;gap:clamp(2px,.5cqw,5px);padding-bottom:10px}
+.session{position:relative;width:100%;height:auto;aspect-ratio:634/103;border:none;padding:0;background:transparent;flex-shrink:0;display:block;transition:filter .12s,transform .12s;cursor:pointer}
+.session img{display:block;width:100%;height:100%;pointer-events:none;user-select:none}.session:active{transform:translateY(3px) scale(.985);filter:brightness(.82)}.session:focus-visible{outline:3px solid #14649a;outline-offset:-5px}.session.missing{filter:saturate(.58);opacity:.83}.session.missing:active{filter:saturate(.35) brightness(.78)}
+.search-wrap{padding:8px 5px 12px;direction:rtl}.search-input{width:100%;padding:10px 13px;border:3px solid #b57722;border-radius:16px;background:#fff1c5;color:#062f53;outline:none;box-shadow:inset 0 2px 7px #71410955;font-weight:700;font-size:clamp(12px,3.0cqw,20px)}.search-input:focus{border-color:#0761a8}
+.content-box{direction:rtl;background:#ffebacdd;border:3px solid #8c4d0f;border-radius:15px;margin:8px;padding:16px 12px;box-shadow:0 6px 0 #aa6926,0 9px 15px #7b421a55,inset 0 1px #fff5c6;text-align:center;color:#103b60;font-size:clamp(12px,2.7cqw,18px);line-height:2}
+.content-box h2{font-size:clamp(16px,4cqw,28px);margin:0 0 10px}.content-box p{margin:8px 0}
+.content-box .player-frame{position:relative;width:100%;aspect-ratio:16/9;border:3px solid #cf9b43;border-radius:10px;background:#0c2032;overflow:hidden;margin:12px auto}.player-frame iframe{width:100%;height:100%;border:0;display:block}.player-note{font-size:clamp(10px,2.35cqw,15px);line-height:1.8}
+.action{border:2px solid #c88e31;border-radius:12px;background:linear-gradient(#ffe4a1,#dca54c);color:#173c65;display:block;width:100%;padding:8px;text-align:center;font-size:clamp(12px,2.8cqw,18px);font-weight:700;text-decoration:none;margin:10px 0;box-shadow:0 3px 0 #875313}.action:active{transform:translateY(2px);box-shadow:0 1px #875313}.action:focus-visible{outline:3px solid #0b6099}
+.note{font-size:clamp(12px,2.7cqw,17px);direction:rtl}.empty{padding:15px 8px;font-size:clamp(12px,3cqw,20px);text-align:center;color:#734c20;font-weight:bold;direction:rtl}
+.toast{position:absolute;left:18%;right:18%;bottom:15%;padding:8px 10px;background:#15395de8;color:#fff1c7;z-index:10;border:1px solid #dfb260;border-radius:12px;font-size:clamp(11px,2.8cqw,18px);text-align:center;box-shadow:0 5px 14px #0007;pointer-events:none}
+.feedback{width:min(510px,100%);border:1px solid #b99453;color:#f5e6bd;border-radius:10px;background:#182942;padding:12px;direction:rtl}.feedback summary{cursor:pointer;font-weight:bold}.feedback textarea{margin-top:8px;width:100%;min-height:60px;border-radius:7px;padding:8px;resize:vertical}.feedback button{margin-top:6px;border-radius:7px;border:1px solid #eab86d;background:#ffe7aa;padding:7px 12px;color:#1a3a57;font-weight:700}
+@media(max-width:520px){body{padding:0 0 14px;gap:5px;background:#0e1726}.headline,.subhead{font-size:11px}.stage{width:min(100vw,calc((100dvh - 43px) * 941 / 1672));border-radius:0}.feedback{margin:5px;width:calc(100% - 16px)}}
+@media(prefers-reduced-motion:reduce){.home-hit,.session{transition:none}}
+
+/* V6: all live copy (except approved pictorial headings) is Vazirmatn. */
+html,body,button,input,textarea,h1,h2,h3,p,span,summary,a,.content-box,.action,.feedback,.toast,.empty,.search-input{font-family:var(--pmm-text-font)}
+.session-label{position:absolute;top:0;right:23%;left:23%;height:100%;display:flex;align-items:center;justify-content:center;direction:rtl;unicode-bidi:plaintext;white-space:nowrap;font-family:var(--pmm-text-font);font-weight:800;font-size:clamp(13px,4.7cqw,25px);line-height:1.2;color:#07345c;pointer-events:none;text-shadow:0 1px 0 #fff2bf;transform:translateY(-1px)}
+@media(max-width:520px){.session-label{font-size:clamp(12px,4.9cqw,20px)}}
+
+/* V7: the approved golden iwan is always fixed, only the inset content moves. */
+.about-home-button{position:absolute;left:34.0%;top:88.5%;width:32%;height:3.45%;display:flex;align-items:center;justify-content:center;z-index:7;border-radius:28px;border:2px solid #93510c;background:linear-gradient(175deg,#fff4b9 0%,#f9cf6c 33%,#dea03d 76%,#a76319 100%);box-shadow:inset 0 2px 0 #fff7d5,inset 0 -4px 0 #874806aa,0 4px 3px #63380f99,0 0 0 2px #eabb67,0 0 13px #ffdc7966;color:#07365f;font-family:var(--pmm-text-font);font-weight:800;font-size:clamp(12px,3.5cqw,21px);line-height:1;cursor:pointer;touch-action:manipulation;text-shadow:0 1px 0 #fff1c1}
+.about-home-button::before,.about-home-button::after{content:'✦';font-size:.78em;color:#0b5a8a;position:absolute;top:50%;transform:translateY(-50%)}.about-home-button::before{right:6%}.about-home-button::after{left:6%}
+.about-home-button:active{transform:translateY(3px) scale(.98);box-shadow:inset 0 4px 10px #6a3a1590,0 1px 3px #63380f99;background:linear-gradient(#ddb052,#f8d57a)}.about-home-button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.about-menu{display:flex;flex-direction:column;gap:clamp(10px,3.5cqw,18px);padding:clamp(10px,2.6cqw,15px) 5px 16px;direction:rtl;min-height:100%}
+.about-entry{background:linear-gradient(#fff6cb,#f0c776 55%,#d69c44);border:3px solid #b16d1e;box-shadow:inset 0 2px #fff6d0,inset 0 -3px #ad6a20,0 4px 5px #57330e9c,0 0 0 1px #e8b65c;border-radius:15px;width:100%;min-height:clamp(53px,12.5cqw,69px);display:flex;align-items:center;justify-content:center;gap:8px;color:#07365f;font-family:var(--pmm-text-font);font-size:clamp(14px,3.8cqw,20px);font-weight:800;cursor:pointer;transition:transform .11s,box-shadow .11s}
+.about-entry:active{transform:translateY(3px) scale(.988);box-shadow:inset 0 5px 12px #764312a3,0 1px 1px #633c1385}.about-entry:focus-visible{outline:3px solid #0c5d98}
+.about-entry .about-entry-icon{font-size:1.25em;color:#0e5a92}
+.gallery-viewport{width:100%;overflow:hidden;border-radius:14px;border:2px solid #c08d37;background:linear-gradient(145deg,#ffeabd,#d6a557);box-shadow:inset 0 2px 8px #7751185c,0 3px 9px #673d1559;padding:8px 0;margin-top:clamp(3px,2.8cqw,15px)}
+.gallery-track{display:flex;direction:ltr;gap:0;width:max-content;will-change:transform;animation:gallery-slide 39s linear infinite}
+.gallery-group{display:flex;align-items:center;gap:8px;padding-right:8px;flex-shrink:0}
+.gallery-viewport:hover .gallery-track,.gallery-viewport:focus-within .gallery-track{animation-play-state:paused}
+.gallery-tile{width:clamp(66px,18cqw,94px);height:clamp(66px,18cqw,94px);flex:none;border:2px solid #edce8c;border-radius:10px;background:#b4843f;overflow:hidden;box-shadow:0 2px 6px #56300866;padding:0;cursor:pointer}
+.gallery-tile img{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none}.gallery-tile:active{transform:scale(.95)}.gallery-tile:focus-visible{outline:3px solid #0a66a2;outline-offset:2px}
+@keyframes gallery-slide{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.about-story{direction:rtl;text-align:right;color:#173951;background:#fff2c7f4;border:2px solid #ac772a;border-radius:14px;margin:5px 3px 12px;padding:clamp(11px,3.4cqw,22px);box-shadow:0 3px 0 #bd862e,0 7px 16px #68421955;font:500 clamp(12px,3.05cqw,17px)/2.15 var(--pmm-text-font);overflow-wrap:anywhere}
+.about-story h1{font-family:var(--pmm-text-font);font-size:1.45em;line-height:1.7;color:#07365f;text-align:center;margin:2px 0 15px;font-weight:800}
+.about-story h2{font-family:var(--pmm-text-font);font-size:1.18em;line-height:1.65;color:#07446d;margin:22px 0 11px;font-weight:800;border-bottom:1px solid #ba873d;padding-bottom:7px}
+.about-story p{margin:0 0 13px;text-align:justify}.about-story ul{margin:5px 0 18px;padding:0 23px 0 0;list-style-type:disc}.about-story li{margin:0 0 10px}.about-story strong{font-weight:800;color:#092f53}
+.about-story p:last-child{text-align:center;font-weight:700}
+#contents:has(.photo-detail){height:100%;padding-bottom:0;display:block;overflow:hidden}
+.photo-detail{direction:rtl;min-height:0;height:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:8px;padding:3px 2px 8px}
+.photo-large-frame{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px solid #bb862e;border-radius:12px;background:linear-gradient(#fce7b8,#d6a154);box-shadow:inset 0 0 15px #6e431c77;padding:5px}
+.photo-large-frame img{display:block;width:100%;height:100%;min-height:0;max-height:100%;object-fit:contain;border-radius:7px}
+.photo-controls{display:flex;align-items:center;gap:8px;justify-content:space-between}.photo-controls button{background:linear-gradient(#fff2c1,#dba45a);border:2px solid #955a19;border-radius:9px;color:#06365c;cursor:pointer;font-weight:800;font-size:clamp(10px,2.8cqw,15px);padding:5px 8px}.photo-controls button:active{transform:translateY(2px)}.photo-counter{white-space:nowrap;font-weight:700;font-size:clamp(10px,2.3cqw,14px);color:#123f65}
+@media(prefers-reduced-motion:reduce){.gallery-track{animation:none}.gallery-viewport{overflow-x:auto}}
+
+/* Android distribution: immersive centered stage; approved iwan never scrolls. */
+html,body{width:100%;height:100%;min-height:100%;overflow:hidden}
+body{margin:0;padding:0!important;gap:0!important;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#c48722,#f6ca61 50%,#be7b18)}
+.stage{width:min(100vw,calc(100dvh * 941 / 1672));max-width:none;height:auto;max-height:100dvh;aspect-ratio:941 / 1672;border-radius:0;box-shadow:none;flex:0 0 auto}
+.headline,.subhead,.feedback{display:none!important}
+@media (min-aspect-ratio: 941/1672) { .stage{height:100dvh;width:auto} }
+
+/* V9: PRESERVE the Golden Iwan. No image stretching; 9:16 and modern tall displays fill. */
+html,body{width:100%;height:100%;min-height:100%;margin:0;overflow:hidden}
+body{padding:0!important;gap:0!important;display:block;background:#c98d27}
+.stage{width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;max-width:none;max-height:none;border-radius:0;border:0;box-shadow:none;overflow:hidden;position:relative}
+.stage>.backdrop,.stage>.pane{
+  position:absolute;width:max(100%,56.28dvh);height:max(100%,177.68vw);
+  inset:auto;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
+}
+.stage>img.backdrop{inset:auto;width:max(100%,56.28dvh);height:max(100%,177.68vw);left:50%;top:50%;right:auto;bottom:auto;object-fit:fill;z-index:0}
+.stage>.pane{z-index:1}
+.stage>.toast{z-index:20}
+.home-door{position:absolute;z-index:2;border:0;background:transparent;display:flex;
+  align-items:flex-end;justify-content:center;padding:0 1.2% 0.5%;color:#133c67;
+  transition:transform .18s ease,filter .18s ease;isolation:isolate;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#hit-towhid,#hit-kafi{left:19.2%;width:24.3%;height:15.1%}
+#hit-life,#hit-clips{left:56.6%;width:24.3%;height:15.1%}
+#hit-towhid,#hit-life{top:49.4%}
+#hit-nahj{left:37.9%;width:24.3%;height:15.1%;top:63.55%}
+#hit-kafi,#hit-clips{top:77.3%}
+.home-door::before{content:'';position:absolute;inset:3% 3% 4%;border-radius:49% 49% 8% 8%;pointer-events:none;
+  background:conic-gradient(from var(--ring-angle,0deg),transparent 0deg,transparent 250deg,#ffecab70 286deg,#fff4bdba 301deg,#e4b54f45 325deg,transparent 355deg);
+  opacity:.8;mix-blend-mode:screen;padding:5px;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;animation:iwan-glow 7s linear infinite}
+.home-door::after{content:'';position:absolute;inset:4%;border-radius:48% 48% 8% 8%;border:1px solid #e4c27955;
+  box-shadow:0 0 9px #ffe2a744, inset 0 0 8px #fff8b522;pointer-events:none;animation:door-pulse 5s ease-in-out infinite}
+@keyframes iwan-glow{from{--ring-angle:0deg}to{--ring-angle:360deg}}
+@property --ring-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes door-pulse{0%,100%{opacity:.35;filter:brightness(1)}50%{opacity:.9;filter:brightness(1.1)}}
+.home-door:nth-child(2)::before{animation-delay:-2s}.home-door:nth-child(3)::before{animation-delay:-4s}
+.home-door:nth-child(4)::before{animation-delay:-3s}.home-door:nth-child(5)::before{animation-delay:-1s}
+.home-door:active{transform:scale(.97);filter:brightness(.9)}
+.home-door:focus-visible{outline:3px solid #fff2b3;outline-offset:3px}
+.door-title{position:relative;z-index:4;min-height:28%;width:93%;padding:4% 1%;margin-bottom:5%;
+ display:flex;align-items:center;justify-content:center;border:1px solid #bd822c;border-radius:10px;
+ background:linear-gradient(160deg,#fff0bd 0%,#ffe2a0 40%,#e9ac56 100%);
+ box-shadow:inset 0 1px 0 #fffdf0,0 2px 4px #79451088;
+ font-family:var(--pmm-text-font);font-weight:900;font-size:clamp(13px,3.8cqw,24px);line-height:1.27;
+ color:#07385f;text-shadow:0 1px 0 #fff6d9;text-align:center;white-space:normal}
+#hit-nahj .door-title{font-size:clamp(12px,3.6cqw,23px)}
+#hit-clips .door-title{font-size:clamp(12px,3.5cqw,23px)}
+.door-film{position:absolute;top:24%;left:33%;width:34%;height:28%;border:3px solid #c8963b;border-radius:10px;
+ display:flex;align-items:center;justify-content:center;color:#f8d786;background:linear-gradient(150deg,#0b4670,#092842);
+ box-shadow:0 3px 6px #613a1680,0 0 12px #ffe2a366;font-size:clamp(20px,7cqw,43px);text-shadow:0 1px 7px #ffd99c}
+/* About is on the lower golden marble, completely clear of all five doors. */
+.about-home-button{top:93.6%;height:3.15%;left:35.1%;width:29.8%;z-index:7;font-size:clamp(11px,3.2cqw,20px)}
+/* Gallery: arrows equally spaced on either side of center counter, no back control. */
+.photo-controls{width:100%;display:grid;grid-template-columns:minmax(40px,1fr) auto minmax(40px,1fr);align-items:center;gap:6px;direction:ltr}
+.photo-controls #photo-next{justify-self:start}.photo-controls #photo-prev{justify-self:end}.photo-controls .photo-counter{grid-column:2;grid-row:1;direction:rtl}
+.photo-controls #photo-next{grid-column:1;grid-row:1}.photo-controls #photo-prev{grid-column:3;grid-row:1}
+/* Clips gallery uses existing moving-gallery language and is ready for real links. */
+.clips-head{font-size:clamp(15px,3.65cqw,24px);color:#123a60;font-weight:900;text-align:center;margin:10px 0}
+.clips-window{position:relative;overflow:hidden;width:100%;padding:12px 0;background:#fff0c8a0;border:2px solid #ba8535;border-radius:14px}
+.clips-track{display:flex;gap:10px;direction:ltr;width:max-content;animation:clips-scroll 28s linear infinite}
+.clips-track:focus-within{animation-play-state:paused}
+.clip-card{width:clamp(120px,31cqw,176px);height:clamp(135px,36cqw,195px);border:3px solid #bc8d37;border-radius:14px;
+ background:linear-gradient(145deg,#04395f,#0b6191 50%,#022c4a);color:#ffe7a9;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;gap:10px;box-shadow:inset 0 0 14px #f7d27365;
+ cursor:pointer;flex:none;font:800 clamp(12px,3cqw,19px)/1.8 var(--pmm-text-font)}
+.clip-card .clip-play{font-size:clamp(25px,8cqw,55px);color:#ffd16b}
+.clip-card:focus-visible{outline:3px solid #fff}
+@keyframes clips-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.home-door::before,.home-door::after,.clips-track{animation:none}.clips-window{overflow-x:auto}}
+.clip-title{position:absolute;top:41.8%;left:26%;width:48%;text-align:center;
+ font-family:var(--pmm-text-font);font-size:clamp(17px,4cqw,25px);font-weight:900;color:#073c65}
+
+
+/* V9.1: travelling luminous glint on the *existing* five iwan frames.
+   SVG stroke-dashoffset animates on older Android WebViews too (no @property required). */
+.home-door::before{display:none}
+.door-archlight{position:absolute;inset:0;z-index:3;width:100%;height:100%;overflow:visible;
+  pointer-events:none;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.door-archlight .arch-border{stroke:#59bddb;stroke-width:1.45;opacity:.72;
+  filter:drop-shadow(0 0 1.5px #67dbed)}
+.door-archlight .arch-glint{stroke:#fff1b3;stroke-width:2.8;
+  stroke-dasharray:11 89;stroke-dashoffset:0;
+  filter:drop-shadow(0 0 2px #fff9e0) drop-shadow(0 0 4px #f2b94a);
+  animation:iwan-dash-travel 6.2s linear infinite}
+@keyframes iwan-dash-travel{to{stroke-dashoffset:-100}}
+#hit-towhid .arch-glint{animation-delay:-.4s}
+#hit-life .arch-glint{animation-delay:-2.2s}
+#hit-nahj .arch-glint{animation-delay:-3.5s}
+#hit-kafi .arch-glint{animation-delay:-1.4s}
+#hit-clips .arch-glint{animation-delay:-4.6s}
+@media(prefers-reduced-motion:reduce){.door-archlight .arch-glint{animation:none;stroke-dasharray:100 0;opacity:.52}}
+
+</style>
+</head>
+<body>
+
+
+<main class="stage" id="stage" aria-label="پای منبر مولا">
+<img class="backdrop" id="backdrop" alt="ایوان طلایی و کاشی‌کاری آبی ثابت">
+<div class="pane" id="home-pane" aria-label="بخش‌های اصلی">
+<button type="button" class="home-door" id="hit-towhid" data-section="towhid" aria-label="توحید کاربردی"><svg class="door-archlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="arch-border" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/><path class="arch-glint" pathLength="100" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/></svg><span class="door-title">توحید کاربردی</span></button>
+<button type="button" class="home-door" id="hit-life" data-section="life" aria-label="دیدن خدا در زندگی"><svg class="door-archlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="arch-border" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/><path class="arch-glint" pathLength="100" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/></svg><span class="door-title">دیدن خدا در زندگی</span></button>
+<button type="button" class="home-door" id="hit-nahj" data-section="nahj" aria-label="شرح صوتی نهج‌البلاغه"><svg class="door-archlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="arch-border" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/><path class="arch-glint" pathLength="100" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/></svg><span class="door-title">شرح صوتی<br>نهج‌البلاغه</span></button>
+<button type="button" class="home-door" id="hit-kafi" data-section="kafi" aria-label="شرح اصول کافی"><svg class="door-archlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="arch-border" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/><path class="arch-glint" pathLength="100" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/></svg><span class="door-title">شرح اصول کافی</span></button>
+<button type="button" class="home-door" id="hit-clips" data-section="clips" aria-label="کلیپ‌های تصویری"><svg class="door-archlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="arch-border" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/><path class="arch-glint" pathLength="100" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/></svg><span class="door-film" aria-hidden="true">▶</span><span class="door-title">کلیپ‌های تصویری</span></button>
+<button type="button" class="about-home-button" id="home-about" aria-label="درباره ما">درباره ما</button>
+</div>
+<div class="pane gone" id="list-pane">
+<button type="button" class="top-action" id="search-button" title="جست‌وجو" aria-label="جست‌وجو"></button>
+<button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
+<img class="list-title gone" id="dynamic-title" alt="عنوان بخش"><div class="clip-title gone" id="clips-page-title">کلیپ‌های تصویری</div>
+<div class="content-view" id="content-view"><div class="row-list" id="contents"></div></div>
+</div>
+<div class="toast gone" id="toast"></div>
+</main>
+<script>
+const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"شرح اصول کافی 1","url":"https://eitaa.com/hadis_kafi/393","source":"ایتا"},{"number":2,"title":"شرح اصول کافی 2","url":"https://eitaa.com/hadis_kafi/450","source":"ایتا"},{"number":3,"title":"شرح اصول کافی 3","url":"https://eitaa.com/hadis_kafi/462","source":"ایتا"},{"number":4,"title":"شرح اصول کافی 4","url":"https://eitaa.com/hadis_kafi/474","source":"ایتا"},{"number":5,"title":"شرح اصول کافی 5","url":"https://eitaa.com/hadis_kafi/486","source":"ایتا"},{"number":6,"title":"شرح اصول کافی 6","url":"https://eitaa.com/hadis_kafi/498","source":"ایتا"},{"number":7,"title":"شرح اصول کافی 7","url":"https://eitaa.com/hadis_kafi/509","source":"ایتا"},{"number":8,"title":"شرح اصول کافی 8","url":"https://eitaa.com/hadis_kafi/521","source":"ایتا"},{"number":9,"title":"شرح اصول کافی 9","url":"https://eitaa.com/hadis_kafi/532","source":"ایتا"},{"number":10,"title":"شرح اصول کافی 10","url":"https://eitaa.com/hadis_kafi/544","source":"ایتا"},{"number":11,"title":"شرح اصول کافی 11","url":"https://eitaa.com/hadis_kafi/556","source":"ایتا"},{"number":12,"title":"شرح اصول کافی 12","url":"https://eitaa.com/hadis_kafi/568","source":"ایتا"},{"number":13,"title":"شرح اصول کافی 13","url":"https://eitaa.com/hadis_kafi/581","source":"ایتا"},{"number":14,"title":"شرح اصول کافی 14","url":"https://eitaa.com/hadis_kafi/594","source":"ایتا"},{"number":15,"title":"شرح اصول کافی 15","url":"https://eitaa.com/hadis_kafi/607","source":"ایتا"},{"number":16,"title":"شرح اصول کافی 16","url":"https://eitaa.com/hadis_kafi/620","source":"ایتا"},{"number":17,"title":"شرح اصول کافی 17","url":"https://eitaa.com/hadis_kafi/632","source":"ایتا"},{"number":18,"title":"شرح اصول کافی 18","url":"https://eitaa.com/hadis_kafi/639","source":"ایتا"},{"number":19,"title":"شرح اصول کافی 19","url":"https://eitaa.com/hadis_kafi/647","source":"ایتا"},{"number":20,"title":"شرح اصول کافی 20","url":"https://eitaa.com/hadis_kafi/657","source":"ایتا"},{"number":21,"title":"شرح اصول کافی 21","url":"https://eitaa.com/hadis_kafi/669","source":"ایتا"},{"number":22,"title":"شرح اصول کافی 22","url":"https://eitaa.com/hadis_kafi/680","source":"ایتا"},{"number":23,"title":"شرح اصول کافی 23","url":"https://eitaa.com/hadis_kafi/687","source":"ایتا"},{"number":24,"title":"شرح اصول کافی 24","url":"https://eitaa.com/hadis_kafi/693","source":"ایتا"},{"number":25,"title":"شرح اصول کافی 25","url":"https://eitaa.com/hadis_kafi/704","source":"ایتا"},{"number":26,"title":"شرح اصول کافی 26","url":"https://eitaa.com/hadis_kafi/712","source":"ایتا"},{"number":27,"title":"شرح اصول کافی 27","url":"https://eitaa.com/hadis_kafi/724","source":"ایتا"},{"number":28,"title":"شرح اصول کافی 28","url":"https://eitaa.com/hadis_kafi/737","source":"ایتا"},{"number":29,"title":"شرح اصول کافی 29","url":"https://eitaa.com/hadis_kafi/746","source":"ایتا"},{"number":30,"title":"شرح اصول کافی 30","url":"https://eitaa.com/hadis_kafi/755","source":"ایتا"},{"number":31,"title":"شرح اصول کافی 31","url":"https://eitaa.com/hadis_kafi/775","source":"ایتا"},{"number":32,"title":"شرح اصول کافی 32","url":"https://eitaa.com/hadis_kafi/793","source":"ایتا"},{"number":33,"title":"شرح اصول کافی 33","url":"https://eitaa.com/hadis_kafi/809","source":"ایتا"},{"number":34,"title":"شرح اصول کافی 34","url":"https://eitaa.com/hadis_kafi/823","source":"ایتا"},{"number":35,"title":"شرح اصول کافی 35","url":"https://eitaa.com/hadis_kafi/836","source":"ایتا"},{"number":36,"title":"شرح اصول کافی 36","url":"https://eitaa.com/hadis_kafi/851","source":"ایتا"},{"number":37,"title":"شرح اصول کافی 37","url":"https://eitaa.com/hadis_kafi/864","source":"ایتا"},{"number":38,"title":"شرح اصول کافی 38","url":"https://eitaa.com/hadis_kafi/881","source":"ایتا"},{"number":39,"title":"شرح اصول کافی 39","url":"https://eitaa.com/hadis_kafi/909","source":"ایتا"},{"number":40,"title":"شرح اصول کافی 40","url":"https://eitaa.com/hadis_kafi/923","source":"ایتا"},{"number":41,"title":"شرح اصول کافی 41","url":"https://eitaa.com/hadis_kafi/941","source":"ایتا"},{"number":42,"title":"شرح اصول کافی 42","url":"https://eitaa.com/hadis_kafi/958","source":"ایتا"},{"number":43,"title":"شرح اصول کافی 43","url":"https://eitaa.com/hadis_kafi/981","source":"ایتا"},{"number":44,"title":"شرح اصول کافی 44","url":"https://eitaa.com/hadis_kafi/993","source":"ایتا"},{"number":45,"title":"شرح اصول کافی 45","url":"https://eitaa.com/hadis_kafi/1017","source":"ایتا"},{"number":46,"title":"شرح اصول کافی 46","url":"https://eitaa.com/hadis_kafi/1037","source":"ایتا"},{"number":47,"title":"شرح اصول کافی 47","url":"https://eitaa.com/hadis_kafi/1048","source":"ایتا"},{"number":48,"title":"شرح اصول کافی 48","url":"https://eitaa.com/hadis_kafi/1060","source":"ایتا"},{"number":49,"title":"شرح اصول کافی 49","url":"https://eitaa.com/hadis_kafi/1107","source":"ایتا"},{"number":50,"title":"شرح اصول کافی 50","url":"https://eitaa.com/hadis_kafi/1119","source":"ایتا"},{"number":51,"title":"شرح اصول کافی 51","url":"https://eitaa.com/hadis_kafi/1141","source":"ایتا"},{"number":52,"title":"شرح اصول کافی 52","url":"https://eitaa.com/hadis_kafi/1153","source":"ایتا"},{"number":53,"title":"شرح اصول کافی 53","url":"https://eitaa.com/hadis_kafi/1190","source":"ایتا"},{"number":54,"title":"شرح اصول کافی 54","url":"https://eitaa.com/hadis_kafi/1202","source":"ایتا"},{"number":55,"title":"شرح اصول کافی 55","url":"https://eitaa.com/hadis_kafi/1223","source":"ایتا"},{"number":56,"title":"شرح اصول کافی 56","url":"https://eitaa.com/hadis_kafi/1429","source":"ایتا"},{"number":57,"title":"شرح اصول کافی 57","url":"https://eitaa.com/hadis_kafi/1441","source":"ایتا"},{"number":58,"title":"شرح اصول کافی 58","url":"https://eitaa.com/hadis_kafi/1454","source":"ایتا"},{"number":59,"title":"شرح اصول کافی 59","url":"","source":""}],"nahj":{"url":"https://kazeminia110.ir/","description":"تا تکمیل صفحه اختصاصی ۱۱۰۰ جلسه، مخاطب می‌تواند از صفحه اصلی سایت یا فهرست موجود در ایتا استفاده کند.","eitaa_url":"https://eitaa.com/nahjolbalagheh_media/8"}}
+const IMG = {"home.webp":"images/v8/home_v9_iwan.webp","list_surface.webp":"images/v8/list_surface_webp.webp","list_other.webp":"images/v8/list_other_webp.webp","row_blank.webp":"images/v8/row_blank_webp.webp","title_towhid":"images/v8/title_towhid.png","title_life":"images/v8/title_life.png","title_kafi":"images/v8/title_kafi.png","title_nahj":"images/v8/title_nahj.png","title_player":"images/v8/title_player.png","title_about":"images/v8/title_about.png","title_biography":"images/v8/title_biography.png"}
+
+const USER_PHOTOS = ["images/gallery/photo_01.webp","images/gallery/photo_02.webp","images/gallery/photo_03.webp","images/gallery/photo_04.webp","images/gallery/photo_05.webp","images/gallery/photo_06.webp","images/gallery/photo_07.webp","images/gallery/photo_08.webp","images/gallery/photo_09.webp","images/gallery/photo_10.webp"];
+const ABOUT_HTML = "<h1>درباره من</h1>\n<p><strong>محمد کاظمی‌نیا</strong>، طلبه درس خارج و مدرس حوزه علمیه قم، دانش‌آموخته بنیاد بین‌المللی نهج‌البلاغه و پژوهشگر حوزه معارف علوی هستم.</p>\n<p>بخش مهمی از فعالیت علمی و تبلیغی من به مطالعه، شرح و ترویج معارف نهج‌البلاغه اختصاص دارد؛ با این باور که کلمات امیرالمؤمنین علی(ع) تنها برای خواندن و دانستن نیستند، بلکه می‌توانند راهنمای اندیشه، انتخاب و رفتار ما در زندگی باشند.</p>\n<h2>از شرح نهج‌البلاغه تا کاربردی کردن معارف</h2>\n<p>فعالیت آموزشی خود را در فضای مجازی از سال ۱۳۹۸ با برگزاری جلسات شرح نهج‌البلاغه آغاز کردم. این مسیر در قالب دو دوره کامل شرح نهج‌البلاغه ادامه یافت و در هر دو دوره، تمام کتاب، از خطبه‌ها و نامه‌ها تا حکمت‌ها، به‌صورت ترتیبی شرح داده شد.</p>\n<p>دوره دوم شرح نهج‌البلاغه، از ابتدای سال ۱۴۰۱ آغاز شد و در ۱۳ رجب ۱۴۰۴ به پایان رسید. این دوره در قالب حدود <strong>۱۱۰۰ جلسه آموزشی</strong> برگزار شد و تمام نهج‌البلاغه، از ابتدا تا انتها، به‌صورت پیوسته و تفصیلی مورد شرح و بررسی قرار گرفت.</p>\n<p>اما پس از پیمودن این مسیر، دغدغه جدی‌تری شکل گرفت: چگونه می‌توان معارف نهج‌البلاغه را از فضای مطالعه و شرح، به متن زندگی مردم آورد؟</p>\n<p>یکی از انگیزه‌های مهم این حرکت، تأکیدهای رهبر معظم انقلاب بر ضرورت کاربردی کردن معارف دینی بود؛ از جمله این بیان که:</p>\n<p>«عناوین و مفاهیم معرفتی اسلام، جنبه‌ی عملیّاتی و ترجمه‌ی عملیّاتی پیدا کند و عمل به آنها ممکن و رایج بشود.»</p>\n<p>از نگاه ایشان، معارف اهل‌بیت(ع) همچون گنجینه‌ای ارزشمند نباید در محدوده کتاب‌ها و مباحث علمی باقی بماند؛ بلکه باید با زبان روز و شیوه‌های درست، به زندگی انسان‌ها راه پیدا کند. ایشان همچنین درباره نهج‌البلاغه تأکید کرده‌اند که دردها، خطرها و مسائل زندگی انسان را می‌توان در آینه این کتاب شناخت و درمان بسیاری از آن‌ها را نیز در همین گنجینه جست‌وجو کرد.</p>\n<p>با توجه به دشواری این مسیر ــ که به‌مراتب پیچیده‌تر از شرح ترتیبی یک کتاب است ــ تلاش کردم در ادامه فعالیت‌ها، از بیان و توضیح معارف به سمت کشف کاربردهای آن‌ها حرکت کنم؛ یعنی ببینیم کلمات امیرالمؤمنین(ع) در زندگی امروز ما چه می‌گویند و چگونه می‌توانند رفتار و انتخاب‌های ما را تغییر دهند.</p>\n<p>در همین راستا، دوره‌های زیر برگزار شده است:</p>\n<ul>\n<li><strong>۵۰ جلسه توحید کاربردی:</strong> با هدف تبدیل مباحث اعتقادی به بینش و رفتار عملی و نشان دادن نقش توحید در تصمیم‌ها و انتخاب‌های روزمره.</li>\n<li><strong>۴۰ جلسه دیدن خدا در زندگی:</strong> با محوریت تقویت نگاه توحیدی به اتفاقات، نعمت‌ها، شادی‌ها و فراز و نشیب‌های زندگی.</li>\n<li><strong>۵۰ جلسه شرح بخشی از کتاب کافی:</strong> در مسیر تبیین و ترویج معارف روایی اهل‌بیت(ع).</li>\n</ul>\n<h2>آثار علمی و ادبی</h2>\n<p>در کنار فعالیت‌های آموزشی و پژوهشی، در حوزه شعر آیینی و نوحه نیز فعالیت دارم. مجموعه شعر و نوحه <strong>«نفس‌های گرم»</strong> از آثار منتشرشده من در این حوزه است. برخی از سروده‌ها و نوحه‌هایم در مراسم و محافل مذهبی اجرا شده‌اند؛ از جمله نوحه‌هایی که توسط مداحان در محضر رهبر انقلاب اجرا شده است.</p>\n<p>رمان تاریخی <strong>«به اتفاق فرمانده»</strong> نیز در سال ۱۴۰۰ توسط انتشارات شهید کاظمی منتشر شده است. این اثر روایتی داستانی از یک موضوع تاریخی است که با قالبی متفاوت و بدیع ارائه شده است.</p>\n<p>همچنین کتاب <strong>«درمان با نهج‌البلاغه»</strong> را با رویکردی کاربردی و در قالبی مصور و در ابعاد یک گوشی تلفن همراه تألیف کرده‌ام. این کتاب به سراغ <strong>۶۰ درد و مسئله واقعی جامعه</strong> می‌رود و می‌کوشد با بهره‌گیری از کلمات امیرالمؤمنین(ع)، راهی برای شناخت و درمان آن‌ها پیش روی مخاطب بگذارد.</p>\n<h2>نرم‌افزار پای منبر مولا</h2>\n<p><strong>«پای منبر مولا»</strong> بستری برای دسترسی آسان و منظم به مجموعه جلسات و محتواهای آموزشی و معارفی است که در سال‌های گذشته تهیه و ارائه شده‌اند.</p>\n<p>هدف از راه‌اندازی این نرم‌افزار، فراهم کردن امکان بهره‌مندی آسان‌تر علاقه‌مندان از این محتواها و در نهایت، ترویج کلمات و معارف امیرالمؤمنین علی(ع) است؛ تا نهج‌البلاغه و سخنان آن حضرت، بیش از پیش در دسترس قرار بگیرد و از فضای مطالعه و شنیدن، به متن زندگی فردی و اجتماعی ما راه پیدا کند.</p>\n<p><strong>دغدغه اصلی این مسیر، تنها دانستن معارف نیست؛ بلکه فهمیدن، به‌کاربستن و زندگی کردن با آن‌هاست.</strong></p>\n<p>امیدوارم این تلاش اندک، قدمی در مسیر شناخت بهتر کلام امیرالمؤمنین(ع)، فهم عمیق‌تر معارف اهل‌بیت(ع) و عمل به آن‌ها باشد.</p>\n<p>والحمدلله رب العالمین</p>\n";
+const VIDEO_CLIPS = []; // Add video URLs/titles when received; no invented media links.
+const CONTACT_URL = "https://eitaa.com/joinchat/2066481246Cb13f0be69d";
+const sectionNames={towhid:'توحید کاربردی',life:'دیدن خدا در زندگی',kafi:'شرح اصول کافی',nahj:'شرح صوتی نهج‌البلاغه',clips:'کلیپ‌های تصویری'};
+const stage=document.getElementById('stage'), backdrop=document.getElementById('backdrop'), home=document.getElementById('home-pane'), list=document.getElementById('list-pane'), titleImg=document.getElementById('dynamic-title'), content=document.getElementById('content-view'), contents=document.getElementById('contents');
+let screen='home',section='',item=null, searching=false,query='',beforePlayerScroll=0;
+const fa=n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)]);
+const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.remove('gone');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.add('gone'),2800)}
+function setState(mode,s=null,v=null){
+ if(screen==='list'&&mode==='player')beforePlayerScroll=content.scrollTop;
+ screen=mode; if(s!==null)section=s;item=v;searching=false;query='';render();
+ if(mode==='list'&&v==='restore')content.scrollTop=beforePlayerScroll;else content.scrollTop=0;
+}
+function render(){
+ const isHome=screen==='home';home.classList.toggle('gone',!isHome);list.classList.toggle('gone',isHome);
+ backdrop.src=isHome?IMG['home.webp']:IMG['list_other.webp'];
+ titleImg.classList.toggle('gone',isHome || (screen==='list'&&section==='clips'));
+ document.getElementById('clips-page-title').classList.toggle('gone',isHome || screen!=='list' || section!=='clips');
+ if(!isHome){
+   const titleKey=(screen==='player'?'player':screen==='about'||screen==='photo'?'about':screen==='biography'?'biography':section);
+   if(IMG['title_'+titleKey])titleImg.src=IMG['title_'+titleKey];
+   titleImg.alt=(screen==='about'||screen==='photo')?'درباره ما':screen==='biography'?'درباره من':screen==='player'?'پخش جلسه':sectionNames[section];
+ }
+ if(screen==='list'&&section==='clips')renderClips();else if(screen==='list')renderList();else if(screen==='player')renderPlayer();
+ else if(screen==='about')renderAbout();else if(screen==='biography')renderBiography();else if(screen==='photo')renderPhoto();
+}
+function renderClips(){
+  const clips=VIDEO_CLIPS.length?VIDEO_CLIPS:Array.from({length:5},(_,i)=>({title:'کلیپ '+fa(i+1),url:''}));
+  const cards=clips.map((v,i)=>`<button type="button" class="clip-card" data-clip="${i}" aria-label="${safe(v.title)}"><span class="clip-play" aria-hidden="true">▶</span><span>${safe(v.title)}</span></button>`).join('');
+  contents.innerHTML=`<div class="clips-head">کلیپ‌های تصویری</div><div class="clips-window"><div class="clips-track"><div style="display:flex;gap:10px;padding:0 5px">${cards}</div><div style="display:flex;gap:10px;padding:0 5px" aria-hidden="true">${cards}</div></div></div><div class="note" style="text-align:center;padding:18px 5px">کلیپ‌های تازه به‌زودی اضافه می‌شوند.</div>`;
+  contents.querySelectorAll('[data-clip]').forEach(b=>b.addEventListener('click',()=>{
+   const clip=VIDEO_CLIPS[Number(b.dataset.clip)];
+   if(!clip?.url){toast('این کلیپ هنوز اضافه نشده است.');return;}
+   if(/^https:\/\/eitaa\.com\//i.test(clip.url))openEitaa(clip.url);
+   else if(/^https:\/\/(?:www\.)?aparat\.com\/v\//i.test(clip.url))setState('player','clips',{number:Number(b.dataset.clip)+1,url:clip.url});
+   else setState('player','clips',{number:Number(b.dataset.clip)+1,url:clip.url});
+  }));
+}
+function renderList(){
+ if(section==='nahj'){
+ contents.innerHTML=`<div class="content-box"><h2>شرح صوتی نهج‌البلاغه</h2><p>برای شنیدن جلسات از آرشیو استفاده کنید.</p><a class="action"  href="${safe(DATA.nahj.url)}">نمایش آرشیو سایت</a><button class="action" type="button" id="nahj-eitaa">باز کردن آرشیو ایتا</button></div>`;
+ document.getElementById('nahj-eitaa')?.addEventListener('click',()=>openEitaaArchive(DATA.nahj.eitaa_url));
+ return;
+ }
+ let input='';if(searching)input='<div class="search-wrap"><input class="search-input" id="search-input" type="search" aria-label="جست‌وجوی جلسات" placeholder="شماره جلسه را بنویسید…"></div>';
+ contents.innerHTML=input+'<div class="row-list" id="rows"></div>';
+ if(searching){const field=document.getElementById('search-input');field.value=query;field.addEventListener('input',e=>{query=e.target.value;drawRows()});field.focus({preventScroll:true});}
+ drawRows();
+}
+function drawRows(){
+ const el=document.getElementById('rows');if(!el)return;
+ const q=query.trim().replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c)));
+ const records=DATA[section].filter(x=>!q||String(x.number).includes(q)||String(x.title).includes(q));
+ el.innerHTML=records.length?records.map(x=>`<button type="button" class="session ${x.url?'':'missing'}" data-n="${x.number}" aria-label="جلسه ${fa(x.number)}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">جلسه ${fa(x.number)}</span></button>`).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
+ el.querySelectorAll('.session').forEach(b=>b.addEventListener('click',()=>{
+  const x=DATA[section].find(v=>v.number===Number(b.dataset.n));
+  if(!x?.url){toast('لینک این جلسه هنوز ثبت نشده است.');return;}
+  // One touch to the exact media link; keep the same list in the local WebView.
+  if(/^https:\/\/eitaa\.com\//i.test(x.url)){openEitaa(x.url);return;}
+  // Restore approved in-app Aparat iframe player; no external app / intermediate page.
+  setState('player',section,x);
+}));
+}
+function openEitaaArchive(url){openEitaa(url)}
+function openEitaa(url){
+  const target=String(url||'');
+  if(!/^https:\/\/eitaa\.com\/(?:joinchat\/[a-zA-Z0-9]+|[a-zA-Z0-9_]+\/\d+)(?:[/?#].*)?$/.test(target))return;
+  // The trusted native bridge starts Eitaa without navigating this WebView.
+  // Therefore there is no white web page and returning preserves the same list.
+  if(window.PMMNative&&typeof window.PMMNative.openEitaa==='function'){
+    window.PMMNative.openEitaa(target);
+  }else window.open(target,'_blank','noopener');
+}
+
+function renderAbout(){
+  const group=USER_PHOTOS.map((src,i)=>`<button type="button" class="gallery-tile" data-photo="${i}" aria-label="نمایش تصویر ${fa(i+1)}"><img src="${src}" alt="تصویر ${fa(i+1)} از فعالیت‌های آموزشی" loading="lazy"></button>`).join('');
+  contents.innerHTML=`<div class="about-menu">
+      <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>درباره ما</span></button>
+      <button class="about-entry" type="button" id="about-contact"><span class="about-entry-icon">✉</span><span>ارتباط با ما</span></button>
+      <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
+        <div class="gallery-track"><div class="gallery-group">${group}</div><div class="gallery-group" aria-hidden="true">${group}</div></div>
+      </div>
+    </div>`;
+  document.getElementById('about-biography').addEventListener('click',()=>setState('biography'));
+  document.getElementById('about-contact').addEventListener('click',()=>openEitaa(CONTACT_URL));
+  contents.querySelectorAll('[data-photo]').forEach(b=>b.addEventListener('click',()=>setState('photo',null,Number(b.dataset.photo))));
+}
+function renderBiography(){
+  contents.innerHTML='<article class="about-story">'+ABOUT_HTML+'</article>';
+}
+function renderPhoto(){
+  const ix=Number.isInteger(item)&&item>=0&&item<USER_PHOTOS.length?item:0;
+  contents.innerHTML=`<div class="photo-detail">
+    <div class="photo-large-frame"><img src="${USER_PHOTOS[ix]}" alt="تصویر ${fa(ix+1)} از فعالیت‌های آموزشی"></div>
+    <div class="photo-controls">
+      <button type="button" id="photo-next" aria-label="تصویر بعدی">❮</button>
+      <span class="photo-counter">${fa(ix+1)} از ${fa(USER_PHOTOS.length)}</span>
+      <button type="button" id="photo-prev" aria-label="تصویر قبلی">❯</button>
+    </div>
+  </div>`;
+  document.getElementById('photo-next').addEventListener('click',()=>setState('photo',null,(ix+1)%USER_PHOTOS.length));
+  document.getElementById('photo-prev').addEventListener('click',()=>setState('photo',null,(ix-1+USER_PHOTOS.length)%USER_PHOTOS.length));
+}
+
+function renderPlayer(){
+ const x=item; if(!x){setState('home');return}
+ const match=String(x.url).match(/^https?:\/\/(?:www\.)?aparat\.com\/v\/([a-z0-9_-]+)/i);
+ let html=`<div class="content-box"><h2>جلسه ${fa(x.number)}</h2>`;
+ if(match){
+  const embed='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
+  html+=`<div class="player-frame"><iframe title="پخش آنلاین جلسه ${fa(x.number)}" src="${embed}" loading="eager" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
+ }else if(/eitaa\.com/i.test(x.url)){
+  // Eitaa links are launched from the list directly; this is a fallback only.
+  html+='<p class="player-note">این جلسه در ایتا قرار دارد.</p>';
+ }else{
+  html+='<a class="action"  href="'+safe(x.url)+'">باز کردن جلسه</a>';
+ }
+ html+='<button class="action" type="button" id="player-back">بازگشت به جلسات</button></div>';
+ contents.innerHTML=html;
+ document.getElementById('player-back').addEventListener('click',goBack);
+}
+function goBack(){if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){const sec=section;setState('list',sec,'restore')}else if(screen==='list')setState('home');else toast('در صفحه اصلی هستید.');}
+document.getElementById('home-about').addEventListener('click',()=>setState('about'));
+document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>setState('list',b.dataset.section)));
+document.getElementById('back-button').addEventListener('click',goBack);
+document.getElementById('search-button').addEventListener('click',()=>{
+ if(screen==='about'||screen==='biography'||screen==='photo'){setState('list','towhid');searching=true;renderList();return;}
+ if(screen==='player'){const sec=section;setState('list',sec);searching=true;renderList();return;}
+ if(section==='nahj'||section==='clips'){toast('جست‌وجو در این بخش فعال نیست.');return}
+ searching=!searching;query='';renderList();content.scrollTop=0;
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'&&document.activeElement?.tagName!=='INPUT'&&document.activeElement?.tagName!=='TEXTAREA'){e.preventDefault();goBack();}});
+render();
+</script>
+</body></html>
