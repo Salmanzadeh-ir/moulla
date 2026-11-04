@@ -162,6 +162,25 @@ body{padding:0!important;gap:0!important;display:block;background:#c98d27}
 #hit-clips .arch-glint{animation-delay:-4.6s}
 @media(prefers-reduced-motion:reduce){.door-archlight .arch-glint{animation:none;stroke-dasharray:100 0;opacity:.52}}
 
+
+/* V9.5: larger About button, visually nearer to the viewer and separate from the five doors. */
+#home-pane #home-about{top:92.6%!important;left:29.2%!important;width:41.6%!important;height:4.7%!important;font-size:clamp(13px,3.9cqw,23px)!important;z-index:7!important}
+/* V9.5: guest sayings match the golden inset panels in the About page. */
+.guest-mola-panel{background:linear-gradient(#fff6cb,#f0c776 55%,#d69c44);border:3px solid #b16d1e;box-shadow:inset 0 2px #fff6d0,inset 0 -3px #ad6a20,0 4px 5px #57330e9c,0 0 0 1px #e8b65c;border-radius:15px;width:100%;padding:10px 8px 12px;margin-top:clamp(8px,3.2cqw,16px)}
+.guest-mola-header{display:flex;align-items:center;justify-content:center;gap:8px;color:#07365f;font:900 clamp(14px,4.1cqw,23px)/1.6 var(--pmm-text-font);text-align:center;margin:2px 4px 10px;text-shadow:0 1px 0 #fff2bf}
+.guest-mola-star{color:#0d5a92}
+.guest-mola-window{width:100%;overflow:hidden;border-radius:14px;border:2px solid #c08d37;background:linear-gradient(145deg,#ffeabd,#d6a557);box-shadow:inset 0 2px 8px #7751185c,0 3px 9px #673d1559;padding:10px 0}
+.guest-mola-track{display:flex;direction:ltr;width:max-content;will-change:transform;animation:guest-mola-slide 42s linear infinite}
+.guest-mola-group{display:flex;gap:10px;padding-right:10px;flex-shrink:0}
+.guest-mola-panel:hover .guest-mola-track,.guest-mola-panel:focus-within .guest-mola-track{animation-play-state:paused}
+.guest-mola-card{width:clamp(178px,49cqw,248px);min-height:clamp(205px,57cqw,282px);flex:none;border:2px solid #bf8730;border-radius:16px;background:linear-gradient(#fff8d9,#fff0bd 38%,#edc06e);overflow:hidden;box-shadow:inset 0 1px #fffdf0,0 4px 10px #72401066;padding:0;display:grid;grid-template-rows:clamp(102px,28cqw,132px) 1fr;cursor:pointer}
+.guest-mola-card img{width:100%;height:100%;object-fit:cover;background:#b4843f}
+.guest-mola-caption{display:flex;align-items:center;justify-content:center;padding:10px 12px;color:#123a60;font:700 clamp(12px,3.25cqw,17px)/1.95 var(--pmm-text-font);text-align:center;direction:rtl}
+.guest-mola-card:focus-visible{outline:3px solid #0a66a2}
+.guest-mola-note{padding:9px 6px 2px;color:#6b481f;font:700 clamp(11px,2.9cqw,15px)/1.9 var(--pmm-text-font);text-align:center}
+@keyframes guest-mola-slide{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.guest-mola-track{animation:none}.guest-mola-window{overflow-x:auto}}
+
 </style>
 </head>
 <body>
@@ -190,6 +209,14 @@ const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نه
 const IMG = {"home.webp":"images/v8/home_v9_iwan.webp","list_surface.webp":"images/v8/list_surface_webp.webp","list_other.webp":"images/v8/list_other_webp.webp","row_blank.webp":"images/v8/row_blank_webp.webp","title_towhid":"images/v8/title_towhid.png","title_life":"images/v8/title_life.png","title_kafi":"images/v8/title_kafi.png","title_nahj":"images/v8/title_nahj.png","title_player":"images/v8/title_player.png","title_about":"images/v8/title_about.png","title_biography":"images/v8/title_biography.png"}
 
 const USER_PHOTOS = ["images/gallery/photo_01.webp","images/gallery/photo_02.webp","images/gallery/photo_03.webp","images/gallery/photo_04.webp","images/gallery/photo_05.webp","images/gallery/photo_06.webp","images/gallery/photo_07.webp","images/gallery/photo_08.webp","images/gallery/photo_09.webp","images/gallery/photo_10.webp"];
+
+const GUEST_SAYINGS = [
+  {image: USER_PHOTOS[0], text: 'این قاب برای نمایش جمله‌های مهمانان مولا آماده شده است.'},
+  {image: USER_PHOTOS[1], text: 'تصاویر و نوشته‌های نهایی را بعداً به این بخش اضافه می‌کنیم.'},
+  {image: USER_PHOTOS[2], text: 'مخاطب با ورود می‌تواند یک جمله کوتاه و اثرگذار بخواند.'},
+  {image: USER_PHOTOS[3], text: 'برای هر مهمان، تصویر اختصاصی و جمله‌ای کوتاه قرار می‌گیرد.'},
+  {image: USER_PHOTOS[4], text: 'این متن‌ها نمونه‌اند و با جمله‌های اصلی جایگزین خواهند شد.'}
+];
 const ABOUT_HTML = "<h1>درباره من</h1>\n<p><strong>محمد کاظمی‌نیا</strong>، طلبه درس خارج و مدرس حوزه علمیه قم، دانش‌آموخته بنیاد بین‌المللی نهج‌البلاغه و پژوهشگر حوزه معارف علوی هستم.</p>\n<p>بخش مهمی از فعالیت علمی و تبلیغی من به مطالعه، شرح و ترویج معارف نهج‌البلاغه اختصاص دارد؛ با این باور که کلمات امیرالمؤمنین علی(ع) تنها برای خواندن و دانستن نیستند، بلکه می‌توانند راهنمای اندیشه، انتخاب و رفتار ما در زندگی باشند.</p>\n<h2>از شرح نهج‌البلاغه تا کاربردی کردن معارف</h2>\n<p>فعالیت آموزشی خود را در فضای مجازی از سال ۱۳۹۸ با برگزاری جلسات شرح نهج‌البلاغه آغاز کردم. این مسیر در قالب دو دوره کامل شرح نهج‌البلاغه ادامه یافت و در هر دو دوره، تمام کتاب، از خطبه‌ها و نامه‌ها تا حکمت‌ها، به‌صورت ترتیبی شرح داده شد.</p>\n<p>دوره دوم شرح نهج‌البلاغه، از ابتدای سال ۱۴۰۱ آغاز شد و در ۱۳ رجب ۱۴۰۴ به پایان رسید. این دوره در قالب حدود <strong>۱۱۰۰ جلسه آموزشی</strong> برگزار شد و تمام نهج‌البلاغه، از ابتدا تا انتها، به‌صورت پیوسته و تفصیلی مورد شرح و بررسی قرار گرفت.</p>\n<p>اما پس از پیمودن این مسیر، دغدغه جدی‌تری شکل گرفت: چگونه می‌توان معارف نهج‌البلاغه را از فضای مطالعه و شرح، به متن زندگی مردم آورد؟</p>\n<p>یکی از انگیزه‌های مهم این حرکت، تأکیدهای رهبر معظم انقلاب بر ضرورت کاربردی کردن معارف دینی بود؛ از جمله این بیان که:</p>\n<p>«عناوین و مفاهیم معرفتی اسلام، جنبه‌ی عملیّاتی و ترجمه‌ی عملیّاتی پیدا کند و عمل به آنها ممکن و رایج بشود.»</p>\n<p>از نگاه ایشان، معارف اهل‌بیت(ع) همچون گنجینه‌ای ارزشمند نباید در محدوده کتاب‌ها و مباحث علمی باقی بماند؛ بلکه باید با زبان روز و شیوه‌های درست، به زندگی انسان‌ها راه پیدا کند. ایشان همچنین درباره نهج‌البلاغه تأکید کرده‌اند که دردها، خطرها و مسائل زندگی انسان را می‌توان در آینه این کتاب شناخت و درمان بسیاری از آن‌ها را نیز در همین گنجینه جست‌وجو کرد.</p>\n<p>با توجه به دشواری این مسیر ــ که به‌مراتب پیچیده‌تر از شرح ترتیبی یک کتاب است ــ تلاش کردم در ادامه فعالیت‌ها، از بیان و توضیح معارف به سمت کشف کاربردهای آن‌ها حرکت کنم؛ یعنی ببینیم کلمات امیرالمؤمنین(ع) در زندگی امروز ما چه می‌گویند و چگونه می‌توانند رفتار و انتخاب‌های ما را تغییر دهند.</p>\n<p>در همین راستا، دوره‌های زیر برگزار شده است:</p>\n<ul>\n<li><strong>۵۰ جلسه توحید کاربردی:</strong> با هدف تبدیل مباحث اعتقادی به بینش و رفتار عملی و نشان دادن نقش توحید در تصمیم‌ها و انتخاب‌های روزمره.</li>\n<li><strong>۴۰ جلسه دیدن خدا در زندگی:</strong> با محوریت تقویت نگاه توحیدی به اتفاقات، نعمت‌ها، شادی‌ها و فراز و نشیب‌های زندگی.</li>\n<li><strong>۵۰ جلسه شرح بخشی از کتاب کافی:</strong> در مسیر تبیین و ترویج معارف روایی اهل‌بیت(ع).</li>\n</ul>\n<h2>آثار علمی و ادبی</h2>\n<p>در کنار فعالیت‌های آموزشی و پژوهشی، در حوزه شعر آیینی و نوحه نیز فعالیت دارم. مجموعه شعر و نوحه <strong>«نفس‌های گرم»</strong> از آثار منتشرشده من در این حوزه است. برخی از سروده‌ها و نوحه‌هایم در مراسم و محافل مذهبی اجرا شده‌اند؛ از جمله نوحه‌هایی که توسط مداحان در محضر رهبر انقلاب اجرا شده است.</p>\n<p>رمان تاریخی <strong>«به اتفاق فرمانده»</strong> نیز در سال ۱۴۰۰ توسط انتشارات شهید کاظمی منتشر شده است. این اثر روایتی داستانی از یک موضوع تاریخی است که با قالبی متفاوت و بدیع ارائه شده است.</p>\n<p>همچنین کتاب <strong>«درمان با نهج‌البلاغه»</strong> را با رویکردی کاربردی و در قالبی مصور و در ابعاد یک گوشی تلفن همراه تألیف کرده‌ام. این کتاب به سراغ <strong>۶۰ درد و مسئله واقعی جامعه</strong> می‌رود و می‌کوشد با بهره‌گیری از کلمات امیرالمؤمنین(ع)، راهی برای شناخت و درمان آن‌ها پیش روی مخاطب بگذارد.</p>\n<h2>نرم‌افزار پای منبر مولا</h2>\n<p><strong>«پای منبر مولا»</strong> بستری برای دسترسی آسان و منظم به مجموعه جلسات و محتواهای آموزشی و معارفی است که در سال‌های گذشته تهیه و ارائه شده‌اند.</p>\n<p>هدف از راه‌اندازی این نرم‌افزار، فراهم کردن امکان بهره‌مندی آسان‌تر علاقه‌مندان از این محتواها و در نهایت، ترویج کلمات و معارف امیرالمؤمنین علی(ع) است؛ تا نهج‌البلاغه و سخنان آن حضرت، بیش از پیش در دسترس قرار بگیرد و از فضای مطالعه و شنیدن، به متن زندگی فردی و اجتماعی ما راه پیدا کند.</p>\n<p><strong>دغدغه اصلی این مسیر، تنها دانستن معارف نیست؛ بلکه فهمیدن، به‌کاربستن و زندگی کردن با آن‌هاست.</strong></p>\n<p>امیدوارم این تلاش اندک، قدمی در مسیر شناخت بهتر کلام امیرالمؤمنین(ع)، فهم عمیق‌تر معارف اهل‌بیت(ع) و عمل به آن‌ها باشد.</p>\n<p>والحمدلله رب العالمین</p>\n";
 const VIDEO_CLIPS = []; // Add video URLs/titles when received; no invented media links.
 const CONTACT_URL = "https://eitaa.com/joinchat/2066481246Cb13f0be69d";
@@ -267,16 +294,25 @@ function openEitaa(url){
 
 function renderAbout(){
   const group=USER_PHOTOS.map((src,i)=>`<button type="button" class="gallery-tile" data-photo="${i}" aria-label="نمایش تصویر ${fa(i+1)}"><img src="${src}" alt="تصویر ${fa(i+1)} از فعالیت‌های آموزشی" loading="lazy"></button>`).join('');
+  const guestCards=GUEST_SAYINGS.map((entry,i)=>`<button type="button" class="guest-mola-card" data-guest="${i}" aria-label="جمله مهمان مولا ${fa(i+1)}"><img src="${entry.image}" alt="تصویر ${fa(i+1)} برای جمله مهمان مولا" loading="lazy"><span class="guest-mola-caption">${safe(entry.text)}</span></button>`).join('');
   contents.innerHTML=`<div class="about-menu">
       <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>درباره ما</span></button>
       <button class="about-entry" type="button" id="about-contact"><span class="about-entry-icon">✉</span><span>ارتباط با ما</span></button>
       <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
         <div class="gallery-track"><div class="gallery-group">${group}</div><div class="gallery-group" aria-hidden="true">${group}</div></div>
       </div>
+      <section class="guest-mola-panel" aria-labelledby="guest-mola-title">
+        <div class="guest-mola-header" id="guest-mola-title"><span class="guest-mola-star">✦</span><span>یک جمله مهمان مولا</span><span class="guest-mola-star">✦</span></div>
+        <div class="guest-mola-window" aria-label="جمله‌های مهمان مولا">
+          <div class="guest-mola-track"><div class="guest-mola-group">${guestCards}</div><div class="guest-mola-group" aria-hidden="true">${guestCards}</div></div>
+        </div>
+        <div class="guest-mola-note">این قاب برای افزودن عکس‌ها و نوشته‌های نهایی مهمانان مولا آماده است.</div>
+      </section>
     </div>`;
   document.getElementById('about-biography').addEventListener('click',()=>setState('biography'));
   document.getElementById('about-contact').addEventListener('click',()=>openEitaa(CONTACT_URL));
   contents.querySelectorAll('[data-photo]').forEach(b=>b.addEventListener('click',()=>setState('photo',null,Number(b.dataset.photo))));
+  contents.querySelectorAll('[data-guest]').forEach(b=>b.addEventListener('click',()=>toast('این بخش برای جمله‌های نهایی مهمان مولا آماده شده است.')));
 }
 function renderBiography(){
   contents.innerHTML='<article class="about-story">'+ABOUT_HTML+'</article>';
