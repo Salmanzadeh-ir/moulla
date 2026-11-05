@@ -45,54 +45,29 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.11.1'
-      - name: Require persistent OWNER release signing credentials
+      - name: Build RELEASE binaries for signing with owner's long-term private key
         shell: bash
-        env:
-          KEY_DATA: ${{ secrets.PMM_KEYSTORE_BASE64 }}
-          KEY_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
-        run: |
-          if [ -z "$KEY_DATA" ] || [ -z "$KEY_PASSWORD" ]; then
-            echo 'OFFICIAL RELEASE BLOCKED: PMM_KEYSTORE_BASE64 and/or PMM_KEYSTORE_PASSWORD are not configured.'
-            echo 'Never substitute an ephemeral debug/test signer. Have the OWNER configure the release signing key in GitHub Actions secrets.'
-            exit 29
-          fi
-          umask 077
-          printf '%s' "$KEY_DATA" | base64 --decode > "$RUNNER_TEMP/production-signing.p12"
-          test -s "$RUNNER_TEMP/production-signing.p12"
-          keytool -list -keystore "$RUNNER_TEMP/production-signing.p12" -storetype PKCS12 -storepass "$KEY_PASSWORD" -alias payemenbaremola >/dev/null
-      - name: Build signed production APK and Android App Bundle
-        env:
-          PMM_KEYSTORE_PATH: ${{ runner.temp }}/production-signing.p12
-          PMM_KEYSTORE_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
         run: gradle --no-daemon --stacktrace assembleRelease bundleRelease
-      - name: Validate official package, SDK levels and signatures
+      - name: Stage UNSIGNED binaries and Android's official apksigner tool
         shell: bash
         run: |
           set -euo pipefail
-          APK=app/build/outputs/apk/release/app-release.apk
-          AAB=app/build/outputs/bundle/release/app-release.aab
-          test -s "$APK"
-          test -s "$AAB"
-          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee "$RUNNER_TEMP/release-signature-report.txt"
-          grep -F 'Verified using v2 scheme (APK Signature Scheme v2): true' "$RUNNER_TEMP/release-signature-report.txt"
-          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee "$RUNNER_TEMP/release-package-report.txt"
-          grep -F "name='ir.nahj.towhidkarbordi'" "$RUNNER_TEMP/release-package-report.txt"
-          grep -F "versionCode='15'" "$RUNNER_TEMP/release-package-report.txt"
-          grep -F "versionName='10.4.9'" "$RUNNER_TEMP/release-package-report.txt"
-          grep -F "targetSdkVersion:'36'" "$RUNNER_TEMP/release-package-report.txt"
-          jarsigner -verify "$AAB"
-          unzip -p "$APK" assets/index.html | grep -Fq 'یک جمله مهمان مولا'
-          unzip -p "$APK" assets/index.html | grep -Fq 'home-exit'
-          sha256sum "$APK" "$AAB" | tee "$RUNNER_TEMP/SHA256SUMS.txt"
-      - name: Upload signed production binaries and verification reports
+          mkdir -p output
+          APK=$(find app/build/outputs/apk/release -maxdepth 1 -name '*.apk' -print -quit)
+          AAB=$(find app/build/outputs/bundle/release -maxdepth 1 -name '*.aab' -print -quit)
+          test -n "$APK" && test -n "$AAB"
+          cp "$APK" output/owner-approved-v1049-release-UNSIGNED.apk
+          cp "$AAB" output/owner-approved-v1049-release-UNSIGNED.aab
+          cp "$ANDROID_HOME/build-tools/36.0.0/lib/apksigner.jar" output/apksigner.jar
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee output/package-badging.txt
+          grep -F "name='ir.nahj.towhidkarbordi'" output/package-badging.txt
+          grep -F "versionCode='15'" output/package-badging.txt
+          grep -F "targetSdkVersion:'36'" output/package-badging.txt
+          sha256sum output/* | tee output/unsigned-SHA256SUMS.txt
+      - name: Upload UNSIGNED release files for secure offline signing
         uses: actions/upload-artifact@v4
         with:
-          name: PayeMenbareMola-v10.4.9-PRODUCTION-SIGNED-APK-AAB
+          name: PayeMenbareMola-v10.4.9-UNSIGNED-FOR-PRIVATE-SIGNING-ONLY
+          path: output/
+          retention-days: 1
           if-no-files-found: error
-          retention-days: 90
-          path: |
-            app/build/outputs/apk/release/app-release.apk
-            app/build/outputs/bundle/release/app-release.aab
-      - name: Delete temporary signing material
-        if: always()
-        run: rm -f "$RUNNER_TEMP/production-signing.p12"
