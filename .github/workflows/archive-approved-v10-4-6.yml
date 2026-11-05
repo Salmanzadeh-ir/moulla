@@ -1,0 +1,79 @@
+name: Archive EXACT approved V10.4.6 APK without rebuilding
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/archive-approved-v10-4-6.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: archive-owner-approved-v10-4-6
+  cancel-in-progress: false
+
+jobs:
+  preserve-approved-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout all approved source and binary parts
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify owner-approved 77 files and original APK chunks
+        run: python3 scripts/verify_layout_lock.py
+      - name: Reassemble EXACT original approved APK, verify checksum
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, shutil
+          lock = json.loads(Path('design/v10.4.6-lock.json').read_text(encoding='utf-8'))
+          out = Path(lock['approved_apk']['path'])
+          out.parent.mkdir(parents=True, exist_ok=True)
+          if out.is_file():
+              assert out.stat().st_size == lock['approved_apk']['size_bytes'], 'Existing APK size mismatch'
+          else:
+              with out.open('wb') as f:
+                  for part in lock['exact_apk_parts']:
+                      with Path(part['path']).open('rb') as source:
+                          shutil.copyfileobj(source, f)
+          digest = hashlib.sha256(out.read_bytes()).hexdigest()
+          assert digest == lock['approved_apk']['sha256'], 'Approved APK SHA256 MISMATCH — DO NOT PUBLISH'
+          assert out.stat().st_size == lock['approved_apk']['size_bytes']
+          (out.parent / 'SHA256SUMS.txt').write_text(f"{digest}  {out.name}\n")
+          (out.parent / 'README.md').write_text(
+              '# Paye Menbare Mola — owner-approved V10.4.6\n\n'
+              'This installable Android APK is preserved BYTE FOR BYTE, directly from '
+              'the APK approved by the project owner on 2026-11-05. '
+              'It has NOT been rebuilt, repacked, modified or re-signed.\n\n'
+              'SHA-256: '+digest+'\n'
+              'Source and image hashes: design/v10.4.6-lock.json\n'
+              'No layout, page, image, text, functionality or installation file may '
+              'be changed without fresh, explicit owner consent.\n',
+              encoding='utf-8'
+          )
+          print('Original, exact APK verified:', digest)
+          PY
+      - name: Commit approved installation APK to the MAIN repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/v10.4.6/PayeMenbareMola_V10_4_6_Approved.apk releases/v10.4.6/SHA256SUMS.txt releases/v10.4.6/README.md
+          if git diff --cached --quiet; then
+            echo 'Original APK already archived — no changes'
+          else
+            git commit -m "archive: preserve byte-identical owner-approved V10.4.6 APK in main"
+            git push origin HEAD:main
+          fi
+      - name: Create version tag and GitHub Release with exact APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! git ls-remote --exit-code --tags origin refs/tags/v10.4.6 >/dev/null 2>&1; then
+            git tag -a v10.4.6 -m 'Owner-approved immutable PayeMenbareMola V10.4.6'
+            git push origin refs/tags/v10.4.6
+          fi
+          if ! gh release view v10.4.6 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create v10.4.6               releases/v10.4.6/PayeMenbareMola_V10_4_6_Approved.apk               releases/v10.4.6/SHA256SUMS.txt               --repo "$GITHUB_REPOSITORY"               --title "پای منبر مولا — نسخه اصلی تأییدشده ۱۰.۴.۶"               --notes "همان APK آزمایشی که مالک پروژه تأیید کرد، بدون تغییر یا بازسازی، در مخزن نگهداری شده است. تمام ۷۷ فایل برنامه و تصاویر با هش ثبت شده‌اند. هیچ تغییری بدون دستور و اجازه صریح مالک مجاز نیست. SHA-256: 3ecf3342635a3ed17b50dc8c2eb7c979d5c59e92c380b7432f7fe40234830ebf"
+          fi
