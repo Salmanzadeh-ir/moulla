@@ -14,7 +14,7 @@ android {
         minSdk 23
         targetSdk 34
         versionCode 14
-        versionName '1.12.1'
+        versionName '10.4.9'
     }
 
     signingConfigs {
@@ -33,7 +33,7 @@ android {
     buildTypes {
         debug {
             // Install next to the live signed app for safe testing.
-            applicationIdSuffix '.exitpreview16'
+            applicationIdSuffix '.exitpreview49'
             versionNameSuffix '-preview'
         }
         release {

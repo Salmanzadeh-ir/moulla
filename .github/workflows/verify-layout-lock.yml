@@ -1,4 +1,4 @@
-name: Verify approved V10.4.6 design lock
+name: Verify owner-approved V10.4.9 design lock
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
   verify-ui-lock:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout owner-approved V10.4.6 code and all reference assets
+      - name: Checkout approved sources and binary references
         uses: actions/checkout@v4
-      - name: Verify 77 app files and 10 original APK binary pieces
+      - name: Ensure every approved screen, image and original APK byte remains unchanged
         run: python3 scripts/verify_layout_lock.py

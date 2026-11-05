@@ -1,0 +1,83 @@
+name: Archive EXACT owner-approved V10.4.9 in GitHub without rebuilding
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/archive-approved-v10-4-9.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: preserve-approved-v10-4-9
+  cancel-in-progress: false
+
+jobs:
+  archive-original-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout all owner-approved source, images and original APK parts
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Verify 78 approved app files, images and ten original APK pieces
+        run: python3 scripts/verify_layout_lock.py
+
+      - name: Assemble exact original APK and check its original SHA-256
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, shutil, zipfile
+          lock = json.loads(Path('design/v10.4.9-lock.json').read_text(encoding='utf-8'))
+          expected = lock['approved_apk']
+          out = Path(expected['path'])
+          out.parent.mkdir(parents=True, exist_ok=True)
+          if not out.exists():
+              with out.open('wb') as dst:
+                  for part in lock['exact_apk_parts']:
+                      with Path(part['path']).open('rb') as source:
+                          shutil.copyfileobj(source, dst)
+          digest = hashlib.sha256(out.read_bytes()).hexdigest()
+          assert out.stat().st_size == expected['size_bytes'], 'Approved APK size mismatch'
+          assert digest == expected['sha256'], 'Approved APK checksum mismatch — DO NOT PUBLISH'
+          with zipfile.ZipFile(out) as z:
+              assert z.testzip() is None, 'APK archive integrity mismatch'
+              assert z.read('assets/index.html') == Path('app/src/main/assets/index.html').read_bytes(), 'Approved embedded HTML differs from source'
+              assert z.read('assets/images/back_v1043_approved.png') == Path('app/src/main/assets/images/back_v1043_approved.png').read_bytes(), 'Approved back icon differs from source'
+          (out.parent / 'SHA256SUMS.txt').write_text(f"{digest}  {out.name}\n", encoding='utf-8')
+          (out.parent / 'README.md').write_text(
+              '# پای منبر مولا — نسخه اصلی تاییدشده V10.4.9\n\n'
+              'This installable APK was preserved BYTE FOR BYTE from the user-approved '
+              'V10.4.9 test version, without a rebuild, repack or re-sign.\n\n'
+              'SHA-256: ' + digest + '\n'
+              'Exact full source / images: app/src/main/\n'
+              'Full file and binary locks: design/v10.4.9-lock.json\n'
+              'No changes without express owner permission.\n', encoding='utf-8')
+          print('Exact owner-approved APK verified:', digest)
+          PY
+
+      - name: Commit unmodified APK to main repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/v10.4.9/PayeMenbareMola_V10_4_9_Approved.apk releases/v10.4.9/SHA256SUMS.txt releases/v10.4.9/README.md
+          if git diff --cached --quiet; then
+            echo 'Exact approved APK already archived; no changes'
+          else
+            git commit -m "archive: preserve exact immutable owner-approved V10.4.9 APK"
+            git push origin HEAD:main
+          fi
+
+      - name: Create immutable release tag and publish original APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! git ls-remote --exit-code --tags origin refs/tags/v10.4.9 >/dev/null 2>&1; then
+            git tag -a v10.4.9 -m "Owner-approved immutable PayeMenbareMola V10.4.9"
+            git push origin refs/tags/v10.4.9
+          fi
+          if ! gh release view v10.4.9 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create v10.4.9               releases/v10.4.9/PayeMenbareMola_V10_4_9_Approved.apk               releases/v10.4.9/SHA256SUMS.txt               --repo "$GITHUB_REPOSITORY"               --title "پای منبر مولا — نسخه اصلی تأییدشده ۱۰.۴.۹"               --notes "نسخه تأییدشده مالک پروژه، با اصلاح صفحه درباره ما و تمام سایر جزئیات مصوب. فایل APK بدون تغییر یا ساخت و امضای مجدد در مخزن ذخیره شده است. تعداد ۷۸ فایل منبع و ۱۰ قطعه باینری با هش قفل شده‌اند. هر تغییر بعدی فقط با اجازه صریح مالک. SHA-256: 3b93a7974402bbdeb7318ee68c0881873d33fa94e61ed1ab6ae594616ddf8624"
+          fi
