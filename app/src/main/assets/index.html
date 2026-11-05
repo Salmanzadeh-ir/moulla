@@ -19,14 +19,13 @@
 .home-hit:focus-visible{outline:3px solid #fff3bd;background:#fff6bb25}
 #hit-towhid{left:18.4%;top:49.0%;width:28.9%;height:18.9%}#hit-life{left:51.4%;top:49.0%;width:28.9%;height:18.9%}#hit-kafi{left:18.4%;top:68.8%;width:28.9%;height:19.2%}#hit-nahj{left:51.4%;top:68.8%;width:28.9%;height:19.2%}
 .top-action{position:absolute;top:35.6%;height:3.8%;width:20%;background:transparent;border:0;z-index:5;border-radius:40%;touch-action:manipulation}.top-action:active{background:#60401933;box-shadow:inset 0 4px 9px #613f1a55;transform:translateY(1px)}.top-action:focus-visible{outline:3px solid white}
-#search-button{left:10.7%;}#back-button{right:10.7%}
+#back-button{right:10.7%}
 .list-title{position:absolute;left:30.5%;width:39%;top:42.5%;height:4.9%;object-fit:contain;z-index:4;pointer-events:none}
 .content-view{position:absolute;top:48.5%;left:15.55%;width:67.3%;height:38.8%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#a96b20 transparent;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:3;direction:ltr;mask-image:linear-gradient(to bottom,transparent 0,black 1.5%,black 97%,transparent 100%)}
 .content-view::-webkit-scrollbar{width:4px}.content-view::-webkit-scrollbar-thumb{background:#c48a36aa;border-radius:2px}
 .row-list{direction:rtl;display:flex;flex-direction:column;gap:clamp(2px,.5cqw,5px);padding-bottom:10px}
 .session{position:relative;width:100%;height:auto;aspect-ratio:634/103;border:none;padding:0;background:transparent;flex-shrink:0;display:block;transition:filter .12s,transform .12s;cursor:pointer}
 .session img{display:block;width:100%;height:100%;pointer-events:none;user-select:none}.session:active{transform:translateY(3px) scale(.985);filter:brightness(.82)}.session:focus-visible{outline:3px solid #14649a;outline-offset:-5px}.session.missing{filter:saturate(.58);opacity:.83}.session.missing:active{filter:saturate(.35) brightness(.78)}
-.search-wrap{padding:8px 5px 12px;direction:rtl}.search-input{width:100%;padding:10px 13px;border:3px solid #b57722;border-radius:16px;background:#fff1c5;color:#062f53;outline:none;box-shadow:inset 0 2px 7px #71410955;font-weight:700;font-size:clamp(12px,3.0cqw,20px)}.search-input:focus{border-color:#0761a8}
 .content-box{direction:rtl;background:#ffebacdd;border:3px solid #8c4d0f;border-radius:15px;margin:8px;padding:16px 12px;box-shadow:0 6px 0 #aa6926,0 9px 15px #7b421a55,inset 0 1px #fff5c6;text-align:center;color:#103b60;font-size:clamp(12px,2.7cqw,18px);line-height:2}
 .content-box h2{font-size:clamp(16px,4cqw,28px);margin:0 0 10px}.content-box p{margin:8px 0}
 .content-box .player-frame{position:relative;width:100%;aspect-ratio:16/9;border:3px solid #cf9b43;border-radius:10px;background:#0c2032;overflow:hidden;margin:12px auto}.player-frame iframe{width:100%;height:100%;border:0;display:block}.player-note{font-size:clamp(10px,2.35cqw,15px);line-height:1.8}
@@ -38,7 +37,7 @@
 @media(prefers-reduced-motion:reduce){.home-hit,.session{transition:none}}
 
 /* V6: all live copy (except approved pictorial headings) is Vazirmatn. */
-html,body,button,input,textarea,h1,h2,h3,p,span,summary,a,.content-box,.action,.feedback,.toast,.empty,.search-input{font-family:var(--pmm-text-font)}
+html,body,button,input,textarea,h1,h2,h3,p,span,summary,a,.content-box,.action,.feedback,.toast,.empty{font-family:var(--pmm-text-font)}
 .session-label{position:absolute;top:0;right:23%;left:23%;height:100%;display:flex;align-items:center;justify-content:center;direction:rtl;unicode-bidi:plaintext;white-space:nowrap;font-family:var(--pmm-text-font);font-weight:800;font-size:clamp(13px,4.7cqw,25px);line-height:1.2;color:#07345c;pointer-events:none;text-shadow:0 1px 0 #fff2bf;transform:translateY(-1px)}
 @media(max-width:520px){.session-label{font-size:clamp(12px,4.9cqw,20px)}}
 
@@ -356,8 +355,7 @@ body{margin:0!important;padding:0!important;display:flex!important;align-items:c
   box-shadow:0 0 0 3px #f7cd73,0 0 23px rgba(255,236,155,.88),inset 0 0 0 4px #fff2c2,inset 0 0 22px rgba(121,62,12,.3),0 8px 15px #6e3b1599;
 }
 #list-pane .top-action{position:absolute;top:43.4%!important;width:12.6%!important;height:5.1%!important;z-index:6!important;border:2px solid #b57c2c!important;border-radius:50%!important;background:linear-gradient(#fff5c7,#dfaa4e)!important;box-shadow:0 2px 6px #62370c9b!important;color:#083a62!important;display:flex;align-items:center;justify-content:center}
-#list-pane #search-button{left:12%!important}#list-pane #back-button{right:12%!important}
-#list-pane #search-button::after{content:'⌕';font-size:clamp(16px,5.3cqw,28px)}
+#list-pane #back-button{right:12%!important}
 #list-pane #back-button::after{content:'↩';font-size:clamp(16px,5cqw,27px)}
 #list-pane .list-title{top:44.1%!important;height:5.2%!important;left:27.3%!important;width:45.4%!important;z-index:5!important}
 #list-pane .clip-title{top:44.2%!important;z-index:5!important}
@@ -502,7 +500,6 @@ body { display:block !important; }
 </div>
 <div class="pane gone" id="list-pane">
 <div class="inner-gold-panel" aria-hidden="true"></div>
-<button type="button" class="top-action" id="search-button" title="جست‌وجو" aria-label="جست‌وجو"></button>
 <button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
 <img class="list-title gone" id="dynamic-title" alt="عنوان بخش"><div class="clip-title gone" id="clips-page-title">کلیپ‌های تصویری</div>
 <div class="content-view" id="content-view"><div class="row-list" id="contents"></div></div>
@@ -529,13 +526,13 @@ const VIDEO_CLIPS = []; // Add video URLs/titles when received; no invented medi
 const CONTACT_URL = "https://eitaa.com/joinchat/2066481246Cb13f0be69d";
 const sectionNames={towhid:'توحید کاربردی',life:'دیدن خدا در زندگی',kafi:'شرح اصول کافی',nahj:'شرح صوتی نهج‌البلاغه',clips:'کلیپ‌های تصویری'};
 const stage=document.getElementById('stage'), backdrop=document.getElementById('backdrop'), home=document.getElementById('home-pane'), list=document.getElementById('list-pane'), titleImg=document.getElementById('dynamic-title'), content=document.getElementById('content-view'), contents=document.getElementById('contents');
-let screen='home',section='',item=null, searching=false,query='',beforePlayerScroll=0;
+let screen='home',section='',item=null,beforePlayerScroll=0;
 const fa=n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)]);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.remove('gone');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.add('gone'),2800)}
 function setState(mode,s=null,v=null){
  if(screen==='list'&&mode==='player')beforePlayerScroll=content.scrollTop;
- screen=mode; if(s!==null)section=s;item=v;searching=false;query='';render();
+ screen=mode; if(s!==null)section=s;item=v;render();
  if(mode==='list'&&v==='restore')content.scrollTop=beforePlayerScroll;else content.scrollTop=0;
 }
 function render(){
@@ -569,15 +566,12 @@ function renderList(){
  document.getElementById('nahj-eitaa')?.addEventListener('click',()=>openEitaaArchive(DATA.nahj.eitaa_url));
  return;
  }
- let input='';if(searching)input='<div class="search-wrap"><input class="search-input" id="search-input" type="search" aria-label="جست‌وجوی جلسات" placeholder="شماره جلسه را بنویسید…"></div>';
- contents.innerHTML=input+'<div class="row-list" id="rows"></div>';
- if(searching){const field=document.getElementById('search-input');field.value=query;field.addEventListener('input',e=>{query=e.target.value;drawRows()});field.focus({preventScroll:true});}
+ contents.innerHTML='<div class="row-list" id="rows"></div>';
  drawRows();
 }
 function drawRows(){
  const el=document.getElementById('rows');if(!el)return;
- const q=query.trim().replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c)));
- const records=DATA[section].filter(x=>!q||String(x.number).includes(q)||String(x.title).includes(q));
+ const records=DATA[section];
  el.innerHTML=records.length?records.map(x=>`<button type="button" class="session ${x.url?'':'missing'}" data-n="${x.number}" aria-label="جلسه ${fa(x.number)}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">جلسه ${fa(x.number)}</span></button>`).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
  el.querySelectorAll('.session').forEach(b=>b.addEventListener('click',()=>{
   const x=DATA[section].find(v=>v.number===Number(b.dataset.n));
@@ -774,12 +768,6 @@ document.getElementById('guest-full-close').addEventListener('click',closeGuestF
 document.getElementById('home-about').addEventListener('click',()=>setState('about'));
 document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>setState('list',b.dataset.section)));
 document.getElementById('back-button').addEventListener('click',goBack);
-document.getElementById('search-button').addEventListener('click',()=>{
- if(screen==='about'||screen==='biography'||screen==='photo'){setState('list','towhid');searching=true;renderList();return;}
- if(screen==='player'){const sec=section;setState('list',sec);searching=true;renderList();return;}
- if(section==='nahj'||section==='clips'){toast('جست‌وجو در این بخش فعال نیست.');return}
- searching=!searching;query='';renderList();content.scrollTop=0;
-});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'&&document.activeElement?.tagName!=='INPUT'&&document.activeElement?.tagName!=='TEXTAREA'){e.preventDefault();goBack();}});
 render();
 </script>
