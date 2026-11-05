@@ -1,0 +1,98 @@
+name: Production V10.4.9 — signed APK and Play AAB
+
+on:
+  push:
+    branches:
+      - release/production-v10-4-9-from-approved-main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout and verify approved V10.4.9 screens unchanged
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Assert NO changes to approved UI, Android implementation and artwork
+        shell: bash
+        run: |
+          git diff --exit-code 7ca6ed8b96d1dcd0ff798002be180c13135ae0c5 HEAD -- app/src/main
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          lock=json.loads(Path('design/v10.4.9-lock.json').read_text(encoding='utf-8'))
+          expected=lock['protected_paths']['git_blob_sha_by_path']
+          for name,sha in expected.items():
+              if name in ('app/build.gradle',): continue
+              actual=__import__('subprocess').check_output(['git','hash-object',name],text=True).strip()
+              assert actual == sha, 'Owner-approved file changed: '+name
+          print('Approved app screens and assets match owner reference.')
+          PY
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Install Android API 36 platform and build tools
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Gradle 8.11.1 for Android Gradle Plugin 8.10.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Require persistent OWNER release signing credentials
+        shell: bash
+        env:
+          KEY_DATA: ${{ secrets.PMM_KEYSTORE_BASE64 }}
+          KEY_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEY_DATA" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo 'OFFICIAL RELEASE BLOCKED: PMM_KEYSTORE_BASE64 and/or PMM_KEYSTORE_PASSWORD are not configured.'
+            echo 'Never substitute an ephemeral debug/test signer. Have the OWNER configure the release signing key in GitHub Actions secrets.'
+            exit 29
+          fi
+          umask 077
+          printf '%s' "$KEY_DATA" | base64 --decode > "$RUNNER_TEMP/production-signing.p12"
+          test -s "$RUNNER_TEMP/production-signing.p12"
+          keytool -list -keystore "$RUNNER_TEMP/production-signing.p12" -storetype PKCS12 -storepass "$KEY_PASSWORD" -alias payemenbaremola >/dev/null
+      - name: Build signed production APK and Android App Bundle
+        env:
+          PMM_KEYSTORE_PATH: ${{ runner.temp }}/production-signing.p12
+          PMM_KEYSTORE_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
+        run: gradle --no-daemon --stacktrace assembleRelease bundleRelease
+      - name: Validate official package, SDK levels and signatures
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/release/app-release.apk
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          test -s "$APK"
+          test -s "$AAB"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee "$RUNNER_TEMP/release-signature-report.txt"
+          grep -F 'Verified using v2 scheme (APK Signature Scheme v2): true' "$RUNNER_TEMP/release-signature-report.txt"
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee "$RUNNER_TEMP/release-package-report.txt"
+          grep -F "name='ir.nahj.towhidkarbordi'" "$RUNNER_TEMP/release-package-report.txt"
+          grep -F "versionCode='15'" "$RUNNER_TEMP/release-package-report.txt"
+          grep -F "versionName='10.4.9'" "$RUNNER_TEMP/release-package-report.txt"
+          grep -F "targetSdkVersion:'36'" "$RUNNER_TEMP/release-package-report.txt"
+          jarsigner -verify "$AAB"
+          unzip -p "$APK" assets/index.html | grep -Fq 'یک جمله مهمان مولا'
+          unzip -p "$APK" assets/index.html | grep -Fq 'home-exit'
+          sha256sum "$APK" "$AAB" | tee "$RUNNER_TEMP/SHA256SUMS.txt"
+      - name: Upload signed production binaries and verification reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-v10.4.9-PRODUCTION-SIGNED-APK-AAB
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+      - name: Delete temporary signing material
+        if: always()
+        run: rm -f "$RUNNER_TEMP/production-signing.p12"
