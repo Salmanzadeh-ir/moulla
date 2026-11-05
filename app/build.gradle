@@ -7,13 +7,13 @@ def pmmKeystorePassword = System.getenv('PMM_KEYSTORE_PASSWORD')
 
 android {
     namespace 'ir.nahj.towhidkarbordi'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId 'ir.nahj.towhidkarbordi'
         minSdk 23
-        targetSdk 34
-        versionCode 14
+        targetSdk 36
+        versionCode 15
         versionName '1.12.1'
     }
 
