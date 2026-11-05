@@ -62,6 +62,7 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee output/package-badging.txt
           grep -F "name='ir.nahj.towhidkarbordi'" output/package-badging.txt
           grep -F "versionCode='15'" output/package-badging.txt
+          grep -F "versionName='10.4.9'" output/package-badging.txt
           grep -F "targetSdkVersion:'36'" output/package-badging.txt
           sha256sum output/* | tee output/unsigned-SHA256SUMS.txt
       - name: Upload UNSIGNED release files for secure offline signing
