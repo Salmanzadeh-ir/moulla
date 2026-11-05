@@ -7,14 +7,14 @@ def pmmKeystorePassword = System.getenv('PMM_KEYSTORE_PASSWORD')
 
 android {
     namespace 'ir.nahj.towhidkarbordi'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId 'ir.nahj.towhidkarbordi'
         minSdk 23
-        targetSdk 34
-        versionCode 14
-        versionName '10.4.9'
+        targetSdk 36
+        versionCode 15
+        versionName '1.12.1'
     }
 
     signingConfigs {
@@ -33,7 +33,7 @@ android {
     buildTypes {
         debug {
             // Install next to the live signed app for safe testing.
-            applicationIdSuffix '.exitpreview49'
+            applicationIdSuffix '.exitpreview16'
             versionNameSuffix '-preview'
         }
         release {
