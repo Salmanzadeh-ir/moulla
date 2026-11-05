@@ -356,7 +356,7 @@ body{margin:0!important;padding:0!important;display:flex!important;align-items:c
 }
 #list-pane .top-action{position:absolute;top:43.4%!important;width:12.6%!important;height:5.1%!important;z-index:6!important;border:2px solid #b57c2c!important;border-radius:50%!important;background:linear-gradient(#fff5c7,#dfaa4e)!important;box-shadow:0 2px 6px #62370c9b!important;color:#083a62!important;display:flex;align-items:center;justify-content:center}
 #list-pane #back-button{right:12%!important}
-#list-pane #back-button::after{content:'↩';font-size:clamp(16px,5cqw,27px)}
+#list-pane #back-button::after{content:'↪';font-size:clamp(18px,5.4cqw,30px);font-weight:900;text-shadow:0 1px 0 #fff3bd}
 #list-pane .list-title{top:44.1%!important;height:5.2%!important;left:27.3%!important;width:45.4%!important;z-index:5!important}
 #list-pane .clip-title{top:44.2%!important;z-index:5!important}
 #list-pane .content-view{left:13%!important;top:51.5%!important;width:74%!important;height:37.7%!important;z-index:5!important;overflow-y:auto!important;direction:ltr}
@@ -364,7 +364,7 @@ body{margin:0!important;padding:0!important;display:flex!important;align-items:c
 /* Guest: an infinite circular 18-card gallery. Each full original 9:16 poster rotates with its OWN frame. */
 #guest-pane .guest-heading{top:44%!important;left:18%!important;width:64%!important;height:4.4%!important;z-index:7!important;font-size:clamp(14px,4.1cqw,25px)!important}
 #guest-pane .guest-return{top:43.6%!important;right:11%!important;left:auto!important;width:13%!important;height:4.9%!important;border:2px solid #bd862c!important;background:linear-gradient(#fff6c9,#dba54d)!important;border-radius:50%!important;box-shadow:0 2px 7px #61421788!important;z-index:10!important}
-#guest-pane .guest-return::after{content:'↩';font-size:clamp(17px,5.1cqw,28px);font-weight:900;color:#07466d;display:flex;justify-content:center;align-items:center;height:100%}
+#guest-pane .guest-return::after{content:'↪';font-size:clamp(18px,5.4cqw,31px);font-weight:900;color:#07466d;text-shadow:0 1px 0 #fff3bd;display:flex;justify-content:center;align-items:center;height:100%}
 #guest-pane .guest-carousel{
   --guest-wheel-radius:67cqw;
   left:4%!important;top:51%!important;width:92%!important;height:35.5%!important;
@@ -472,6 +472,36 @@ body { display:block !important; }
   justify-content: center;
   font-size: clamp(13px, 3.7cqw, 23px) !important;
 }
+
+/* Home page ONLY: small gold-and-lapis Exit plaque, aligned with right-side inner-page Back button. */
+#home-pane #home-exit {
+  position:absolute !important;
+  top:43.4% !important;
+  right:12% !important;
+  left:auto !important;
+  width:12.6% !important;
+  height:5.1% !important;
+  z-index:18 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  border:2px solid #e9ba61 !important;
+  border-radius:37% 37% 37% 37% / 45% 45% 45% 45% !important;
+  background:linear-gradient(180deg,#0d4e85 0%,#06325f 55%,#092a4f 100%) !important;
+  color:#ffe4a0 !important;
+  font-family:var(--pmm-text-font) !important;
+  font-size:clamp(12px,3.5cqw,21px) !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  text-shadow:0 1px 1px #051c38 !important;
+  box-shadow:0 0 0 2px #9e6723,0 2px 7px #45230788,inset 0 1px 3px #fff1b84d !important;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+#home-pane #home-exit:active { filter:brightness(1.23); transform:scale(.97); }
+#home-pane #home-exit:focus-visible { outline:2px solid #fff4c7; outline-offset:3px; }
 </style>
 </head>
 <body>
@@ -489,6 +519,7 @@ body { display:block !important; }
 <button type="button" class="home-door" id="hit-clips" data-section="clips" aria-label="کلیپ‌های تصویری"><svg class="door-archlight" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="arch-border" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/><path class="arch-glint" pathLength="100" d="M4 95 L4 42 C4 18 23 4 50 4 C77 4 96 18 96 42 L96 95 Z"/></svg><span class="door-film" aria-hidden="true">▶</span><span class="door-title">کلیپ‌های تصویری</span></button>
 <button type="button" class="home-door" id="hit-guest" aria-label="یک جمله مهمان مولا"></button>
 <button type="button" class="about-home-button" id="home-about" aria-label="درباره ما">درباره ما</button>
+<button type="button" class="home-exit" id="home-exit" title="خروج از برنامه" aria-label="خروج از برنامه">خروج</button>
 </div>
 <div class="pane gone" id="guest-pane" aria-label="یک جمله مهمان مولا">
 <div class="inner-gold-panel" aria-hidden="true"></div>
@@ -762,6 +793,11 @@ function showGuestFull(){
  if(guestTicker){clearInterval(guestTicker);guestTicker=null}
 }
 function closeGuestFull(){document.getElementById('guest-fullview').hidden=true;resetGuestTicker()}
+document.getElementById('home-exit').addEventListener('click',()=>{
+  if(screen!=='home')return;
+  if(window.PMMNative && typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();
+  else toast('دکمه خروج فقط در برنامه اندروید فعال است.');
+});
 document.getElementById('hit-guest').addEventListener('click',enterGuest);
 document.getElementById('guest-return').addEventListener('click',()=>{if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home')});
 document.getElementById('guest-full-close').addEventListener('click',closeGuestFull);
