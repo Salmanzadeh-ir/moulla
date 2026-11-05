@@ -1,0 +1,81 @@
+name: Archive owner-approved V10.4.3 APK in repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/archive-approved-v10-4-3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: archive-v10-4-3
+  cancel-in-progress: false
+
+jobs:
+  archive-approved-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download EXACT previously approved GitHub Actions build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/approved-apk"
+          gh run download 41999381978 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "PayeMenbareMola-HomeExit-Preview-APK" \
+            --dir "$RUNNER_TEMP/approved-apk"
+      - name: Verify exact approved APK SHA256 (do not rebuild)
+        run: |
+          test -f "$RUNNER_TEMP/approved-apk/app-debug.apk"
+          echo "a19dec5ae0eeedd78e6893f6b70f68741aba8eda388ef52e0be843fc6d664385  $RUNNER_TEMP/approved-apk/app-debug.apk" | sha256sum -c -
+      - name: Save approved APK and verification details in GitHub repository
+        run: |
+          mkdir -p releases/v10.4.3
+          cp "$RUNNER_TEMP/approved-apk/app-debug.apk" releases/v10.4.3/PayeMenbareMola_V10_4_3_Approved.apk
+          (
+            cd releases/v10.4.3
+            sha256sum PayeMenbareMola_V10_4_3_Approved.apk > SHA256SUMS.txt
+          )
+          cat > releases/v10.4.3/README.md <<'EOF'
+          # Owner-approved Paye Menbare Mola V10.4.3 (frozen)
+          This APK is the *exact*, already-approved GitHub Actions build from run 41999381978.
+          Its SHA-256 is a19dec5ae0eeedd78e6893f6b70f68741aba8eda388ef52e0be843fc6d664385.
+          Source implementation baseline: 5086cbf3940161660a04bdbc42c0b2609989736f.
+          Do not modify the file or layouts without the express permission of the project owner.
+          Download the APK from this directory or the GitHub Release v10.4.3.
+          EOF
+      - name: Commit and push binary APK to main, never overwrite an existing differing archive
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/v10.4.3/
+          if git diff --cached --quiet; then
+            echo "Already archived, nothing to commit."
+          else
+            git commit -m "archive: preserve exact owner-approved V10.4.3 APK in repository"
+            git push origin HEAD:main
+          fi
+      - name: Tag archived version and publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! git rev-parse "refs/tags/v10.4.3" >/dev/null 2>&1; then
+            git tag -a v10.4.3 -m "Owner-approved frozen V10.4.3 APK"
+            git push origin refs/tags/v10.4.3
+          fi
+          if ! gh release view v10.4.3 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create v10.4.3 \
+              releases/v10.4.3/PayeMenbareMola_V10_4_3_Approved.apk \
+              releases/v10.4.3/SHA256SUMS.txt \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "پای منبر مولا — نسخه تأییدشده V10.4.3" \
+              --notes "نسخه تأییدشده توسط مالک پروژه. تمام صفحات و چینش‌ها قفل شده و بدون اجازه صریح مالک نباید تغییر کنند. اصل APK بدون بازسازی یا دستکاری آرشیو شده است. SHA-256: a19dec5ae0eeedd78e6893f6b70f68741aba8eda388ef52e0be843fc6d664385"
+          fi

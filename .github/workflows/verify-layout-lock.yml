@@ -1,0 +1,20 @@
+name: Verify approved V10.4.3 design lock
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-ui-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full locked design
+        uses: actions/checkout@v4
+      - name: Verify all layouts, image assets and implementation
+        run: python3 scripts/verify_layout_lock.py
