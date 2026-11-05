@@ -1,0 +1,53 @@
+name: Publish EXACT signed official APK v10.4.9
+on:
+  push:
+    branches:
+      - release/publish-signed-v10-4-9
+    paths:
+      - '.github/workflows/publish-signed-v10-4-9.yml'
+      - 'distribution/official-v10.4.9/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish-signed-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout distribution branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify reference source not changed and validate all ten binary parts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code 7ca6ed8b96d1dcd0ff798002be180c13135ae0c5 HEAD -- app/
+          sha256sum --check distribution/official-v10.4.9/PART_SHA256SUMS.txt
+          test "$(find distribution/official-v10.4.9/parts -name 'part-*.bin' | wc -l)" -eq 10
+          mkdir -p output
+          cat distribution/official-v10.4.9/parts/part-{00..09}.bin > output/PayeMenbareMola_V10_4_9_Official_Install.apk
+          test "$(stat -c %s output/PayeMenbareMola_V10_4_9_Official_Install.apk)" -eq 19482647
+          echo "80cd77cdb6fbd967bfb7a3ccfde8d8ee598b4d675f2c4410fc7fda8d781d212b  output/PayeMenbareMola_V10_4_9_Official_Install.apk" | sha256sum --check
+          unzip -tqq output/PayeMenbareMola_V10_4_9_Official_Install.apk
+          echo 'PASS: Byte-identical signed APK, unaltered app source.'
+      - name: Create NEW GitHub Release; never touch approved v10.4.9 archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="v10.4.9-official"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; refusing to overwrite or replace it."
+            exit 1
+          fi
+          gh release create "$TAG" \
+            "output/PayeMenbareMola_V10_4_9_Official_Install.apk" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "7ca6ed8b96d1dcd0ff798002be180c13135ae0c5" \
+            --title "پای منبر مولا — نسخه رسمی قابل نصب ۱۰.۴.۹" \
+            --notes "APK رسمی اندروید با شناسه اصلی ir.nahj.towhidkarbordi و امضای انتشار V1/V2/V3. این فایل دقیقاً همان APK امضاشده مورد تأیید است؛ SHA-256: 80cd77cdb6fbd967bfb7a3ccfde8d8ee598b4d675f2c4410fc7fda8d781d212b ؛ حجم: 19482647 بایت. نسخه مرجع v10.4.9 و تمام تصاویر و کد آن بدون تغییر حفظ شده‌اند. هیچ کلید خصوصی یا رمز امضایی در این انتشار قرار ندارد. توجه: برای به‌روزرسانی برنامه‌های قبلاً نصب‌شده، گواهی امضا باید یکسان باشد."
+          echo "Public direct download:"
+          echo "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/PayeMenbareMola_V10_4_9_Official_Install.apk"

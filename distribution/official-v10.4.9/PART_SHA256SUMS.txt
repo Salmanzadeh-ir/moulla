@@ -1,0 +1,10 @@
+f6024afc440a40947aa8c52a79b05cea904f4e110bda44579d3168dfcb9259a7  distribution/official-v10.4.9/parts/part-00.bin
+3953a2ccd6f08f964c745e1f91c382f9047350dfc2c0a2c298dd950e6d8c631b  distribution/official-v10.4.9/parts/part-01.bin
+b1d206146bc22855222f3e1daf8afd44e643f1c96b19c2d65be3abffa2e1fe96  distribution/official-v10.4.9/parts/part-02.bin
+d440f40c020fdda9d48951399a4d3d3def50ba4623e56e6af7f722d1379d2685  distribution/official-v10.4.9/parts/part-03.bin
+790dac0b9ddc91d263fe0049b5b39083689b465cf2b1fd141541445d8030d62d  distribution/official-v10.4.9/parts/part-04.bin
+aea001755e4ab3c523eb693325cba13855c18f6cb0e5dce6ea421c176d00bcbb  distribution/official-v10.4.9/parts/part-05.bin
+f36e931861ea32209bd170811b75aaeee09173370c2953f371bae07d4db489ca  distribution/official-v10.4.9/parts/part-06.bin
+aa8f5ebdf6f2054e36c18d3e81182032855a433ffc21325be9b4c96975d14f7c  distribution/official-v10.4.9/parts/part-07.bin
+95847563bd6051387322e916e6a9206834eb852d5d6ea1f0ede2cfbf5c44cc94  distribution/official-v10.4.9/parts/part-08.bin
+e25d889913755d00df4929173fa78b77b731bd33ea90cffff1b397b269b37414  distribution/official-v10.4.9/parts/part-09.bin
