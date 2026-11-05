@@ -473,10 +473,10 @@ body { display:block !important; }
   font-size: clamp(13px, 3.7cqw, 23px) !important;
 }
 
-/* Home page ONLY: small gold-and-lapis Exit plaque, aligned with right-side inner-page Back button. */
+/* Home page ONLY: the small Exit plaque aligns vertically with the main app title. */
 #home-pane #home-exit {
   position:absolute !important;
-  top:43.4% !important;
+  top:39.1% !important;
   right:12% !important;
   left:auto !important;
   width:12.6% !important;
@@ -502,6 +502,31 @@ body { display:block !important; }
 }
 #home-pane #home-exit:active { filter:brightness(1.23); transform:scale(.97); }
 #home-pane #home-exit:focus-visible { outline:2px solid #fff4c7; outline-offset:3px; }
+
+/* V10.4.3: Approved golden-iwan curved RIGHT-facing back emblem (never a text glyph). */
+#list-pane #back-button, #guest-pane .guest-return {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  overflow: visible !important;
+}
+#list-pane #back-button::after, #guest-pane .guest-return::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%0A%3Cdefs%3E%0A%20%3ClinearGradient%20id%3D%22gold%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220.8%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23fff4c1%22%2F%3E%3Cstop%20offset%3D%22.47%22%20stop-color%3D%22%23e8b657%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23a96b22%22%2F%3E%3C%2FlinearGradient%3E%0A%20%3ClinearGradient%20id%3D%22blue%22%20x1%3D%220%22%20x2%3D%22.9%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%230e6eac%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2306325e%22%2F%3E%3C%2FlinearGradient%3E%0A%3C%2Fdefs%3E%0A%3Cpath%20d%3D%22M50%203%20C60%2011%2065%2015%2075%2016%20Q77%2025%2085%2029%20Q91%2034%2097%2039%20Q91%2050%2097%2061%20Q92%2068%2085%2072%20Q77%2078%2075%2085%20Q61%2089%2050%2097%20Q39%2089%2025%2085%20Q23%2078%2015%2072%20Q8%2068%203%2061%20Q9%2050%203%2039%20Q9%2034%2015%2029%20Q23%2025%2025%2016%20Q40%2011%2050%203Z%22%20fill%3D%22url(%23gold)%22%20stroke%3D%22%2379470d%22%20stroke-width%3D%223%22%2F%3E%0A%3Cpath%20d%3D%22M50%2011%20Q64%2022%2069%2023%20Q73%2032%2081%2035%20L89%2042%20Q85%2050%2089%2058%20L80%2066%20Q73%2070%2069%2078%20Q58%2081%2050%2088%20Q42%2081%2031%2078%20Q27%2070%2020%2066%20L11%2058%20Q15%2050%2011%2042%20L19%2035%20Q27%2032%2031%2023%20Q42%2019%2050%2011Z%22%20fill%3D%22%23ffebac%22%20stroke%3D%22%23fff8d5%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20d%3D%22M19%2052%20Q23%2035%2038%2033%20C47%2031%2055%2036%2059%2040%20L59%2027%20L83%2049%20L59%2070%20L59%2056%20C45%2049%2031%2049%2019%2061%20Q18%2057%2019%2052Z%22%20fill%3D%22url(%23blue)%22%20stroke%3D%22%2306325e%22%20stroke-width%3D%222.8%22%20stroke-linejoin%3D%22round%22%2F%3E%0A%3Cpath%20d%3D%22M64%2039%20L75%2049%20L64%2059%22%20fill%3D%22none%22%20stroke%3D%22%236caff0%22%20stroke-width%3D%222.6%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fsvg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  background-position: center !important;
+  font-size: 0 !important;
+  text-shadow: none !important;
+  pointer-events: none !important;
+}
 </style>
 </head>
 <body>
