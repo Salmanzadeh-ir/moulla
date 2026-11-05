@@ -1,17 +1,21 @@
-# Project agent instructions — immutable user-approved V10.4.6
+# Project agent instructions — frozen owner-approved V10.4.9
 
-This repository is the Android application «پای منبر مولا». The owner **explicitly approved** the 2026-11-05 V10.4.6 installation APK, its exact images, UI, text, layout, navigation and behavior as the official baseline.
+This repository contains «پای منبر مولا» Android application. **V10.4.9 is the latest owner-approved official reference.** The owner explicitly authorized final registration and permanent protection on 2026-11-05.
 
-## Hard operating rule for anyone working on this repo
-**DO NOT change any app file, layout, screen, image, text, code, or installable APK unless the user explicitly directs and authorizes that exact change.** Suggestions are not permission. A request to create or test a preview is not permission to commit, merge or publish it. Never silently optimize, reformat or regenerate approved artwork. Treat all six home screen icons, the original and new home backgrounds, Exit, Back, About, full-screen behavior, 18-image 3D guest gallery, every internal screen and every link as frozen.
+## Absolute working rule for agents and collaborators
+**Never change any approved file, screen, asset, pixel arrangement, font, label, text, layout, behavior, navigation, source code, signing or installation APK unless the owner issues a NEW, explicit instruction authorizing that particular change.** A discussion, improvement suggestion, or permission to test does not authorize committing, merging or publishing. Do not silently optimize, refactor, format, recrop, upscale, redraw, fix or replace artwork.
 
-- Primary record: `design/V10_4_6_APPROVED_FROZEN_FA.md`.
-- Exact content and SHA locks: `design/v10.4.6-lock.json`.
-- Verify with: `python3 scripts/verify_layout_lock.py`.
-- Exact approved APK: `releases/v10.4.6/PayeMenbareMola_V10_4_6_Approved.apk` (SHA256 `3ecf3342635a3ed17b50dc8c2eb7c979d5c59e92c380b7432f7fe40234830ebf`).
-- Immutable reference tag: `v10.4.6`.
-- Old approved release `v10.4.3` remains archived for history.
+Freeze all six independent home plaques (close, symmetric arrangement around «شرح صوتی نهج‌البلاغه»), their positions and labels, the independent gold-and-blue background, the title, Exit button, approved right-facing Back badge, all internal pages, full-screen layout, About page without the duplicate «یک جمله مهمان مولا» section, and the independent 18-poster guest carousel.
 
-If future changes receive explicit owner approval, use an independent branch, preserve old tags and APKs, verify isolated diffs, provide testable APK first, and merge only after a separate user authorization for final registration. Every new approved release gets a separate lock and release tag.
+- Current Persian approval record: `design/V10_4_9_APPROVED_FROZEN_FA.md`
+- SHA-locked app source and all reference assets: `design/v10.4.9-lock.json`
+- Verification: `python3 scripts/verify_layout_lock.py`
+- Exact user-approved APK: `releases/v10.4.9/PayeMenbareMola_V10_4_9_Approved.apk`
+- Exact APK SHA-256: `3b93a7974402bbdeb7318ee68c0881873d33fa94e61ed1ab6ae594616ddf8624`
+- Exact APK Git blob SHA-1: `a88295e2b7673766a8b3c6ea705b177f6cb3f4bc`
+- Official immutable historical release tag: `v10.4.9`
+- Preserve `v10.4.6` and `v10.4.3` as older references; **never rewrite old tags or artifacts**.
 
-GitHub admin MUST enable main branch protection/rulesets with required PR reviews from CODEOWNERS and required lock status checks to block unapproved changes by repository writers. Documentation and CI alone cannot make admin-level changes impossible.
+Workflow for any *future* authorized change: create a new branch, change only owner-requested items, provide an installable preview, obtain separate express approval before publishing, update lock for a **new version**, use a PR and owner review, verify hashes before merger, and preserve all older approved tags.
+
+GitHub branch protections / rulesets are a separate administrator control: require pull requests, CODEOWNERS reviews, and the `verify-ui-lock` status on `main` and protect release tags. These must be enabled by the repository owner/admin to technically prevent unauthorized merges. This file and CI are documentary and detection controls, not an unbreakable lock against administrators.
