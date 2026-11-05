@@ -1,0 +1,8 @@
+# Approved Paye Menbare Mola V10.4.3 - changes need explicit permission from owner.
+# To enforce owner review on GitHub: protect main and require CODEOWNERS review.
+/app/ @Salmanzadeh-ir
+/design/ @Salmanzadeh-ir
+/scripts/verify_layout_lock.py @Salmanzadeh-ir
+/.github/CODEOWNERS @Salmanzadeh-ir
+/.github/workflows/verify-layout-lock.yml @Salmanzadeh-ir
+/.github/workflows/archive-approved-v10-4-3.yml @Salmanzadeh-ir
