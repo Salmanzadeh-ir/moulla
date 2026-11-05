@@ -452,6 +452,28 @@ body { display:block !important; }
 }
 .stage > img.backdrop { object-fit:fill !important; }
 /* The original PNG image file is unchanged; only its on-screen dimensions change. */
+
+/* V10.4 FONT MATCH: the guest and clips headings follow the bold navy Touhid title artwork. */
+#guest-pane .guest-heading,
+#list-pane #clips-page-title {
+  font-family: 'Noto Sans Arabic', 'Noto Kufi Arabic', Tahoma, Arial, sans-serif !important;
+  font-weight: 900 !important;
+  font-style: normal !important;
+  color: #073c65 !important;
+  text-shadow: none !important;
+  letter-spacing: 0 !important;
+  line-height: 1.25 !important;
+  white-space: nowrap;
+}
+#guest-pane .guest-heading {
+  font-size: clamp(14px, 4cqw, 24px) !important;
+}
+#list-pane #clips-page-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(13px, 3.7cqw, 23px) !important;
+}
 </style>
 </head>
 <body>
