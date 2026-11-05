@@ -33,7 +33,7 @@ android {
     buildTypes {
         debug {
             // Install next to the live signed app for safe testing.
-            applicationIdSuffix '.preview'
+            applicationIdSuffix '.testv14'
             versionNameSuffix '-preview'
         }
         release {
