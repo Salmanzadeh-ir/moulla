@@ -34,6 +34,18 @@ public final class MainActivity extends Activity {
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
+        /** App exit is accepted only when the trusted main page is on the home screen. */
+        @JavascriptInterface
+        public void exitApp() {
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || web == null ||
+                    !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                web.evaluateJavascript("typeof screen==='string'?screen:'unknown'", current -> {
+                    if ("\"home\"".equals(current) && !isFinishing()) finish();
+                });
+            });
+        }
+
         @JavascriptInterface
         public void openEitaa(final String url) {
             // This interface is also visible to iframe content; validate every input.
