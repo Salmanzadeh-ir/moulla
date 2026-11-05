@@ -409,47 +409,10 @@ body{margin:0!important;padding:0!important;display:flex!important;align-items:c
 
 
 /* V10.5 — USER-APPROVED FULL-HEIGHT STRETCH: ignore original aspect ratio on screen. */
-html, body {
-  width:100% !important;
-  height:100% !important;
-  min-height:100% !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:hidden !important;
-}
+html, body {width:100% !important;height:100% !important;min-height:100% !important;margin:0 !important;padding:0 !important;overflow:hidden !important;}
 body { display:block !important; }
-.stage {
-  position:relative !important;
-  display:block !important;
-  box-sizing:border-box !important;
-  width:100vw !important;
-  height:100vh !important;
-  height:100dvh !important;
-  max-width:none !important;
-  max-height:none !important;
-  aspect-ratio:auto !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
-  border-radius:0 !important;
-  box-shadow:none !important;
-}
-.stage > img.backdrop, .stage > .pane {
-  position:absolute !important;
-  inset:0 !important;
-  left:0 !important;
-  top:0 !important;
-  right:0 !important;
-  bottom:0 !important;
-  width:100% !important;
-  height:100% !important;
-  max-width:none !important;
-  max-height:none !important;
-  aspect-ratio:auto !important;
-  transform:none !important;
-}
-.stage > img.backdrop { object-fit:fill !important; }
-/* The original PNG image file is unchanged; only its on-screen dimensions change. */
+.stage {position:relative !important;display:block !important;box-sizing:border-box !important;width:100vw !important;height:100vh !important;height:100dvh !important;max-width:none !important;max-height:none !important;aspect-ratio:auto !important;margin:0 auto !important;}
+.stage > img.backdrop {position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;object-fit:fill !important;}
 
 /* V10.4 FONT MATCH: the guest and clips headings follow the bold navy Touhid title artwork. */
 #guest-pane .guest-heading,
@@ -463,38 +426,30 @@ body { display:block !important; }
   line-height: 1.25 !important;
   white-space: nowrap;
 }
-#guest-pane .guest-heading {
-  font-size: clamp(14px, 4cqw, 24px) !important;
-}
-#list-pane #clips-page-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(13px, 3.7cqw, 23px) !important;
-}
-
-/* Home page ONLY: the small Exit plaque aligns vertically with the main app title. */
+#guest-pane .guest-heading {font-size: clamp(14px, 4cqw, 24px) !important;}
+#list-pane #clips-page-title {display:flex;align-items:center;justify-content:center;font-size: clamp(13px, 3.7cqw, 23px) !important;}
+/* Home page ONLY: small gold-and-lapis Exit plaque, lifted upward into the path of the main title. */
 #home-pane #home-exit {
   position:absolute !important;
-  top:39.1% !important;
-  right:12% !important;
+  top:37.0% !important;
+  right:11.8% !important;
   left:auto !important;
-  width:12.6% !important;
-  height:5.1% !important;
+  width:11.8% !important;
+  height:4.8% !important;
   z-index:18 !important;
   display:flex !important;
   align-items:center !important;
   justify-content:center !important;
   padding:0 !important;
-  border:2px solid #e9ba61 !important;
-  border-radius:37% 37% 37% 37% / 45% 45% 45% 45% !important;
-  background:linear-gradient(180deg,#0d4e85 0%,#06325f 55%,#092a4f 100%) !important;
-  color:#ffe4a0 !important;
+  border:2px solid #ebc06d !important;
+  border-radius:34% 34% 34% 34% / 42% 42% 42% 42% !important;
+  background:linear-gradient(180deg,#0f5e99 0%,#0a4678 45%,#083860 100%) !important;
+  color:#ffe5a8 !important;
   font-family:var(--pmm-text-font) !important;
-  font-size:clamp(12px,3.5cqw,21px) !important;
+  font-size:clamp(11px,3.0cqw,18px) !important;
   font-weight:900 !important;
   line-height:1 !important;
-  text-shadow:0 1px 1px #051c38 !important;
+  text-shadow:0 1px 1px #062443 !important;
   box-shadow:0 0 0 2px #9e6723,0 2px 7px #45230788,inset 0 1px 3px #fff1b84d !important;
   cursor:pointer;
   touch-action:manipulation;
@@ -503,6 +458,71 @@ body { display:block !important; }
 #home-pane #home-exit:active { filter:brightness(1.23); transform:scale(.97); }
 #home-pane #home-exit:focus-visible { outline:2px solid #fff4c7; outline-offset:3px; }
 
+/* V10.4.2 approved ornate right-facing return icon for all inner pages. */
+#list-pane .top-action,
+#guest-pane .guest-return{
+  position:absolute;
+  overflow:hidden !important;
+  border:2px solid #bd862c!important;
+  border-radius:50%!important;
+  background:radial-gradient(circle at 35% 28%,#fff8d8 0 16%,#efcf80 17%,#d9a64d 55%,#a86d1e 100%)!important;
+  box-shadow:0 0 0 2px #8b5416,0 2px 7px #5f3a1188,inset 0 1px 4px #fff2c880!important;
+  color:transparent!important;
+}
+#list-pane .top-action::before,
+#guest-pane .guest-return::before{
+  content:'';
+  position:absolute;
+  inset:16%;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#0f639f 0%,#0a4a7f 45%,#083760 100%);
+  box-shadow:inset 0 0 0 1.8px #efd087,inset 0 1px 4px rgba(255,255,255,.22);
+}
+#list-pane #back-button::after,
+#guest-pane .guest-return::after{
+  content:''!important;
+  position:absolute;
+  inset:23%;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:78% 78%;
+  z-index:1;
+  filter:drop-shadow(0 1px 0 rgba(255,244,200,.42));
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23f9e7ab' d='M68 24c-13 2-24 11-30 24l-7-7c-3-3-7 1-5 4l15 15c1 1 3 2 4 1l17-11c4-3 1-8-3-7l-9 1c5-10 14-16 25-18 6-1 5-10-1-9z'/%3E%3Cpath fill='none' stroke='%2307426b' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' d='M68 24c-13 2-24 11-30 24l-7-7c-3-3-7 1-5 4l15 15c1 1 3 2 4 1l17-11c4-3 1-8-3-7l-9 1c5-10 14-16 25-18 6-1 5-10-1-9z'/%3E%3C/svg%3E");
+}
+
+
+/* V10.4.4 preview: separated home background and standardized six plaques. */
+#home-pane .pmm-path-glow{display:none!important}
+#home-pane .door-archlight,#home-pane .door-title,#home-pane .door-film{display:none!important}
+#home-pane .home-door{
+  position:absolute!important;display:block!important;z-index:6!important;
+  background-color:transparent!important;background-position:center center!important;background-repeat:no-repeat!important;background-size:contain!important;
+  border:0!important;padding:0!important;outline-offset:2px!important;border-radius:0!important;
+  box-shadow:none!important;filter:drop-shadow(0 6px 10px rgba(119,62,8,.24));
+  transition:transform .12s ease, filter .12s ease!important;
+}
+#home-pane .home-door::before,#home-pane .home-door::after{content:none!important;display:none!important}
+#home-pane .home-door:focus-visible{outline:3px solid #fff7ca!important;border-radius:18px!important}
+#home-pane .home-door:active{transform:translateY(1.4%) scale(.985)!important;filter:brightness(.97) drop-shadow(0 4px 8px rgba(119,62,8,.18))!important;background-color:transparent!important}
+#home-pane .home-door:not(:active){animation:none!important}
+#home-pane #hit-kafi{left:13.2%!important;top:41.4%!important;width:26.2%!important;height:15.6%!important;background-image:url("images/home_kafi_plaque.png")!important}
+#home-pane #hit-clips{left:60.6%!important;top:41.4%!important;width:26.2%!important;height:15.6%!important;background-image:url("images/home_clips_plaque.png")!important}
+#home-pane #hit-nahj{left:30.2%!important;top:48.5%!important;width:39.6%!important;height:22.3%!important;background-image:url("images/home_nahj_plaque.png")!important;z-index:7!important}
+#home-pane #hit-towhid{left:13.1%!important;top:58.6%!important;width:26.2%!important;height:15.6%!important;background-image:url("images/home_towhid_plaque.png")!important}
+#home-pane #hit-life{left:60.7%!important;top:58.6%!important;width:26.2%!important;height:15.6%!important;background-image:url("images/home_life_plaque.png")!important}
+#home-pane #hit-guest{left:33.0%!important;top:68.4%!important;width:34.0%!important;height:19.1%!important;background-image:url("images/home_guest_plaque.png")!important;z-index:7!important}
+#home-pane #home-about{display:block!important;visibility:visible!important;pointer-events:auto!important;left:26.4%!important;top:87.9%!important;width:47.3%!important;height:6.1%!important;z-index:8!important;background:transparent url("images/home_about_button.png") center/contain no-repeat!important;border:0!important;box-shadow:none!important;color:transparent!important;font-size:0!important;text-shadow:none!important;padding:0!important}
+#home-pane #home-about::before,#home-pane #home-about::after{content:none!important;display:none!important}
+#home-pane #home-about:active{transform:translateY(2px) scale(.985)!important;filter:brightness(1.04)!important}
+#home-pane #home-exit{top:36.0%!important;right:8.0%!important;width:11.6%!important;height:4.6%!important;z-index:9!important}
+
+/* V10.4.6: restore V10.4.3 APPROVED Back buttons exactly; suppress legacy overlay. */
+#list-pane #back-button::before, #guest-pane .guest-return::before {
+ content:none!important; display:none!important;
+}
+#list-pane #back-button {right:12%!important;top:43.4%!important;width:12.6%!important;height:5.1%!important;aspect-ratio:auto!important;}
+#guest-pane .guest-return {right:11%!important;left:auto!important;top:43.6%!important;width:13%!important;height:4.9%!important;aspect-ratio:auto!important;}
 /* V10.4.3: Approved golden-iwan curved RIGHT-facing back emblem (never a text glyph). */
 #list-pane #back-button, #guest-pane .guest-return {
   background: transparent !important;
@@ -527,6 +547,7 @@ body { display:block !important; }
   text-shadow: none !important;
   pointer-events: none !important;
 }
+
 </style>
 </head>
 <body>
@@ -565,6 +586,7 @@ body { display:block !important; }
 <script>
 const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"شرح اصول کافی 1","url":"https://eitaa.com/hadis_kafi/393","source":"ایتا"},{"number":2,"title":"شرح اصول کافی 2","url":"https://eitaa.com/hadis_kafi/450","source":"ایتا"},{"number":3,"title":"شرح اصول کافی 3","url":"https://eitaa.com/hadis_kafi/462","source":"ایتا"},{"number":4,"title":"شرح اصول کافی 4","url":"https://eitaa.com/hadis_kafi/474","source":"ایتا"},{"number":5,"title":"شرح اصول کافی 5","url":"https://eitaa.com/hadis_kafi/486","source":"ایتا"},{"number":6,"title":"شرح اصول کافی 6","url":"https://eitaa.com/hadis_kafi/498","source":"ایتا"},{"number":7,"title":"شرح اصول کافی 7","url":"https://eitaa.com/hadis_kafi/509","source":"ایتا"},{"number":8,"title":"شرح اصول کافی 8","url":"https://eitaa.com/hadis_kafi/521","source":"ایتا"},{"number":9,"title":"شرح اصول کافی 9","url":"https://eitaa.com/hadis_kafi/532","source":"ایتا"},{"number":10,"title":"شرح اصول کافی 10","url":"https://eitaa.com/hadis_kafi/544","source":"ایتا"},{"number":11,"title":"شرح اصول کافی 11","url":"https://eitaa.com/hadis_kafi/556","source":"ایتا"},{"number":12,"title":"شرح اصول کافی 12","url":"https://eitaa.com/hadis_kafi/568","source":"ایتا"},{"number":13,"title":"شرح اصول کافی 13","url":"https://eitaa.com/hadis_kafi/581","source":"ایتا"},{"number":14,"title":"شرح اصول کافی 14","url":"https://eitaa.com/hadis_kafi/594","source":"ایتا"},{"number":15,"title":"شرح اصول کافی 15","url":"https://eitaa.com/hadis_kafi/607","source":"ایتا"},{"number":16,"title":"شرح اصول کافی 16","url":"https://eitaa.com/hadis_kafi/620","source":"ایتا"},{"number":17,"title":"شرح اصول کافی 17","url":"https://eitaa.com/hadis_kafi/632","source":"ایتا"},{"number":18,"title":"شرح اصول کافی 18","url":"https://eitaa.com/hadis_kafi/639","source":"ایتا"},{"number":19,"title":"شرح اصول کافی 19","url":"https://eitaa.com/hadis_kafi/647","source":"ایتا"},{"number":20,"title":"شرح اصول کافی 20","url":"https://eitaa.com/hadis_kafi/657","source":"ایتا"},{"number":21,"title":"شرح اصول کافی 21","url":"https://eitaa.com/hadis_kafi/669","source":"ایتا"},{"number":22,"title":"شرح اصول کافی 22","url":"https://eitaa.com/hadis_kafi/680","source":"ایتا"},{"number":23,"title":"شرح اصول کافی 23","url":"https://eitaa.com/hadis_kafi/687","source":"ایتا"},{"number":24,"title":"شرح اصول کافی 24","url":"https://eitaa.com/hadis_kafi/693","source":"ایتا"},{"number":25,"title":"شرح اصول کافی 25","url":"https://eitaa.com/hadis_kafi/704","source":"ایتا"},{"number":26,"title":"شرح اصول کافی 26","url":"https://eitaa.com/hadis_kafi/712","source":"ایتا"},{"number":27,"title":"شرح اصول کافی 27","url":"https://eitaa.com/hadis_kafi/724","source":"ایتا"},{"number":28,"title":"شرح اصول کافی 28","url":"https://eitaa.com/hadis_kafi/737","source":"ایتا"},{"number":29,"title":"شرح اصول کافی 29","url":"https://eitaa.com/hadis_kafi/746","source":"ایتا"},{"number":30,"title":"شرح اصول کافی 30","url":"https://eitaa.com/hadis_kafi/755","source":"ایتا"},{"number":31,"title":"شرح اصول کافی 31","url":"https://eitaa.com/hadis_kafi/775","source":"ایتا"},{"number":32,"title":"شرح اصول کافی 32","url":"https://eitaa.com/hadis_kafi/793","source":"ایتا"},{"number":33,"title":"شرح اصول کافی 33","url":"https://eitaa.com/hadis_kafi/809","source":"ایتا"},{"number":34,"title":"شرح اصول کافی 34","url":"https://eitaa.com/hadis_kafi/823","source":"ایتا"},{"number":35,"title":"شرح اصول کافی 35","url":"https://eitaa.com/hadis_kafi/836","source":"ایتا"},{"number":36,"title":"شرح اصول کافی 36","url":"https://eitaa.com/hadis_kafi/851","source":"ایتا"},{"number":37,"title":"شرح اصول کافی 37","url":"https://eitaa.com/hadis_kafi/864","source":"ایتا"},{"number":38,"title":"شرح اصول کافی 38","url":"https://eitaa.com/hadis_kafi/881","source":"ایتا"},{"number":39,"title":"شرح اصول کافی 39","url":"https://eitaa.com/hadis_kafi/909","source":"ایتا"},{"number":40,"title":"شرح اصول کافی 40","url":"https://eitaa.com/hadis_kafi/923","source":"ایتا"},{"number":41,"title":"شرح اصول کافی 41","url":"https://eitaa.com/hadis_kafi/941","source":"ایتا"},{"number":42,"title":"شرح اصول کافی 42","url":"https://eitaa.com/hadis_kafi/958","source":"ایتا"},{"number":43,"title":"شرح اصول کافی 43","url":"https://eitaa.com/hadis_kafi/981","source":"ایتا"},{"number":44,"title":"شرح اصول کافی 44","url":"https://eitaa.com/hadis_kafi/993","source":"ایتا"},{"number":45,"title":"شرح اصول کافی 45","url":"https://eitaa.com/hadis_kafi/1017","source":"ایتا"},{"number":46,"title":"شرح اصول کافی 46","url":"https://eitaa.com/hadis_kafi/1037","source":"ایتا"},{"number":47,"title":"شرح اصول کافی 47","url":"https://eitaa.com/hadis_kafi/1048","source":"ایتا"},{"number":48,"title":"شرح اصول کافی 48","url":"https://eitaa.com/hadis_kafi/1060","source":"ایتا"},{"number":49,"title":"شرح اصول کافی 49","url":"https://eitaa.com/hadis_kafi/1107","source":"ایتا"},{"number":50,"title":"شرح اصول کافی 50","url":"https://eitaa.com/hadis_kafi/1119","source":"ایتا"},{"number":51,"title":"شرح اصول کافی 51","url":"https://eitaa.com/hadis_kafi/1141","source":"ایتا"},{"number":52,"title":"شرح اصول کافی 52","url":"https://eitaa.com/hadis_kafi/1153","source":"ایتا"},{"number":53,"title":"شرح اصول کافی 53","url":"https://eitaa.com/hadis_kafi/1190","source":"ایتا"},{"number":54,"title":"شرح اصول کافی 54","url":"https://eitaa.com/hadis_kafi/1202","source":"ایتا"},{"number":55,"title":"شرح اصول کافی 55","url":"https://eitaa.com/hadis_kafi/1223","source":"ایتا"},{"number":56,"title":"شرح اصول کافی 56","url":"https://eitaa.com/hadis_kafi/1429","source":"ایتا"},{"number":57,"title":"شرح اصول کافی 57","url":"https://eitaa.com/hadis_kafi/1441","source":"ایتا"},{"number":58,"title":"شرح اصول کافی 58","url":"https://eitaa.com/hadis_kafi/1454","source":"ایتا"},{"number":59,"title":"شرح اصول کافی 59","url":"","source":""}],"nahj":{"url":"https://kazeminia110.ir/","description":"تا تکمیل صفحه اختصاصی ۱۱۰۰ جلسه، مخاطب می‌تواند از صفحه اصلی سایت یا فهرست موجود در ایتا استفاده کند.","eitaa_url":"https://eitaa.com/nahjolbalagheh_media/8"}}
 const APPROVED_IMAGE_01 = "images/IMAGE_01_APPROVED_ORIGINAL.png";
+const NEW_HOME_IMAGE = "images/home_bg_separated.png";
 const IMG = {"home.webp":APPROVED_IMAGE_01,"list_surface.webp":"images/v8/list_surface_webp.webp","list_other.webp":APPROVED_IMAGE_01,"row_blank.webp":"images/v8/row_blank_webp.webp","title_towhid":"images/v8/title_towhid.png","title_life":"images/v8/title_life.png","title_kafi":"images/v8/title_kafi.png","title_nahj":"images/v8/title_nahj.png","title_player":"images/v8/title_player.png","title_about":"images/v8/title_about.png","title_biography":"images/v8/title_biography.png"}
 
 const USER_PHOTOS = ["images/gallery/photo_01.webp","images/gallery/photo_02.webp","images/gallery/photo_03.webp","images/gallery/photo_04.webp","images/gallery/photo_05.webp","images/gallery/photo_06.webp","images/gallery/photo_07.webp","images/gallery/photo_08.webp","images/gallery/photo_09.webp","images/gallery/photo_10.webp"];
@@ -593,7 +615,7 @@ function setState(mode,s=null,v=null){
 }
 function render(){
  const isHome=screen==='home';const isGuest=screen==='guest';home.classList.toggle('gone',!isHome);document.getElementById('guest-pane').classList.toggle('gone',!isGuest);list.classList.toggle('gone',isHome||isGuest);
- backdrop.src=APPROVED_IMAGE_01; // identical immutable architectural background on every page
+ backdrop.src=isHome ? NEW_HOME_IMAGE : APPROVED_IMAGE_01; // approved original remains untouched on every inner page
  titleImg.classList.toggle('gone',isHome || isGuest || (screen==='list'&&section==='clips'));
  document.getElementById('clips-page-title').classList.toggle('gone',isHome || screen!=='list' || section!=='clips');
  if(!isHome&&!isGuest){
@@ -818,11 +840,7 @@ function showGuestFull(){
  if(guestTicker){clearInterval(guestTicker);guestTicker=null}
 }
 function closeGuestFull(){document.getElementById('guest-fullview').hidden=true;resetGuestTicker()}
-document.getElementById('home-exit').addEventListener('click',()=>{
-  if(screen!=='home')return;
-  if(window.PMMNative && typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();
-  else toast('دکمه خروج فقط در برنامه اندروید فعال است.');
-});
+document.getElementById('home-exit').addEventListener('click',()=>{if(screen!=='home')return;if(window.PMMNative&&typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();else toast('دکمه خروج فقط در برنامه اندروید فعال است.');});
 document.getElementById('hit-guest').addEventListener('click',enterGuest);
 document.getElementById('guest-return').addEventListener('click',()=>{if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home')});
 document.getElementById('guest-full-close').addEventListener('click',closeGuestFull);
