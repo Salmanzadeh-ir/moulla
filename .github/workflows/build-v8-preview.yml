@@ -25,7 +25,8 @@ jobs:
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep '^package:'
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"\n          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "ir.nahj.towhidkarbordi.newiwanv9"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "ir.nahj.towhidkarbordi.newiwanv9"
       - uses: actions/upload-artifact@v4
         with:
           name: PayeMenbareMola-New-Iwan-V9-Preview-APK
