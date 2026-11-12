@@ -1,11 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>پای منبر مولا</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08366d">
+<title>پای منبر مولا | صفحه جدید آزمایشی یکپارچه</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+:root { color-scheme:light; --navy:#042f67; --navy-dark:#001c49; --gold:#d58d17; --gold-light:#ffe7a1; --cream:#ffedbe; }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#100d0a}
+body{display:flex;align-items:center;justify-content:center;font-family:Tahoma,'Noto Naskh Arabic','Arial',sans-serif}
+button{font:inherit}
+button:not(:disabled){cursor:pointer}
+[hidden]{display:none!important}
+.scene{
+  container-type:inline-size;position:relative;overflow:hidden;isolation:isolate;flex:0 0 auto;
+  width:min(100vw,calc(100dvh * 941 / 1672),941px);aspect-ratio:941 / 1672;background:#efd087;
+}
+.scene-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;user-select:none}
+/* The architectural background, title and outer golden frame remain stationary. */
+.main-scroll,.wisdom-scroll{position:absolute;left:11.9979%;top:41.0885%;width:73.0074%;height:43.7201%;
+ overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+ scrollbar-width:none;z-index:2;overflow-anchor:none}
+.main-scroll::-webkit-scrollbar,.wisdom-scroll::-webkit-scrollbar{display:none}
+.main-scroll{direction:ltr}
+.menu-content{position:relative;direction:ltr;width:100%}
+.menu-image{display:block;width:100%;height:auto;user-select:none;pointer-events:none}
+.menu-buttons{position:absolute;top:0;left:0;width:100%;aspect-ratio:687/731;pointer-events:none}
+.menu-button{position:absolute;left:0;width:100%;border:0;background:transparent;pointer-events:auto;touch-action:pan-y}
+.menu-button:focus-visible{outline:3px solid #1478d8;outline-offset:-5px;border-radius:15px}
+
+.scroll-rail{position:absolute;left:85.76%;top:41.87%;width:1.35%;height:42.6%;border-radius:999px;
+ background:rgba(255,250,222,.7);border:1px solid #a87329;pointer-events:none;z-index:4}
+.scroll-thumb{position:absolute;left:7%;width:86%;top:8%;height:20%;border-radius:999px;
+ background:linear-gradient(90deg,#002c72,#167db8,#001b53);box-shadow:0 0 1px 1px #b28337}
+.exit,.about{position:absolute;appearance:none;border:0;background:transparent;z-index:5}
+.exit{left:78.65%;top:33.54%;width:11.75%;height:5.1%}
+.about{left:23.7%;top:86.74%;width:52.6%;height:7.65%}
+.exit:focus-visible,.about:focus-visible{outline:3px solid #0473ce;border-radius:30px}
+/* Wisdom view uses the very same scroll aperture and original decorative backdrop. */
+.wisdom-scroll{direction:rtl;scroll-padding-block:12px;background:rgba(255,238,189,.55)}
+.wisdom-body{padding:2.5% 3.7% 12%;text-align:center;color:var(--navy-dark)}
+.wisdom-title{margin:1% 0 0;font-weight:900;font-size:clamp(17px,3.75cqw,36px);line-height:1.5;
+ text-shadow:0 1px 0 #fff7da}
+.wisdom-flourish{display:flex;align-items:center;gap:3%;margin:1% auto 3%;width:85%;color:#b97b0d}
+.wisdom-flourish::before,.wisdom-flourish::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,transparent,#c69127,#eac978)}
+.wisdom-flourish::after{transform:rotate(180deg)}
+.wisdom-flourish span{font-size:clamp(17px,3.1cqw,29px)}
+.mode-alert{border:2px dashed #ba7915;background:#fff4d8;border-radius:12px;padding:2% 3%;margin:0 auto 3%;
+ font-size:clamp(10px,1.75cqw,17px);line-height:1.8;color:#753f09;font-weight:600}
+.numberplate{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:44px;
+ padding:1.3% 7%;border-radius:999px;border:3px solid #d59a2b;
+ background:linear-gradient(165deg,#fff9dc 0%,#ffd36e 48%,#f0af3d 100%);
+ box-shadow:inset 0 2px 2px #fff8ce,0 4px 7px #a5743166;color:#073e7b;
+ font-size:clamp(13px,2.6cqw,25px);font-weight:900}
+.wisdom-panel{margin:3.7% auto 0;padding:4% 4.6% 4.5%;border:3px solid #cf932d;border-radius:24px;
+ background:linear-gradient(145deg,#fff9e2 0%,#fff0c3 85%);box-shadow:inset 0 0 0 3px #fff7df,0 5px 11px #96703652}
+.wisdom-panel.arabic{border-color:#a77518;background:linear-gradient(145deg,#fff6d8,#ffebae)}
+.panel-label{font-size:clamp(12px,2.06cqw,19px);font-weight:900;color:#0b538b;margin:0 0 2%;letter-spacing:.01em}
+.panel-text{direction:rtl;text-align:justify;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;
+ font-size:clamp(17px,3.1cqw,29px);line-height:2.0;color:#092c61}
+.arabic .panel-text{font-family:'Noto Naskh Arabic',Tahoma,serif;font-size:clamp(18px,3.4cqw,32px);line-height:2.15}
+.wisdom-panel.translation .panel-text{font-size:clamp(14px,2.6cqw,25px);line-height:2}
+.source-note{margin:2.5% auto 0;color:#6a501b;font-size:clamp(10px,1.55cqw,16px);line-height:1.6;overflow-wrap:anywhere}
+.control-stack{display:grid;gap:clamp(8px,1.65cqw,16px);margin:4.4% 2% 0}
+.gold-button,.navy-button{display:flex;align-items:center;justify-content:center;gap:2%;border-radius:999px;
+ padding:3.1% 3%;min-height:48px;box-shadow:0 4px 7px rgba(67,49,12,.27);font-weight:900;
+ font-size:clamp(13px,2.35cqw,23px)}
+.gold-button{border:3px solid #97600c;background:linear-gradient(#fff5cb,#ffce62,#e8a02e);color:#073b78}
+.navy-button{border:3px solid #e6b54c;background:linear-gradient(#0b65a0,#063d80,#012353);color:#fff5cd}
+.gold-button:focus-visible,.navy-button:focus-visible,.back-action:focus-visible{outline:3px solid #005b9e;outline-offset:3px}
+.gold-button:active,.navy-button:active{transform:translateY(1px)}
+.audio-box{margin:3% 4%;padding:2%;border:1px solid #b88c47;background:#fff1c5;border-radius:12px}
+.audio-box audio{width:100%}
+.wisdom-footer-hint{margin:5% auto;color:#876331;font-size:clamp(11px,1.65cqw,17px);line-height:1.7}
+/* Overlay the Exit art only while the wisdom page is shown. */
+.back-action{position:absolute;z-index:8;left:78.65%;top:33.54%;width:11.75%;height:5.1%;border-radius:999px;
+ border:3px solid #edbe58;background:linear-gradient(155deg,#0863a5,#06356f,#061d4a);color:#fff4cb;
+ box-shadow:0 0 0 3px #a86e14,0 5px 9px #6c431440;font-weight:900;
+ font-size:clamp(9px,1.43cqw,15px);display:flex;align-items:center;justify-content:center;gap:1px;padding:0 3px;white-space:nowrap}
+.back-action span:first-child{font-size:clamp(11px,1.7cqw,20px);line-height:1}
+
+.toast{position:absolute;z-index:11;left:11%;width:78%;bottom:8.7%;border:2px solid #e3b24e;border-radius:16px;
+ background:rgba(3,38,84,.95);color:#fff;padding:10px 14px;line-height:1.7;
+ font-size:clamp(11px,2cqw,19px);text-align:center}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important}}
+
+/* In wisdom mode there is NO bottom navigation: the fixed, approved footer button
+   is visually covered with neighboring natural marble flooring. The home photo
+   and its bottom "About" button remain completely unchanged. */
+.wisdom-floor-cover{position:absolute;z-index:5;left:21.9%;top:87.48%;width:56.2%;height:7.93%;
+ background-image:url("data:image/jpeg;base64,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");background-position:center;background-size:100% 100%;pointer-events:none;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 2.5%,#000 97.5%,transparent 100%);
+ mask-image:linear-gradient(90deg,transparent 0%,#000 2.5%,#000 97.5%,transparent 100%)}
+/* Keep scrolling exclusively inside the central framed content area. */
+.main-scroll{background:transparent}
+
+
+
 :root{--pmm-text-font:'Vazirmatn','Noto Sans Arabic',Tahoma,Arial,sans-serif}
 
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:var(--pmm-text-font)}body{color:#0d365c;background:radial-gradient(circle at 50% 35%,#273851,#0d1523 80%);direction:rtl;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 10px 30px}button,input,textarea{font:inherit}
@@ -591,12 +683,444 @@ body { display:block !important; }
   filter:brightness(1.08) !important;
 }
 
+
+
+/* V7 — the original repository's data and rendering, in the approved new iwan. */
+html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#100d0a!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;flex-direction:row!important}
+#stage{width:min(100vw,calc(100dvh * 941 / 1672),941px)!important;aspect-ratio:941/1672!important;
+ height:auto!important;border-radius:0!important;box-shadow:none!important;border:0!important;
+ padding:0!important;margin:0!important;background:#ead393 url('images/new_ui_bg.png') center/100% 100% no-repeat!important;}
+#stage[hidden],#scene[hidden]{display:none!important}
+#stage>.backdrop,#stage #home-pane,#stage .inner-gold-panel,
+#stage .list-title,#stage .clip-title,#stage #back-button{display:none!important}
+#stage #list-pane{position:absolute!important;inset:0!important;background:transparent!important}
+#stage .content-view{position:absolute!important;left:11.9979%!important;top:41.0885%!important;
+ width:73.0074%!important;height:43.7201%!important;overflow-y:auto!important;overflow-x:hidden!important;
+ background:rgba(255,239,195,.42)!important;mask-image:none!important;-webkit-mask-image:none!important;
+ direction:rtl!important;padding:0 2.0% 6%!important;border-radius:2%;scrollbar-width:thin;
+ scrollbar-color:#a16d22 #ffe8aa;overscroll-behavior:contain;touch-action:pan-y}
+#stage .content-view::-webkit-scrollbar{width:5px}
+#stage #legacy-heading{position:sticky;top:0;z-index:5;margin:0 -2% 4%;padding:2.5% 2% 3%;
+ border-bottom:2px solid #c59134;background:linear-gradient(#fff4d7,#fbd68c);
+ color:#063d79;text-shadow:0 1px #fffae5;text-align:center;font-size:clamp(16px,3.3cqw,31px);
+ font-weight:900;line-height:1.6}
+#stage #contents{padding:2px 1% 15px!important;direction:rtl!important}
+#stage .row-list{direction:rtl}
+#stage .session{width:100%;min-height:34px}
+#stage .session-label{font-size:clamp(13px,3.0cqw,23px)!important}
+#stage .about-menu{min-height:unset}
+#stage .content-box{font-size:clamp(13px,2.8cqw,18px);padding:10px 7px;margin:3px}
+#stage .content-box .player-frame{min-height:160px}
+#stage .toast{position:absolute!important;bottom:15%!important;left:16%!important;right:16%!important;z-index:25}
+#stage .legacy-back{position:absolute;z-index:20;left:78.65%;top:33.54%;width:11.75%;height:5.1%;
+ border-radius:999px;border:3px solid #edbe58;background:linear-gradient(155deg,#0863a5,#06356f,#061d4a);
+ color:#fff4cb;box-shadow:0 0 0 3px #a86e14,0 5px 9px #6c431440;font-weight:900;
+ font-size:clamp(9px,1.43cqw,15px);display:flex;align-items:center;justify-content:center;
+ padding:0 3px;white-space:nowrap;cursor:pointer}
+#stage .legacy-back:focus-visible{outline:3px solid #0064ab;outline-offset:3px}
+#stage #list-pane .top-action{display:none!important}
+#stage .feedback,.headline,.subhead{display:none!important}
+#scene .gallery-scroll{position:absolute;left:11.9979%;top:41.0885%;width:73.0074%;height:43.7201%;
+ z-index:3;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;
+ background:rgba(255,238,195,.56);padding:3% 3.5% 9%;direction:rtl;scrollbar-width:thin;
+ scrollbar-color:#9a6b19 transparent}
+#scene .gallery-scroll::-webkit-scrollbar{width:4px}
+#scene .gallery-heading{font-size:clamp(18px,3.7cqw,30px);font-weight:900;text-align:center;
+ color:#053971;margin:0 0 3%;text-shadow:0 1px #fff}
+#scene .gallery-intro{color:#765020;font-size:clamp(11px,2.0cqw,18px);line-height:1.9;text-align:center}
+#scene .gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3%;}
+#scene .gallery-card{border:2px solid #a87725;border-radius:13px;background:#fae4af;padding:3%;box-shadow:0 3px 5px #784d1870}
+#scene .gallery-card img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:7px;display:block}
+#scene .gallery-card span{display:block;text-align:center;color:#063970;font-weight:bold;font-size:clamp(12px,2cqw,18px);padding-top:3%}
+#scene .gallery-large{width:100%;height:auto;object-fit:contain;max-height:65cqh;
+ background:#e9bd76;border:3px solid #c18f37;border-radius:13px;display:block}
+#scene .gallery-controls{display:flex;gap:2%;justify-content:center;align-items:center;margin-top:3%}
+#scene .gallery-controls button{background:linear-gradient(#ffebae,#dfab4d);border:2px solid #b47c25;
+ border-radius:10px;padding:2% 4%;color:#083c73;font-size:clamp(12px,2cqw,19px);font-weight:bold}
+#scene .gallery-controls span{font-size:clamp(12px,2cqw,18px)}
+#scene .back-action{font-size:clamp(9px,1.43cqw,15px)!important}
+
+
+/* V8 — original repository circular 3D poster animation restored, not a grid. */
+#scene .gallery-scroll{overflow:hidden!important;padding:0!important;scrollbar-width:none!important;
+ background:rgba(255,239,199,.12)!important;touch-action:pan-x}
+#scene .gallery-scroll .gallery-heading{position:absolute;left:0;right:0;top:.4%;margin:0!important;
+ font-size:clamp(16px,3.35cqw,29px)!important;line-height:1.5;z-index:4;pointer-events:none}
+#scene .pmm-wheel-page{position:absolute;inset:0;overflow:hidden;perspective:1150px;touch-action:pan-x;user-select:none}
+.pmm-wheel-canvas{position:absolute;left:0;top:7%;width:100%;height:89%;overflow:hidden;
+ perspective:1150px;perspective-origin:center center;touch-action:pan-x;cursor:grab}
+.pmm-wheel-canvas:active{cursor:grabbing}
+.pmm-wheel-rotor{width:100%;height:100%;position:relative;transform-style:preserve-3d;transform:none;
+ transition:none}
+.pmm-wheel-board{position:absolute;top:50%;left:50%;display:block;width:36cqw;height:auto;aspect-ratio:9/16;
+ box-sizing:border-box;padding:1.25cqw;border:3px solid #07538c;border-radius:16px 16px 12px 12px;
+ background:linear-gradient(160deg,#fff4be,#d69c45);
+ box-shadow:0 0 0 3px #edb85b,0 0 13px #fff4c9bd,0 8px 17px #63330e9e;
+ transform:translate(-50%,-50%) translate3d(var(--wheel-x,0cqw),0,var(--wheel-z,16cqw)) rotateY(var(--wheel-angle,0deg)) scale(var(--wheel-scale,1));
+ transition:transform .78s cubic-bezier(.2,.75,.16,1),opacity .65s ease;
+ backface-visibility:hidden;-webkit-backface-visibility:hidden;cursor:pointer;overflow:hidden;touch-action:pan-x;will-change:transform}
+.pmm-wheel-board img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;
+ border-radius:10px;pointer-events:none;image-rendering:auto}
+.pmm-wheel-board[aria-current="true"]{filter:drop-shadow(0 2px 5px #5a3305)}
+.pmm-wheel-position{position:absolute;left:3%;top:1%;min-width:19%;z-index:5;
+ background:#fbe0a2eb;border:1px solid #be822a;border-radius:30px;text-align:center;line-height:1.7;
+ font-size:clamp(10px,1.95cqw,18px);font-weight:800;color:#064579;pointer-events:none}
+#scene .gallery-scroll:has(#gallery-detail:not([hidden])){overflow-y:auto!important;touch-action:pan-y}
+#gallery-detail:not([hidden]){position:absolute;inset:0;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:6px;padding:3% 4%;background:linear-gradient(#fff1c9eb,#ffe0a0ec)}
+#scene .gallery-large{display:block;width:auto!important;height:auto!important;max-height:79%!important;
+ max-width:99%!important;aspect-ratio:9/16;object-fit:contain!important}
+#gallery-detail .gallery-controls{width:100%;min-height:30px;flex:none;margin-top:0}
+#scene .gallery-grid{display:none!important}
+
+/* Clips: exactly the same original circular mechanics, using 9:16 vertical posters. */
+#stage[data-v8-route="clips"] #legacy-heading{display:none!important}
+#stage[data-v8-route="clips"] .content-view{overflow:hidden!important;touch-action:pan-x!important;padding:0!important}
+#stage[data-v8-route="clips"] #contents{height:100%!important;padding:0!important;overflow:hidden!important}
+#stage .pmm-clips-panel{position:relative;overflow:hidden;height:100%;width:100%;
+ background:rgba(255,237,189,.2);touch-action:pan-x}
+#stage .pmm-clips-panel .pmm-wheel-canvas{top:5%;height:92%;}
+#stage .pmm-clips-panel .pmm-wheel-board{width:36cqw}
+#stage .pmm-clips-panel .pmm-wheel-position{top:1%;}
+#stage .pmm-clips-heading{position:absolute;top:0%;left:0;right:0;z-index:6;font-weight:900;
+ font-size:clamp(15px,3.1cqw,24px);line-height:1.4;color:#073d78;text-align:center;pointer-events:none}
+#stage .pmm-clips-note{position:absolute;bottom:1%;left:6%;right:6%;z-index:12;
+ font-size:clamp(9px,1.85cqw,15px);color:#795320;text-align:center;pointer-events:none}
+#stage .pmm-wheel-clip-placeholder{height:100%;width:100%;border-radius:10px;
+ background:linear-gradient(140deg,#ffe6a2 8%,#f1bc57 50%,#e0a145 100%);
+ border:2px solid #c68c37;color:#103b6a;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:9%;padding:10%;text-align:center;pointer-events:none}
+#stage .pmm-wheel-clip-icon{width:48%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+ color:#fff1c6;font-size:clamp(20px,5.2cqw,48px);background:linear-gradient(#096caa,#064077);
+ border:3px solid #a4741a;box-shadow:0 3px 5px #6a47235b}
+#stage .pmm-wheel-clip-title{font-weight:900;font-size:clamp(13px,2.9cqw,24px)}
+#stage .pmm-wheel-clip-caption{font-weight:650;font-size:clamp(10px,2.1cqw,16px);line-height:1.8}
+
+/* The iframe must exactly fill its designated 16:9 player frame, centered and
+   without the old forced min-height that mismatched the width on phones. */
+#stage .content-view:has(.player-frame){padding-left:.6%!important;padding-right:.6%!important}
+#stage .content-box:has(.player-frame){width:100%!important;margin:1% auto!important;
+ padding:1.3% 1.3% 2%!important;box-shadow:none!important}
+#stage .content-box .player-frame{position:relative!important;display:block!important;
+ width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:16/9!important;
+ padding:0!important;margin:1% auto 2%!important;border:2px solid #bd8f3f!important;
+ overflow:hidden!important;background:#07172b!important}
+#stage .content-box .player-frame iframe{position:absolute!important;inset:0!important;
+ display:block!important;width:100%!important;height:100%!important;
+ min-width:0!important;min-height:0!important;border:0!important;margin:0!important;padding:0!important}
+
+/* All back controls use plain text only; no CSS-rendered arrows or icons. */
+#back-top,#legacy-back-top{z-index:30!important;touch-action:manipulation!important}
+#back-top::before,#back-top::after,#legacy-back-top::before,#legacy-back-top::after,
+#stage #back-button::before,#stage #back-button::after,
+#stage #guest-return::before,#stage #guest-return::after {content:none!important;display:none!important}
+
+/* About: keep the repository's photo tiles, but allow native finger swipes
+   horizontally while auto-advancing. CSS-only animation blocked touch scrolling. */
+#stage .content-view:has(.gallery-viewport){touch-action:auto!important}
+#stage .gallery-viewport{overflow-x:auto!important;overflow-y:hidden!important;
+ direction:ltr!important;touch-action:pan-x!important;-webkit-overflow-scrolling:touch!important;
+ overscroll-behavior-x:contain;scroll-snap-type:x proximity;
+ scroll-behavior:smooth;scrollbar-width:thin!important;scrollbar-color:#a77b35 transparent}
+#stage .gallery-track{animation:none!important;transform:none!important;will-change:auto!important;
+ width:max-content!important;display:flex!important;direction:ltr!important}
+#stage .gallery-group{display:flex!important;flex:none!important}
+#stage .gallery-tile{scroll-snap-align:center;touch-action:pan-x;pointer-events:auto}
+#stage .about-menu{min-height:0!important;gap:5px!important;padding:2px 4px 5px!important}
+#stage .about-entry{min-height:39px!important;height:39px!important;border-radius:12px!important;
+ padding:2px 5px!important}
+#stage .gallery-viewport{height:100px!important;min-height:100px!important;margin-top:3px!important;
+ padding:6px 0!important}
+#stage .gallery-tile{width:80px!important;height:80px!important}
+#stage .gallery-group{align-items:center!important}
+@media(prefers-reduced-motion:reduce){.pmm-wheel-board{transition:none!important}}
+
+
+/* V9 phone fixes — final overrides after the inherited V8 styles */
+/* The architectural header already says «پای منبر مولا». Repeated headings
+   inside the aperture add no information and must not cover the posters. */
+#stage #legacy-heading,
+#scene .gallery-scroll .gallery-heading,
+#stage .pmm-clips-heading,
+#stage .content-box > h2,
+#stage .clips-page-title {display:none!important}
+#stage .content-box:has(.player-frame){padding-top:2%!important}
+#stage .content-box:has(.player-frame) .player-frame{margin-top:1%!important}
+#scene .gallery-scroll .pmm-wheel-canvas{top:0!important;height:97%!important}
+#stage .pmm-clips-panel .pmm-wheel-canvas{top:0!important;height:96%!important}
+/* The WebView must not consume horizontal swipes: JS handles them. */
+#scene .gallery-scroll, #scene .pmm-wheel-page,
+#scene .pmm-wheel-canvas, #scene .pmm-wheel-board,
+#stage[data-v8-route="clips"] .content-view,
+#stage[data-v8-route="clips"] #contents,
+#stage .pmm-clips-panel,#stage .pmm-wheel-canvas,#stage .pmm-wheel-board
+{touch-action:pan-y!important;-webkit-user-select:none;user-select:none}
+#scene .pmm-wheel-canvas,#stage .pmm-wheel-canvas{overscroll-behavior-x:contain}
+#back-top,#legacy-back-top{z-index:55!important;pointer-events:auto!important;visibility:visible}
 </style>
 </head>
 <body>
+<main class="scene" id="scene" data-screen="home" aria-label="صفحه جدید پای منبر مولا">
+  <img class="scene-bg" src="images/new_ui_bg.png" alt="" aria-hidden="true">
+  <section class="main-scroll" id="main-scroll" aria-label="فهرست هفت‌گانه؛ برای دیدن موارد پایانی اسکرول کنید" tabindex="0">
+    <div class="menu-content">
+      <img class="menu-image" src="images/new_ui_menu.png" alt="" aria-hidden="true">
+      <div class="menu-buttons">
+        <button type="button" class="menu-button" style="top:1.64%;height:13.27%" data-menu="nahj_audio" aria-label="شرح جامع صوتی نهج‌البلاغه"></button>
+        <button type="button" class="menu-button" style="top:16.42%;height:12.59%" data-menu="tawhid" aria-label="توحید کاربردی"></button>
+        <button type="button" class="menu-button" style="top:30.10%;height:12.59%" data-menu="see_god" aria-label="دیدن خدا در زندگی"></button>
+        <button type="button" class="menu-button" style="top:43.91%;height:12.86%" data-menu="kafi" aria-label="شرح اصول کافی"></button>
+        <button type="button" class="menu-button" style="top:57.73%;height:12.86%" data-menu="videos" aria-label="کلیپ‌های تصویری"></button>
+        <button type="button" class="menu-button" style="top:71.55%;height:13%" data-menu="photo_quotes" aria-label="عکس نوشته؛ گالری ۱۸ تصویری"></button>
+        <button type="button" class="menu-button" style="top:85.77%;height:13.54%" data-menu="guest_sentence_new" aria-label="یک جمله مهمان مولا؛ صفحه جدید حکمت تصادفی"></button>
+      </div>
+    </div>
+  </section>
+  <section class="wisdom-scroll" id="wisdom-scroll" aria-labelledby="wisdom-title" hidden tabindex="0">
+    <div class="wisdom-body">
+      <h1 class="wisdom-title" id="wisdom-title">یک جمله مهمان مولا</h1>
+      <div class="wisdom-flourish" aria-hidden="true"><span>❖</span></div>
+      <div class="mode-alert" id="demo-warning">پیش‌نمایش آزمایشی: ترجمه‌های نمونه صرفاً برای آزمایش طراحی هستند. متن‌های سایت معرفی‌شده متعلق به استاد حسین انصاریان است؛ بانک کامل و دارای مجوز هنوز وارد نشده است.</div>
+      <div class="numberplate" id="wisdom-number" aria-live="polite">حکمت شماره —</div>
+      <section class="wisdom-panel arabic" aria-label="متن عربی حکمت">
+        <p class="panel-label">✦ متن عربی حکمت ✦</p>
+        <p class="panel-text" id="wisdom-arabic" lang="ar">—</p>
+      </section>
+      <section class="wisdom-panel translation" aria-label="ترجمه فارسی حکمت">
+        <p class="panel-label" id="translation-label">✦ ترجمه آزمایشی فارسی ✦</p>
+        <p class="panel-text" id="wisdom-persian" lang="fa">—</p>
+      </section>
+      <div class="source-note" id="source-note"></div>
+      <div class="control-stack">
+        <button type="button" id="audio-action" class="navy-button"><span aria-hidden="true">🎧</span> شرح این حکمت را بشنوید</button>
+        <button type="button" id="other-action" class="gold-button"><span aria-hidden="true">✦</span> حکمت دیگری ببینم</button>
+      </div>
+      <div id="audio-box" class="audio-box" hidden><audio id="audio-player" controls preload="none"></audio></div>
+      <p class="wisdom-footer-hint">تمام متن در همین قاب اسکرول می‌شود؛ ایوان و دکمه بازگشت ثابت می‌مانند.</p>
+    </div>
+  </section>
+  <div class="scroll-rail" aria-hidden="true"><div class="scroll-thumb" id="scroll-thumb"></div></div>
+  <button type="button" id="exit" class="exit" aria-label="خروج"></button>
 
+<section class="gallery-scroll" id="gallery-scroll" aria-label="عکس نوشته ها؛ ۱۸ تصویر" hidden>
+ <h2 class="gallery-heading">عکس نوشته</h2>
+ <div id="pmm-wheel-gallery" class="pmm-wheel-page" role="region" aria-label="آلبوم چرخشی ۱۸ عکس نوشته با امکان کشیدن به چپ و راست">
+   <div class="pmm-wheel-canvas" id="photo-wheel-canvas"><div class="pmm-wheel-rotor" id="photo-wheel-rotor"></div></div>
+   <div class="pmm-wheel-position" id="photo-wheel-position" aria-live="polite"></div>
+ </div>
+ <div class="gallery-grid" id="gallery-grid" hidden></div>
+ <div id="gallery-detail" hidden>
+  <img id="gallery-large" class="gallery-large" alt="عکس نوشته انتخابی">
+  <div class="gallery-controls">
+   <button id="gallery-prev" type="button">قبلی</button>
+   <span id="gallery-counter"></span>
+   <button id="gallery-next" type="button">بعدی</button>
+  </div>
+  <div class="gallery-controls"><button id="gallery-back-to-grid" type="button">بازگشت</button></div>
+ </div>
+</section>
+  <button type="button" id="about" class="about" aria-label="درباره ما"></button>
+  <div class="wisdom-floor-cover" id="wisdom-floor-cover" aria-hidden="true" hidden></div>
+  <button type="button" id="back-top" class="back-action" aria-label="بازگشت به صفحه جدید" hidden>بازگشت</button>
+  <output class="toast" id="new-toast" role="status" aria-live="polite" hidden></output>
+</main>
+<!-- This prototype reads a local data file; the bank remains empty until separately vetted and licensed 480 records are supplied. -->
+<script>window.PMM_HIKMAT_480 = [];</script>
+<script>
+(()=>{
+'use strict';
+/*
+ PAGE: «یک جمله مهمان مولا» — isolated prototype for the approved «صفحه جدید».
+ The reference bitmap is not altered. NO GitHub, release or Android integration.
+ The complete wisdom bank will later replace window.PMM_HIKMAT_480 (480 vetted entries).
+*/
+const EXPECTED_TRANSLATOR = null; // Translator is stored and validated per record; do not reattribute.
+// Public-domain Arabic extracts + ORIGINAL provisional Persian renderings strictly for UI testing.
+// Never present these Persian drafts as Makarem's translation or publish them as official content.
+const SAMPLE_WISDOM = Object.freeze([
+  {number:1,arabic:'كُنْ فِي الْفِتْنَةِ كَابْنِ اللَّبُونِ، لَا ظَهْرٌ فَيُرْكَبَ وَلَا ضَرْعٌ فَيُحْلَبَ.',persian:'در هنگام فتنه مانند شتر جوان باش؛ نه پشتی برای سواری دادن دارد و نه پستانی برای دوشیدن.',audio:null},
+  {number:11,arabic:'إِذَا قَدَرْتَ عَلَى عَدُوِّكَ فَاجْعَلِ الْعَفْوَ عَنْهُ شُكْراً لِلْقُدْرَةِ عَلَيْهِ.',persian:'هنگامی که بر دشمن خود توانایی یافتی، گذشت از او را سپاسِ این توانایی قرار بده.',audio:null},
+  {number:14,arabic:'مَنْ ضَيَّعَهُ الْأَقْرَبُ أُتِيحَ لَهُ الْأَبْعَدُ.',persian:'کسی که نزدیکان او را واگذار کنند، ممکن است افراد دورتر به یاری او برسند.',audio:null},
+  {number:23,arabic:'مَنْ أَبْطَأَ بِهِ عَمَلُهُ لَمْ يُسْرِعْ بِهِ نَسَبُهُ.',persian:'کسی که کردارش او را عقب نگه دارد، نسب و تبارش او را پیش نخواهد برد.',audio:null},
+  {number:44,arabic:'طُوبَى لِمَنْ ذَكَرَ الْمَعَادَ وَعَمِلَ لِلْحِسَابِ وَقَنِعَ بِالْكَفَافِ وَرَضِيَ عَنِ اللهِ.',persian:'خوشا به حال کسی که بازگشت را یاد کند، برای حسابرسی عمل کند، به اندازه کفایت بسنده کند و از خدا خشنود باشد.',audio:null}
+]);
+function validateCompleteBank(bank){
+  const errors=[];
+  if(!Array.isArray(bank))return{valid:false,errors:['بانک داده باید آرایه باشد.']};
+  if(bank.length!==480)errors.push(`تعداد رکوردها ${bank.length} است؛ باید دقیقاً ۴۸۰ باشد.`);
+  const seen=new Set();
+  for(const item of bank){
+    if(!item || !Number.isInteger(item.number) || item.number<1 || item.number>480){errors.push('شماره حکمت نامعتبر است.');continue}
+    if(seen.has(item.number))errors.push(`حکمت تکراری: ${item.number}`);
+    seen.add(item.number);
+    if(typeof item.arabic!=='string'||!item.arabic.trim())errors.push(`متن عربی حکمت ${item.number} خالی است.`);
+    if(typeof item.persian!=='string'||!item.persian.trim())errors.push(`ترجمه حکمت ${item.number} خالی است.`);
+    if(typeof item.translator!=='string'||!item.translator.trim())errors.push(`مترجم حکمت ${item.number} نامشخص است.`);
+    if(item.translator==='آزمایشی')errors.push(`ترجمه آزمایشی در بانک رسمی مجاز نیست: ${item.number}`);
+    if(typeof item.sourceUrl!=='string'||!item.sourceUrl.startsWith('https://'))errors.push(`پیوند منبع حکمت ${item.number} نامعتبر است.`);
+  }
+  for(let n=1;n<=480;n++)if(!seen.has(n))errors.push(`حکمت ${n} موجود نیست.`);
+  return{valid:errors.length===0,errors};
+}
+const inputBank=Array.isArray(window.PMM_HIKMAT_480)?window.PMM_HIKMAT_480:[];
+const bankReport=validateCompleteBank(inputBank);
+const demoMode=!bankReport.valid;
+const wisdoms=demoMode?SAMPLE_WISDOM:inputBank;
+const scene=document.getElementById('scene');
+const mainScroll=document.getElementById('main-scroll');
+const wisdomScroll=document.getElementById('wisdom-scroll');
+const thumb=document.getElementById('scroll-thumb');
+const toast=document.getElementById('new-toast');
+const audioPlayer=document.getElementById('audio-player');
+const audioBox=document.getElementById('audio-box');
+let lastNumber=null,bag=[],current=null,noticeTimer=null,originalFocus=null;
+function randInt(max){
+  if(max<=1)return 0;
+  if(typeof crypto!=='undefined'&&typeof crypto.getRandomValues==='function'){
+    const arr=new Uint32Array(1),range=0x100000000,limit=range-(range%max);let value;
+    do{crypto.getRandomValues(arr);value=arr[0]}while(value>=limit);
+    return value%max;
+  }
+  return Math.floor(Math.random()*max);
+}
+function refillBag(){
+  bag=wisdoms.map(w=>w.number);
+  for(let i=bag.length-1;i>0;i--){const j=randInt(i+1);[bag[i],bag[j]]=[bag[j],bag[i]]}
+  // We pop from the end; never repeat the last displayed item across a bag boundary.
+  if(bag.length>1&&bag[bag.length-1]===lastNumber){[bag[bag.length-1],bag[0]]=[bag[0],bag[bag.length-1]]}
+}
+function pickWisdom(){
+  if(!bag.length)refillBag();
+  const num=bag.pop();lastNumber=num;
+  return wisdoms.find(item=>item.number===num);
+}
+function showToast(message){
+  toast.textContent=message;toast.hidden=false;
+  clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>toast.hidden=true,3700);
+}
+function updateScrollbar(){
+  const active=scene.dataset.screen==='wisdom'?wisdomScroll:scene.dataset.screen==='gallery'?document.getElementById('gallery-scroll'):mainScroll;
+  const max=Math.max(0,active.scrollHeight-active.clientHeight);
+  const fraction=max?active.scrollTop/max:0;
+  const viewRatio=Math.max(.15,Math.min(.96,active.clientHeight/Math.max(active.clientHeight,active.scrollHeight)));
+  const thumbHeight=Math.max(16,Math.min(88,viewRatio*90));
+  thumb.style.height=`${thumbHeight}%`;
+  thumb.style.top=`${5+fraction*(90-thumbHeight)}%`;
+}
+function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true}
+function showRandomWisdom(){
+  stopSound();current=pickWisdom();
+  document.getElementById('wisdom-number').textContent=`حکمت شماره ${current.number}`;
+  document.getElementById('wisdom-arabic').textContent=current.arabic;
+  document.getElementById('wisdom-persian').textContent=current.persian;
+  document.getElementById('translation-label').textContent=demoMode?'✦ ترجمه آزمایشی — فقط برای مشاهده چیدمان ✦':`✦ ترجمه: ${current.translator} ✦`;
+  document.getElementById('demo-warning').hidden=!demoMode;
+  document.getElementById('source-note').textContent=demoMode?'این متن برای بررسی ظاهر و عملکرد تصادفی است؛ محتوای نهایی هنوز تأیید نشده است.':`منبع حکمت ${current.number}: ${current.sourceUrl}`;
+  wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
+  window.dispatchEvent(new CustomEvent('pmm:wisdom-selected',{detail:{number:current.number,demo:demoMode}}));
+}
+function enterWisdom(){
+  originalFocus=document.activeElement;
+  mainScroll.hidden=true;wisdomScroll.hidden=false;
+  document.getElementById('exit').hidden=true;document.getElementById('about').hidden=true;
+  document.getElementById('back-top').hidden=false;document.getElementById('wisdom-floor-cover').hidden=false;
+  scene.dataset.screen='wisdom';window.PMM_V7&&window.PMM_V7.markWisdom();toast.hidden=true;showRandomWisdom();
+  document.getElementById('back-top').focus({preventScroll:true});
+}
+function leaveWisdom(){
+  stopSound();wisdomScroll.hidden=true;mainScroll.hidden=false;
+  document.getElementById('exit').hidden=false;document.getElementById('about').hidden=false;
+  document.getElementById('back-top').hidden=true;document.getElementById('wisdom-floor-cover').hidden=true;
+  scene.dataset.screen='home';window.PMM_V7&&window.PMM_V7.markHome();toast.hidden=true;requestAnimationFrame(updateScrollbar);
+  if(originalFocus&&originalFocus.isConnected)originalFocus.focus({preventScroll:true});
+}
+function playExplanation(){
+  if(!current)return;
+  const media=current.audio;
+  if(!media||typeof media.url!=='string'||!media.url.trim()){
+    showToast('شرح صوتی این حکمت هنوز به لینک معتبر وصل نشده است. متن و ترجمه آفلاین کار می‌کنند.');return;
+  }
+  let url;try{url=new URL(media.url)}catch{showToast('آدرس صوت معتبر نیست.');return}
+  if(url.protocol!=='https:'){showToast('برای امنیت، فقط پیوند HTTPS مجاز است.');return}
+  if(media.type==='audio'){
+    audioPlayer.src=url.href;audioBox.hidden=false;
+    if(Number.isFinite(media.startSeconds)&&media.startSeconds>=0){
+      audioPlayer.addEventListener('loadedmetadata',()=>{audioPlayer.currentTime=Math.min(media.startSeconds,Math.max(0,audioPlayer.duration||0))},{once:true});
+    }
+    audioPlayer.play().catch(()=>showToast('برای شروع پخش، دکمه پخش‌کننده را لمس کنید.'));
+    audioBox.scrollIntoView({block:'nearest',behavior:'smooth'});
+  }else{
+    window.dispatchEvent(new CustomEvent('pmm:wisdom-online-explanation',{detail:{number:current.number,url:url.href}}));
+    const tab=window.open(url.href,'_blank','noopener,noreferrer');
+    if(!tab)showToast('پیوند شرح آماده است؛ بازکردن پنجره در این پیش‌نمایش محدود شده است.');
+  }
+}
+document.querySelectorAll('[data-menu]').forEach(button=>button.addEventListener('click',()=>{
+  if(button.dataset.menu==='guest_sentence_new'){enterWisdom();return}
+  if(window.PMM_V7)window.PMM_V7.openMenu(button.dataset.menu);else showToast('خطا در راه‌اندازی بخش‌ها.');
+}));
+document.getElementById('other-action').addEventListener('click',showRandomWisdom);
+document.getElementById('audio-action').addEventListener('click',playExplanation);
+document.getElementById('back-top').addEventListener('click',()=>{if(window.PMM_V7)window.PMM_V7.goBack();else leaveWisdom()});
 
-<main class="stage" id="stage" aria-label="پای منبر مولا">
+document.getElementById('exit').addEventListener('click',()=>{if(window.PMMNative&&typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();else showToast('خروج از برنامه در نسخه اندروید فعال است.');});
+document.getElementById('about').addEventListener('click',()=>window.PMM_V7&&window.PMM_V7.openLegacy('about'));
+mainScroll.addEventListener('scroll',updateScrollbar,{passive:true});
+wisdomScroll.addEventListener('scroll',updateScrollbar,{passive:true});
+window.addEventListener('resize',updateScrollbar);
+window.addEventListener('load',updateScrollbar);
+
+// Read-only test hooks for controlled preview/testing; do not integrate until owner authorizes.
+Object.defineProperty(window,'PMM_WISDOM_PROTOTYPE',{value:Object.freeze({
+  open:enterWisdom,back:leaveWisdom,chooseAnother:showRandomWisdom,
+  validateCompleteBank,bankStatus:bankReport,hasFullBank:!demoMode,
+  getCurrent:()=>current?{number:current.number,demo:demoMode}:null
+}),writable:false});
+
+window.PMM_NEW_UI=Object.freeze({
+ enterWisdom, leaveWisdom,
+ showHome:()=>{
+   stopSound();wisdomScroll.hidden=true;
+   document.getElementById('gallery-scroll').hidden=true;
+   mainScroll.hidden=false;
+   document.getElementById('exit').hidden=false;
+   document.getElementById('about').hidden=false;
+   document.getElementById('back-top').hidden=true;
+   document.getElementById('wisdom-floor-cover').hidden=true;
+   scene.dataset.screen='home';
+   requestAnimationFrame(updateScrollbar);
+ },
+ showLegacy:()=>{scene.hidden=true;},
+ restore:()=>{scene.hidden=false;},
+ showGallery:()=>{
+   mainScroll.hidden=true;wisdomScroll.hidden=true;
+   document.getElementById('gallery-scroll').hidden=false;
+   document.getElementById('exit').hidden=true;
+   document.getElementById('about').hidden=true;
+   document.getElementById('back-top').hidden=false;
+   document.getElementById('wisdom-floor-cover').hidden=false;
+   scene.dataset.screen='gallery';
+   document.getElementById('gallery-scroll').scrollTop=0;
+   requestAnimationFrame(updateScrollbar);
+ },
+ closeGallery:()=>{
+   document.getElementById('gallery-scroll').hidden=true;
+   mainScroll.hidden=false;
+   document.getElementById('exit').hidden=false;
+   document.getElementById('about').hidden=false;
+   document.getElementById('back-top').hidden=true;
+   document.getElementById('wisdom-floor-cover').hidden=true;
+   scene.dataset.screen='home';
+   requestAnimationFrame(updateScrollbar);
+ },
+ updateScrollbar,
+ showToast
+});
+})();
+</script>
+
+<main hidden class="stage" id="stage" aria-label="پای منبر مولا">
 <img class="backdrop" id="backdrop" alt="ایوان طلایی و کاشی‌کاری آبی ثابت">
 <div class="pane" id="home-pane" aria-label="بخش‌های اصلی">
 <!-- The image 01 background is owned by #backdrop. No duplicate or substitute image overlay. -->
@@ -622,11 +1146,13 @@ body { display:block !important; }
 <div class="inner-gold-panel" aria-hidden="true"></div>
 <button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
 <img class="list-title gone" id="dynamic-title" alt="عنوان بخش"><div class="clip-title gone" id="clips-page-title">کلیپ‌های تصویری</div>
-<div class="content-view" id="content-view"><div class="row-list" id="contents"></div></div>
+<div class="content-view" id="content-view"><h2 id="legacy-heading" aria-live="polite"></h2><div class="row-list" id="contents"></div></div>
 </div>
 <div class="toast gone" id="toast"></div>
-</main>
+<div class="wisdom-floor-cover" aria-hidden="true"></div><button type="button" id="legacy-back-top" class="legacy-back" aria-label="بازگشت به صفحه جدید">بازگشت</button></main>
+
 <script>
+
 const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"شرح اصول کافی 1","url":"https://eitaa.com/hadis_kafi/393","source":"ایتا"},{"number":2,"title":"شرح اصول کافی 2","url":"https://eitaa.com/hadis_kafi/450","source":"ایتا"},{"number":3,"title":"شرح اصول کافی 3","url":"https://eitaa.com/hadis_kafi/462","source":"ایتا"},{"number":4,"title":"شرح اصول کافی 4","url":"https://eitaa.com/hadis_kafi/474","source":"ایتا"},{"number":5,"title":"شرح اصول کافی 5","url":"https://eitaa.com/hadis_kafi/486","source":"ایتا"},{"number":6,"title":"شرح اصول کافی 6","url":"https://eitaa.com/hadis_kafi/498","source":"ایتا"},{"number":7,"title":"شرح اصول کافی 7","url":"https://eitaa.com/hadis_kafi/509","source":"ایتا"},{"number":8,"title":"شرح اصول کافی 8","url":"https://eitaa.com/hadis_kafi/521","source":"ایتا"},{"number":9,"title":"شرح اصول کافی 9","url":"https://eitaa.com/hadis_kafi/532","source":"ایتا"},{"number":10,"title":"شرح اصول کافی 10","url":"https://eitaa.com/hadis_kafi/544","source":"ایتا"},{"number":11,"title":"شرح اصول کافی 11","url":"https://eitaa.com/hadis_kafi/556","source":"ایتا"},{"number":12,"title":"شرح اصول کافی 12","url":"https://eitaa.com/hadis_kafi/568","source":"ایتا"},{"number":13,"title":"شرح اصول کافی 13","url":"https://eitaa.com/hadis_kafi/581","source":"ایتا"},{"number":14,"title":"شرح اصول کافی 14","url":"https://eitaa.com/hadis_kafi/594","source":"ایتا"},{"number":15,"title":"شرح اصول کافی 15","url":"https://eitaa.com/hadis_kafi/607","source":"ایتا"},{"number":16,"title":"شرح اصول کافی 16","url":"https://eitaa.com/hadis_kafi/620","source":"ایتا"},{"number":17,"title":"شرح اصول کافی 17","url":"https://eitaa.com/hadis_kafi/632","source":"ایتا"},{"number":18,"title":"شرح اصول کافی 18","url":"https://eitaa.com/hadis_kafi/639","source":"ایتا"},{"number":19,"title":"شرح اصول کافی 19","url":"https://eitaa.com/hadis_kafi/647","source":"ایتا"},{"number":20,"title":"شرح اصول کافی 20","url":"https://eitaa.com/hadis_kafi/657","source":"ایتا"},{"number":21,"title":"شرح اصول کافی 21","url":"https://eitaa.com/hadis_kafi/669","source":"ایتا"},{"number":22,"title":"شرح اصول کافی 22","url":"https://eitaa.com/hadis_kafi/680","source":"ایتا"},{"number":23,"title":"شرح اصول کافی 23","url":"https://eitaa.com/hadis_kafi/687","source":"ایتا"},{"number":24,"title":"شرح اصول کافی 24","url":"https://eitaa.com/hadis_kafi/693","source":"ایتا"},{"number":25,"title":"شرح اصول کافی 25","url":"https://eitaa.com/hadis_kafi/704","source":"ایتا"},{"number":26,"title":"شرح اصول کافی 26","url":"https://eitaa.com/hadis_kafi/712","source":"ایتا"},{"number":27,"title":"شرح اصول کافی 27","url":"https://eitaa.com/hadis_kafi/724","source":"ایتا"},{"number":28,"title":"شرح اصول کافی 28","url":"https://eitaa.com/hadis_kafi/737","source":"ایتا"},{"number":29,"title":"شرح اصول کافی 29","url":"https://eitaa.com/hadis_kafi/746","source":"ایتا"},{"number":30,"title":"شرح اصول کافی 30","url":"https://eitaa.com/hadis_kafi/755","source":"ایتا"},{"number":31,"title":"شرح اصول کافی 31","url":"https://eitaa.com/hadis_kafi/775","source":"ایتا"},{"number":32,"title":"شرح اصول کافی 32","url":"https://eitaa.com/hadis_kafi/793","source":"ایتا"},{"number":33,"title":"شرح اصول کافی 33","url":"https://eitaa.com/hadis_kafi/809","source":"ایتا"},{"number":34,"title":"شرح اصول کافی 34","url":"https://eitaa.com/hadis_kafi/823","source":"ایتا"},{"number":35,"title":"شرح اصول کافی 35","url":"https://eitaa.com/hadis_kafi/836","source":"ایتا"},{"number":36,"title":"شرح اصول کافی 36","url":"https://eitaa.com/hadis_kafi/851","source":"ایتا"},{"number":37,"title":"شرح اصول کافی 37","url":"https://eitaa.com/hadis_kafi/864","source":"ایتا"},{"number":38,"title":"شرح اصول کافی 38","url":"https://eitaa.com/hadis_kafi/881","source":"ایتا"},{"number":39,"title":"شرح اصول کافی 39","url":"https://eitaa.com/hadis_kafi/909","source":"ایتا"},{"number":40,"title":"شرح اصول کافی 40","url":"https://eitaa.com/hadis_kafi/923","source":"ایتا"},{"number":41,"title":"شرح اصول کافی 41","url":"https://eitaa.com/hadis_kafi/941","source":"ایتا"},{"number":42,"title":"شرح اصول کافی 42","url":"https://eitaa.com/hadis_kafi/958","source":"ایتا"},{"number":43,"title":"شرح اصول کافی 43","url":"https://eitaa.com/hadis_kafi/981","source":"ایتا"},{"number":44,"title":"شرح اصول کافی 44","url":"https://eitaa.com/hadis_kafi/993","source":"ایتا"},{"number":45,"title":"شرح اصول کافی 45","url":"https://eitaa.com/hadis_kafi/1017","source":"ایتا"},{"number":46,"title":"شرح اصول کافی 46","url":"https://eitaa.com/hadis_kafi/1037","source":"ایتا"},{"number":47,"title":"شرح اصول کافی 47","url":"https://eitaa.com/hadis_kafi/1048","source":"ایتا"},{"number":48,"title":"شرح اصول کافی 48","url":"https://eitaa.com/hadis_kafi/1060","source":"ایتا"},{"number":49,"title":"شرح اصول کافی 49","url":"https://eitaa.com/hadis_kafi/1107","source":"ایتا"},{"number":50,"title":"شرح اصول کافی 50","url":"https://eitaa.com/hadis_kafi/1119","source":"ایتا"},{"number":51,"title":"شرح اصول کافی 51","url":"https://eitaa.com/hadis_kafi/1141","source":"ایتا"},{"number":52,"title":"شرح اصول کافی 52","url":"https://eitaa.com/hadis_kafi/1153","source":"ایتا"},{"number":53,"title":"شرح اصول کافی 53","url":"https://eitaa.com/hadis_kafi/1190","source":"ایتا"},{"number":54,"title":"شرح اصول کافی 54","url":"https://eitaa.com/hadis_kafi/1202","source":"ایتا"},{"number":55,"title":"شرح اصول کافی 55","url":"https://eitaa.com/hadis_kafi/1223","source":"ایتا"},{"number":56,"title":"شرح اصول کافی 56","url":"https://eitaa.com/hadis_kafi/1429","source":"ایتا"},{"number":57,"title":"شرح اصول کافی 57","url":"https://eitaa.com/hadis_kafi/1441","source":"ایتا"},{"number":58,"title":"شرح اصول کافی 58","url":"https://eitaa.com/hadis_kafi/1454","source":"ایتا"},{"number":59,"title":"شرح اصول کافی 59","url":"","source":""}],"nahj":{"url":"https://kazeminia110.ir/","description":"تا تکمیل صفحه اختصاصی ۱۱۰۰ جلسه، مخاطب می‌تواند از صفحه اصلی سایت یا فهرست موجود در ایتا استفاده کند.","eitaa_url":"https://eitaa.com/nahjolbalagheh_media/8"}}
 const APPROVED_IMAGE_01 = "images/IMAGE_01_APPROVED_ORIGINAL.png";
 const NEW_HOME_IMAGE = "images/home_bg_separated.png";
@@ -757,7 +1283,7 @@ function renderPlayer(){
  }else{
   html+='<a class="action"  href="'+safe(x.url)+'">باز کردن جلسه</a>';
  }
- html+='<button class="action" type="button" id="player-back">بازگشت به جلسات</button></div>';
+ html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
  document.getElementById('player-back').addEventListener('click',goBack);
 }
@@ -883,5 +1409,382 @@ document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click
 document.getElementById('back-button').addEventListener('click',goBack);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'&&document.activeElement?.tagName!=='INPUT'&&document.activeElement?.tagName!=='TEXTAREA'){e.preventDefault();goBack();}});
 render();
+
 </script>
-</body></html>
+<script>
+
+// INTEGRATION V7: read-only imported app renderers/data, navigation glue and tests.
+const pmmShell=document.getElementById('scene');
+const pmmOldStage=document.getElementById('stage');
+const galleryEl=document.getElementById('gallery-scroll');
+const galleryGrid=document.getElementById('gallery-grid');
+const album=Array.from({length:18},(_,i)=>'images/guest_album/'+String(i+1).padStart(2,'0')+'.jpg');
+let galleryIndex=null;
+function galleryRenderGrid(){
+ galleryIndex=null;document.getElementById('gallery-detail').hidden=true;galleryGrid.hidden=false;
+ galleryGrid.innerHTML=album.map((src,i)=>`<button class="gallery-card" type="button" data-gallery="${i}" aria-label="عکس نوشته ${fa(i+1)}"><img src="${src}" loading="lazy" alt="عکس نوشته ${fa(i+1)}"><span>${fa(i+1)} از ${fa(album.length)}</span></button>`).join('');
+ galleryGrid.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>galleryOpen(Number(b.dataset.gallery))));
+ galleryEl.scrollTop=0;
+}
+function galleryOpen(index){
+ galleryIndex=((index%album.length)+album.length)%album.length;
+ galleryGrid.hidden=true;document.getElementById('gallery-detail').hidden=false;
+ document.getElementById('gallery-large').src=album[galleryIndex];
+ document.getElementById('gallery-large').alt='عکس نوشته '+fa(galleryIndex+1);
+ document.getElementById('gallery-counter').textContent=fa(galleryIndex+1)+' از '+fa(album.length);
+ galleryEl.scrollTop=0;
+}
+document.getElementById('gallery-next').addEventListener('click',()=>galleryOpen(galleryIndex+1));
+document.getElementById('gallery-prev').addEventListener('click',()=>galleryOpen(galleryIndex-1));
+document.getElementById('gallery-back-to-grid').addEventListener('click',galleryRenderGrid);
+galleryEl.addEventListener('scroll',()=>window.PMM_NEW_UI.updateScrollbar(),{passive:true});
+function oldTitle(){
+ if(screen==='list')return sectionNames[section]||'آرشیو جلسات';
+ if(screen==='player')return 'پخش جلسه '+fa(item?.number||'');
+ if(screen==='about')return 'درباره ما';
+ if(screen==='biography')return 'درباره من';
+ if(screen==='photo')return 'گالری تصاویر';
+ return 'پای منبر مولا';
+}
+function syncOldTitle(){document.getElementById('legacy-heading').textContent=oldTitle()}
+const oldSetState=setState;
+setState=function(mode,s=null,v=null){
+ oldSetState(mode,s,v);
+ if(mode==='home'){pmmOldStage.hidden=true;window.PMM_NEW_UI.restore();window.PMM_NEW_UI.showHome()}
+ else{syncOldTitle();}
+};
+const oldGoBack=goBack;
+goBack=function(){
+ if(screen==='wisdom'){window.PMM_NEW_UI.leaveWisdom();screen='home';return;}
+ if(screen==='gallery'){
+   if(galleryIndex!==null){galleryRenderGrid();return;}
+   window.PMM_NEW_UI.closeGallery();screen='home';return;
+ }
+ if(screen==='home'){return;}
+ oldGoBack();
+};
+document.getElementById('legacy-back-top').addEventListener('click',()=>goBack());
+const openLegacy=kind=>{
+ if(kind==='about'){setState('about')}
+ else{if(!['nahj','towhid','life','kafi','clips'].includes(kind)){window.PMM_NEW_UI.showToast('بخش نامعتبر است');return;}setState('list',kind)}
+ pmmOldStage.hidden=false;window.PMM_NEW_UI.showLegacy();
+ syncOldTitle();
+};
+const menuMap={nahj_audio:'nahj',tawhid:'towhid',see_god:'life',kafi:'kafi',videos:'clips'};
+window.PMM_V7=Object.freeze({
+ openMenu:name=>{
+   if(name==='photo_quotes'){galleryRenderGrid();screen='gallery';window.PMM_NEW_UI.showGallery();return;}
+   const key=menuMap[name];if(key){openLegacy(key);return;}
+   window.PMM_NEW_UI.showToast('گزینه در دسترس نیست.');
+ },
+ openLegacy,
+ goBack,
+ markWisdom:()=>{screen='wisdom';},
+ markHome:()=>{screen='home';},
+ getState:()=>({screen,section,legacyVisible:!pmmOldStage.hidden,albumSize:album.length,counts:{towhid:DATA.towhid.length,life:DATA.life.length,kafi:DATA.kafi.length,clips:VIDEO_CLIPS.length}})
+});
+// Native Android Back calls global goBack(). Keyboard testing uses same path.
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'||(e.key==='Backspace'&&!['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))){
+  e.preventDefault();e.stopImmediatePropagation();goBack();
+ }
+},true);
+// Native browser history Back is a fallback when the WebView calls history rather than JS.
+window.addEventListener('pagehide',()=>{ /* no cross-origin state writes */ });
+galleryRenderGrid();
+syncOldTitle();
+
+</script>
+<script>
+// V8: exact repository 18-board circular wheel geometry, generalized for photo and video.
+// The next five lines in update() use the same sin/cos, depth, Y-rotation, scale,
+// opacity and z-index calculations as updateGuestWheel() in approved repository.
+(function(){
+'use strict';
+const photoFiles=Array.from({length:18},(_,i)=>'images/guest_album/'+String(i+1).padStart(2,'0')+'.jpg');
+const activeWheels=new Map();
+let wheelAuto=null;
+const DELAY=7000; // V9: visibly advance without requiring a 22-second wait
+function faNum(n){return Number(n).toLocaleString('fa-IR')}
+function stopWheelTimer(){if(wheelAuto){clearInterval(wheelAuto);wheelAuto=null}}
+function routeForWheel(){return screen==='gallery'?'photos':screen==='list'&&section==='clips'?'clips':null}
+function startWheelTimer(){
+ stopWheelTimer();
+ wheelAuto=setInterval(()=>{
+  const key=routeForWheel();const wheel=activeWheels.get(key);
+  if(wheel && document.getElementById('gallery-detail').hidden && document.visibilityState!=='hidden')wheel.spin(1);
+ },DELAY);
+}
+function mountWheel(key,items,rotorId,canvasId,posId,onSelect){
+ const rotor=document.getElementById(rotorId),area=document.getElementById(canvasId),counter=document.getElementById(posId);
+ if(!rotor||!area||!counter)return;
+ rotor.textContent='';
+ const boards=[];
+ let index=0,step=0,swiped=false,suppressClickUntil=0;
+ items.forEach((item,i)=>{
+  const board=document.createElement('button');board.type='button';board.className='pmm-wheel-board';
+  board.dataset.index=String(i);board.style.setProperty('--board-angle',`${i*360/items.length}deg`);
+  board.setAttribute('aria-label',(key==='photos'?'عکس نوشته ':'کلیپ تصویری ')+faNum(i+1)+' از '+faNum(items.length));
+  if(item.src){const img=document.createElement('img');img.src=item.src;img.alt='تابلوی '+faNum(i+1);img.loading='eager';img.draggable=false;board.appendChild(img)}
+  else{const panel=document.createElement('div');panel.className='pmm-wheel-clip-placeholder';
+   panel.innerHTML='<span class="pmm-wheel-clip-icon" aria-hidden="true">▶</span><span class="pmm-wheel-clip-title"></span><span class="pmm-wheel-clip-caption">در انتظار دریافت لینک کلیپ</span>';
+   panel.querySelector('.pmm-wheel-clip-title').textContent=item.title;board.appendChild(panel);}
+  board.addEventListener('click',()=>{if(swiped||Date.now()<suppressClickUntil)return;if(i===index)onSelect(i);else spin(closest(i))});
+  rotor.appendChild(board);boards.push(board);
+ });
+ function closest(to){const n=items.length;return ((to-index+n+n/2)%n)-n/2}
+ function update(){
+  const n=items.length;
+  boards.forEach((board,i)=>{
+   const relative=((i-index+n+n/2)%n)-n/2;
+   const distance=Math.abs(relative);
+   const angle=relative*38;
+   const rad=angle*Math.PI/180;
+   board.style.setProperty('--wheel-x',(Math.sin(rad)*45).toFixed(3)+'cqw');
+   board.style.setProperty('--wheel-z',(Math.cos(rad)*33-17).toFixed(3)+'cqw');
+   board.style.setProperty('--wheel-angle',(-angle)+'deg');
+   board.style.setProperty('--wheel-scale',distance===0?'1':distance===1?'0.85':'0.70');
+   board.style.opacity=distance>2?'0':distance===2?'0.58':distance===1?'0.88':'1';
+   board.style.zIndex=String(10-distance);
+   board.style.pointerEvents=distance>2?'none':'auto';
+   board.setAttribute('aria-current',String(i===index));
+   board.tabIndex=distance<3?0:-1;
+  });
+  counter.textContent=faNum(index+1)+' / '+faNum(items.length);
+ }
+ function spin(delta){
+  step+=delta;
+  index=((step%items.length)+items.length)%items.length;
+  update();startWheelTimer();
+ }
+ // Android WebView: horizontal touch is app-owned, while vertical gestures
+ // still belong to the internal scroll view. Use touchstart/touchend rather
+ // than relying on pointerup (which Chrome may cancel during native panning).
+ let touchStart=null,mouseStart=null;
+ area.tabIndex=0;
+ area.setAttribute('aria-label',(key==='photos'?'عکس نوشته':'کلیپ تصویری')+'؛ برای ورق زدن به چپ یا راست بکشید');
+ function finishSwipe(dx,dy){
+  if(Math.abs(dx)<20||Math.abs(dx)<Math.abs(dy)*1.08)return false;
+  suppressClickUntil=Date.now()+750;
+  swiped=true;
+  const steps=Math.min(3,Math.max(1,Math.round(Math.abs(dx)/68)));
+  spin((dx<0?1:-1)*steps);
+  setTimeout(()=>{swiped=false},360);
+  return true;
+ }
+ area.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1){touchStart=null;return}
+  const t=e.touches[0];touchStart={x:t.clientX,y:t.clientY,id:t.identifier};
+ },{passive:true});
+ area.addEventListener('touchend',e=>{
+  if(!touchStart)return;
+  const end=Array.from(e.changedTouches).find(t=>t.identifier===touchStart.id);
+  if(end)finishSwipe(end.clientX-touchStart.x,end.clientY-touchStart.y);
+  touchStart=null;
+ },{passive:true});
+ area.addEventListener('touchcancel',()=>{touchStart=null},{passive:true});
+ area.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='touch'||e.button!==0)return;
+  mouseStart={x:e.clientX,y:e.clientY,id:e.pointerId};
+ },{passive:true});
+ area.addEventListener('pointerup',e=>{
+  if(!mouseStart||e.pointerId!==mouseStart.id)return;
+  finishSwipe(e.clientX-mouseStart.x,e.clientY-mouseStart.y);
+  mouseStart=null;
+ });
+ area.addEventListener('pointercancel',()=>{mouseStart=null});
+ area.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+   e.preventDefault();e.stopPropagation();spin(e.key==='ArrowLeft'?1:-1);
+  }
+ });
+ const w={spin,getIndex:()=>index,boardCount:items.length};activeWheels.set(key,w);
+ update();startWheelTimer();return w;
+}
+// Restore EXACT original images, card structure, curved 3D positions and 22s rotation.
+// V7 legacy router calls galleryRenderGrid on entering the photo section.
+galleryRenderGrid=function(){
+ galleryIndex=null;
+ document.getElementById('gallery-detail').hidden=true;
+ galleryGrid.hidden=true;
+ document.getElementById('pmm-wheel-gallery').hidden=false;
+ const items=photoFiles.map(src=>({src}));
+ const w=mountWheel('photos',items,'photo-wheel-rotor','photo-wheel-canvas','photo-wheel-position',i=>galleryOpen(i));
+ let remembered=-1;try{remembered=Number(sessionStorage.getItem('pmm_v8_photo_last')??-1)}catch(_){remembered=-1}
+ if(w && remembered>=0 && remembered<items.length)w.spin(remembered);
+ galleryEl.scrollTop=0;
+};
+const oldGalleryOpen=galleryOpen;
+galleryOpen=function(index){
+ stopWheelTimer();
+ const current=activeWheels.get('photos');
+ if(current){try{sessionStorage.setItem('pmm_v8_photo_last',String(index))}catch(_){}}
+ document.getElementById('pmm-wheel-gallery').hidden=true;
+ oldGalleryOpen(index);
+};
+// V7 wired its button listeners to function expressions, but these are updated
+// by name at invocation time, so the old next/previous buttons keep working.
+
+// Same movement and 9:16 frames in Clips, with honestly empty placeholders
+// until the user supplies actual URLs (no invented playable media).
+renderClips=function(){
+ const clips=VIDEO_CLIPS.length?VIDEO_CLIPS:Array.from({length:5},(_,i)=>({title:'کلیپ '+fa(i+1),url:''}));
+ contents.innerHTML='<div class="pmm-clips-panel"><div class="pmm-clips-heading">کلیپ‌های تصویری</div>'+
+ '<div id="clips-wheel-canvas" class="pmm-wheel-canvas"><div id="clips-wheel-rotor" class="pmm-wheel-rotor"></div></div>'+
+ '<div class="pmm-wheel-position" id="clips-wheel-position"></div>'+
+ '<div class="pmm-clips-note">قاب‌های عمودی ۹:۱۶ — پیوند کلیپ‌ها هنوز ثبت نشده است</div></div>';
+ mountWheel('clips',clips.map(c=>({title:c.title})), 'clips-wheel-rotor','clips-wheel-canvas','clips-wheel-position',i=>{
+  const clip=VIDEO_CLIPS[i];
+  if(!clip||!clip.url){toast('این کلیپ هنوز در مخزن ثبت نشده است.');return}
+  if(/^https:\/\/eitaa\.com\//i.test(clip.url)){openEitaa(clip.url);return}
+  setState('player','clips',{number:i+1,url:clip.url});
+ });
+};
+
+// About gallery: preserve original thumbnails and image detail. Native pan-x
+// for manual swipe, JS auto-advance on the same track without CSS animation.
+let aboutTimer=null;
+let aboutUntil=0;
+let aboutPhotoPos=0;
+function stopAbout(){if(aboutTimer){clearInterval(aboutTimer);aboutTimer=null}}
+function setupAbout(){
+ const viewport=document.querySelector('#contents .gallery-viewport');
+ if(!viewport)return;
+ viewport.tabIndex=0;
+ viewport.setAttribute('aria-label','گالری تصاویر؛ حرکت خودکار و کشیدن دستی به چپ و راست');
+ const buttons=viewport.querySelectorAll('[data-photo]');
+ aboutPhotoPos=0;
+ if(!buttons.length)return;
+ const pause=()=>{aboutUntil=Date.now()+6500};
+ viewport.addEventListener('touchstart',pause,{passive:true});
+ viewport.addEventListener('pointerdown',pause,{passive:true});
+ viewport.addEventListener('wheel',pause,{passive:true});
+ viewport.addEventListener('scroll',()=>{
+  if(Date.now()<aboutUntil)return;
+  const first=buttons[0].getBoundingClientRect();
+  if(!first.width)return;
+  aboutPhotoPos=Math.max(0,Math.round(viewport.scrollLeft/(first.width+8))%USER_PHOTOS.length);
+ },{passive:true});
+ aboutTimer=setInterval(()=>{
+  if(screen!=='about'||Date.now()<aboutUntil||document.visibilityState==='hidden')return;
+  const next=(aboutPhotoPos+1)%USER_PHOTOS.length;
+  const item=buttons[next];
+  if(item){viewport.scrollTo({left:item.offsetLeft,behavior:next===0?'auto':'smooth'});aboutPhotoPos=next}
+ },3300);
+}
+
+// Guard about/back navigation with reliable physical button click handlers,
+// and stop all rotating timers on leaving their routes.
+const oldState=setState;
+setState=function(mode,s=null,v=null){
+ stopWheelTimer();stopAbout();
+ document.getElementById('toast')?.classList.add('gone');
+ oldState(mode,s,v);
+ pmmOldStage.dataset.v8Route=mode==='list'&&section==='clips'?'clips':mode;
+ if(mode==='about')setupAbout();
+ if(mode==='list'&&section==='clips')startWheelTimer();
+};
+// Use dynamic global handler for the top return; do not depend on stale handler
+// references attached before the integration code had loaded.
+const topLegacy=document.getElementById('legacy-back-top');
+topLegacy.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();goBack();},true);
+const topNew=document.getElementById('back-top');
+topNew.textContent='بازگشت';
+topNew.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();goBack();},true);
+// Additional fallback for native Android Back action already dispatching goBack().
+window.addEventListener('pagehide',()=>{stopWheelTimer();stopAbout()});
+window.PMM_V8=Object.freeze({
+ getWheels:()=>[...activeWheels].map(([k,v])=>({name:k,index:v.getIndex(),total:v.boardCount})),
+ spin:key=>{activeWheels.get(key)?.spin(1)},
+ aboutNext:()=>{const v=document.querySelector('#contents .gallery-viewport');return v?.scrollLeft},
+ version:'8'
+});
+})();
+</script>
+
+<script>
+/* V9: external-Eitaa return guard and on-device swipe/back diagnostics. */
+(function(){
+'use strict';
+const STAMP='pmm_v9_external_pending';
+const scene=document.getElementById('scene');
+const stage=document.getElementById('stage');
+const oldEitaa=openEitaa;
+let openedAt=0,lastResume=0;
+function saveExternalRoute(){
+ const data={ts:Date.now(),screen,section,item:screen==='player'?item:null};
+ try{localStorage.setItem(STAMP,JSON.stringify(data))}catch(_){}
+ openedAt=data.ts;
+}
+openEitaa=function(url){
+ // Persist *before* switching Android activities, in case the WebView is reclaimed.
+ saveExternalRoute();
+ return oldEitaa(url);
+};
+function displayReturn(){
+ if(screen==='home')return;
+ if(['list','player','about','biography','photo'].includes(screen)){
+  scene.hidden=true;stage.hidden=false;
+  document.getElementById('legacy-back-top').hidden=false;
+  stage.dataset.v8Route=screen==='list'&&section==='clips'?'clips':screen;
+ }else if(screen==='wisdom'||screen==='gallery'){
+  stage.hidden=true;scene.hidden=false;
+  document.getElementById('back-top').hidden=false;
+ }
+}
+function resumed(){
+ if(document.visibilityState==='hidden')return;
+ const now=Date.now();if(now-lastResume<250)return;lastResume=now;
+ displayReturn();
+ // Remove focus retained by the external-launch button; it can steal the first tap.
+ const active=document.activeElement;
+ if(active&&typeof active.blur==='function')active.blur();
+ requestAnimationFrame(()=>{
+  displayReturn();
+  const top=stage.hidden?document.getElementById('back-top'):document.getElementById('legacy-back-top');
+  if(top&&!top.hidden){top.style.pointerEvents='auto';top.style.visibility='visible';}
+ });
+ if(openedAt){openedAt=0;try{localStorage.removeItem(STAMP)}catch(_){}}
+}
+// If Android re-creates the WebView while Eitaa is in front, reconstruct its route.
+function recoverReload(){
+ let saved;
+ try{saved=JSON.parse(localStorage.getItem(STAMP)||'null')}catch(_){saved=null}
+ if(!saved||!Number.isFinite(saved.ts)||Date.now()-saved.ts>600000){
+  try{localStorage.removeItem(STAMP)}catch(_){};return;
+ }
+ if(screen==='home'){
+  if(saved.screen==='list'&&['nahj','towhid','life','kafi','clips'].includes(saved.section)){
+   window.PMM_V7.openLegacy(saved.section);
+  }else if(saved.screen==='about'||saved.screen==='biography'||saved.screen==='photo'){
+   window.PMM_V7.openLegacy('about');
+   if(saved.screen==='biography')setState('biography');
+  }else if(saved.screen==='player'&&saved.item&&saved.section){
+   window.PMM_V7.openLegacy(saved.section);setState('player',saved.section,saved.item);
+  }
+ }
+ try{localStorage.removeItem(STAMP)}catch(_){}
+ displayReturn();
+}
+// Capture at document level; unlike a stale per-page listener it survives
+// returning from external activities and does not double-navigate.
+document.addEventListener('click',e=>{
+ const target=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
+ if(!target||target.hidden)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ goBack();
+},true);
+window.addEventListener('focus',resumed);
+window.addEventListener('pageshow',resumed);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resumed()});
+window.addEventListener('pmm:external-return',resumed); // app test hook
+recoverReload();
+window.PMM_V9=Object.freeze({
+ version:'9',getRoute:()=>({screen,section,stageVisible:!stage.hidden,sceneVisible:!scene.hidden}),
+ simulateResume:resumed,
+ getCarouselState:()=>window.PMM_V8.getWheels()
+});
+})();
+</script>
+</body>
+</html>
