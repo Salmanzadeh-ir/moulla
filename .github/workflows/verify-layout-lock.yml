@@ -1,4 +1,4 @@
-name: Verify owner-approved V10.4.9 design lock
+name: Verify historical V10.4.9 lock and owner-requested V9 preview
 
 on:
   pull_request:
@@ -14,7 +14,15 @@ jobs:
   verify-ui-lock:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout approved sources and binary references
+      - name: Check out active owner-requested V9 source
         uses: actions/checkout@v4
-      - name: Ensure every approved screen, image and original APK byte remains unchanged
+      - name: Verify V9 source, 7-option UI and original media assets
+        run: python3 scripts/verify_v9_preview.py
+      - name: Check out untouched owner-approved V10.4.9 historical tag
+        uses: actions/checkout@v4
+        with:
+          ref: v10.4.9
+          path: approved-v10-4-9
+      - name: Verify original V10.4.9 lock and binary hashes at historical tag
+        working-directory: approved-v10-4-9
         run: python3 scripts/verify_layout_lock.py

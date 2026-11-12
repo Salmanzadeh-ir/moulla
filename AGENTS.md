@@ -1,3 +1,11 @@
+# Current working source: owner-requested New Iwan V9 PREVIEW (2026-11-12)
+
+The owner explicitly asked to replace the repository's **active source** with the separately tested V9 seven-option New Iwan prototype. This authorization is for source/development only; do NOT publish or sign an official release without fresh owner approval.
+
+The previously approved V10.4.9 must remain preserved byte-for-byte in historical tag `v10.4.9`, old releases, and `design/v10.4.9-lock.json`. The older freeze rules below describe the **historical V10.4.9 reference**, not the now-authorized V9 preview changes on `main`. Run V9 checks using `python3 scripts/verify_v9_preview.py` and historical verification on `v10.4.9`. For details see `docs/V9_NEW_IWAN_FA.md`.
+
+---
+
 # Project agent instructions — frozen owner-approved V10.4.9
 
 This repository contains «پای منبر مولا» Android application. **V10.4.9 is the latest owner-approved official reference.** The owner explicitly authorized final registration and permanent protection on 2026-11-05.
