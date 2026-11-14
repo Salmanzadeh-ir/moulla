@@ -1,0 +1,55 @@
+name: V16 Android fresh independent install APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  fresh-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Confirm approved V16 source is unchanged
+        run: |
+          python3 scripts/verify_v16_preview.py
+          python3 scripts/verify_current_preview_lock.py
+      - name: Use a brand-new package identity ONLY in the build workspace
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          f = Path('app/build.gradle')
+          old = "applicationIdSuffix '.newiwanv16'"
+          new = "applicationIdSuffix '.freshinstallv16'"
+          contents = f.read_text(encoding='utf-8')
+          assert contents.count(old) == 1, 'Expected exactly one original V16 debug package suffix'
+          f.write_text(contents.replace(old, new), encoding='utf-8')
+          print('Fresh-install app ID: ir.nahj.towhidkarbordi.freshinstallv16')
+          PY
+      - name: Build standalone debug-signed installable APK
+        run: gradle --no-daemon :app:assembleDebug --stacktrace
+      - name: Verify Android manifest and install signature
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='ir.nahj.towhidkarbordi.freshinstallv16'"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          mkdir -p dist
+          cp "$APK" dist/PayeMenbareMola-V16-FRESH-INSTALL.apk
+          sha256sum dist/PayeMenbareMola-V16-FRESH-INSTALL.apk
+      - name: Upload standalone APK for user testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-V16-FRESH-INSTALL-APK
+          path: dist/PayeMenbareMola-V16-FRESH-INSTALL.apk
+          if-no-files-found: error
+          retention-days: 20
