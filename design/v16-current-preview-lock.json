@@ -1,7 +1,7 @@
 {
   "schema": "owner-approved-app-file-git-blobs-v1",
   "preview": "V16",
-  "approval": "2026-11-14 explicit owner instruction: update latest repo and lock all sections",
+  "approval": "2026-11-14 explicit owner approval: place wisdom copy and font-size icons on opposite sides of the wisdom number at the top; all other V16 app sections remain frozen",
   "officialTagPreserved": "v10.4.9",
   "lockedFileCount": 164,
   "restriction": "No app file edits, deletions or additions without a new explicit owner approval. Updating this manifest requires that approval.",
@@ -155,7 +155,7 @@
     "app/src/main/assets/images/v8/title_nahj.png": "11812a23cc45708f51f569561708bb336366cedb",
     "app/src/main/assets/images/v8/title_player.png": "f376b8c6b4c30f3874aeeaa3fa5f3dc21ce66d48",
     "app/src/main/assets/images/v8/title_towhid.png": "e35af36d9541d1eefc7364c3214a419b302c81b5",
-    "app/src/main/assets/index.html": "9b514be892abd635c27e3ec98ade08d8767a6f2a",
+    "app/src/main/assets/index.html": "0dac38c7d28af027c62d56e16e5305a6b867525f",
     "app/src/main/assets/kafi.json": "026fcb45f91dc6924a0b56816d4f7ca7eac21875",
     "app/src/main/assets/lessons.json": "cd1d82eedc363e5baee1a6fae468feba3bd94a4b",
     "app/src/main/assets/library.json": "4c1215170649c0e8aadbdbe08e297a9d5f86e2f7",
