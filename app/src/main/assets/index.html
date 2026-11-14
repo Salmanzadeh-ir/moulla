@@ -1277,7 +1277,7 @@ document.getElementById('wisdom-copy-action').addEventListener('click',copyWisdo
 document.getElementById('wisdom-textsize-action').addEventListener('click',adjustWisdomFontSize);
 window.addEventListener('resize',updateWisdomFontSize);
 updateWisdomFontSize();
-document.getElementById('back-top').addEventListener('click',()=>{if(window.PMM_V7)window.PMM_V7.goBack();else leaveWisdom()});
+// Visible Back buttons use the single delegated navigation handler below.
 
 document.getElementById('exit').addEventListener('click',()=>{if(window.PMMNative&&typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();else showToast('خروج از برنامه در نسخه اندروید فعال است.');});
 document.getElementById('about').addEventListener('click',()=>window.PMM_V7&&window.PMM_V7.openLegacy('about'));
@@ -1501,7 +1501,7 @@ function renderPlayer(){
  }
  html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
- document.getElementById('player-back').addEventListener('click',goBack);
+ document.getElementById('player-back').addEventListener('click',()=>goBack());
 }
 function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){const sec=section;setState('list',sec,'restore')}else if(screen==='list')setState('home');else toast('در صفحه اصلی هستید.');}
 
@@ -1622,7 +1622,7 @@ document.getElementById('guest-return').addEventListener('click',()=>{if(guestTi
 document.getElementById('guest-full-close').addEventListener('click',closeGuestFull);
 document.getElementById('home-about').addEventListener('click',()=>setState('about'));
 document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>setState('list',b.dataset.section)));
-document.getElementById('back-button').addEventListener('click',goBack);
+document.getElementById('back-button').addEventListener('click',()=>goBack());
 document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'&&document.activeElement?.tagName!=='INPUT'&&document.activeElement?.tagName!=='TEXTAREA'){e.preventDefault();goBack();}});
 render();
 
@@ -1671,6 +1671,7 @@ setState=function(mode,s=null,v=null){
 };
 const oldGoBack=goBack;
 goBack=function(){
+ window.PMM_LAST_BACK_NAV_AT=Date.now(); // Keep Exit disarmed after an inner-page Back.
  if(screen==='wisdom'){window.PMM_NEW_UI.leaveWisdom();screen='home';return;}
  if(screen==='gallery'){
    if(galleryIndex!==null){galleryRenderGrid();return;}
@@ -1679,7 +1680,7 @@ goBack=function(){
  if(screen==='home'){return;}
  oldGoBack();
 };
-document.getElementById('legacy-back-top').addEventListener('click',()=>goBack());
+// Delegated click routing also handles the legacy top Back button.
 const openLegacy=kind=>{
  if(kind==='about'){setState('about')}
  else{if(!['nahj','towhid','life','kafi','clips'].includes(kind)){window.PMM_NEW_UI.showToast('بخش نامعتبر است');return;}setState('list',kind)}
@@ -1973,11 +1974,8 @@ setState=function(mode,s=null,v=null){
 };
 // Use dynamic global handler for the top return; do not depend on stale handler
 // references attached before the integration code had loaded.
-const topLegacy=document.getElementById('legacy-back-top');
-topLegacy.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();goBack();},true);
-const topNew=document.getElementById('back-top');
-topNew.textContent='بازگشت';
-topNew.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();goBack();},true);
+document.getElementById('back-top').textContent='بازگشت';
+// Both top Back controls are now handled by the same delegated click handler.
 // Additional fallback for native Android Back action already dispatching goBack().
 window.addEventListener('pagehide',()=>{stopWheelTimer();stopAbout()});
 window.PMM_V8=Object.freeze({
@@ -2053,24 +2051,47 @@ function recoverReload(){
  try{localStorage.removeItem(STAMP)}catch(_){}
  displayReturn();
 }
-// Android WebView may deliver touch/pointer release after returning from Eitaa
-// without synthesizing a click. Route both cases through the same back action.
-// A short guard prevents touchend/pointerup and the later click from navigating twice.
-let lastBackTap=-1000;
+// V16 fix: Back and Exit share the same coordinates. Navigating on pointerup
+// or touchend unmasks Exit before WebView emits click, which can wrongly exit.
+// Only a completed click performs Back; no route mutation during touch release.
+let lastBackClick=-1000;
 function handleOnScreenBack(e){
  const target=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
  if(!target||target.hidden)return;
- if(e.type==='pointerup'&&e.pointerType==='mouse')return;
- if(e.type==='touchend'&&e.changedTouches&&e.changedTouches.length!==1)return;
  e.preventDefault();e.stopImmediatePropagation();
  const now=performance.now();
- if(now-lastBackTap<500)return;
- lastBackTap=now;
+ if(now-lastBackClick<350)return;
+ lastBackClick=now;
  goBack();
 }
-document.addEventListener('pointerup',handleOnScreenBack,true);
-document.addEventListener('touchend',handleOnScreenBack,{capture:true,passive:false});
 document.addEventListener('click',handleOnScreenBack,true);
+
+// Exit must be pressed intentionally from an already visible Home screen,
+// never as the re-targeted final click of the same Back gesture.
+let exitPressTarget=null;
+function exitFromEvent(e){
+ return e.target instanceof Element?e.target.closest('#exit,#home-exit'):null;
+}
+function exitVisibleOnHome(btn){
+ if(!btn||btn.hidden||screen!=='home')return false;
+ if(btn.id==='exit')return !scene.hidden&&stage.hidden&&scene.dataset.screen==='home';
+ return !stage.hidden&&scene.hidden;
+}
+function rememberExitPress(e){
+ const btn=exitFromEvent(e);
+ exitPressTarget=exitVisibleOnHome(btn)?btn:null;
+}
+document.addEventListener('pointerdown',rememberExitPress,true);
+document.addEventListener('touchstart',rememberExitPress,{capture:true,passive:true});
+document.addEventListener('click',e=>{
+ const btn=exitFromEvent(e);
+ if(!btn)return;
+ const valid=exitVisibleOnHome(btn)&&
+   (e.detail===0||exitPressTarget===btn)&&
+   Date.now()-(window.PMM_LAST_BACK_NAV_AT||0)>700;
+ exitPressTarget=null;
+ if(!valid){e.preventDefault();e.stopImmediatePropagation();}
+},true);
 window.addEventListener('focus',resumed);
 window.addEventListener('pageshow',resumed);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resumed()});

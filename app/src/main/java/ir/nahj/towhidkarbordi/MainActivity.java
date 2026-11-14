@@ -40,9 +40,12 @@ public final class MainActivity extends Activity {
         public void exitApp() {
             runOnUiThread(() -> {
                 if (isFinishing() || isDestroyed() || web == null || !"file:///android_asset/index.html".equals(web.getUrl())) return;
-                web.evaluateJavascript("typeof screen==='string'?screen:'unknown'", current -> {
-                    if ("\"home\"".equals(current) && !isFinishing()) finish();
-                });
+                web.evaluateJavascript(
+                    "(function(){var s=document.getElementById('scene');var t=document.getElementById('stage');"
+                    + "return typeof screen==='string'&&screen==='home'&&s&&!s.hidden&&"
+                    + "s.dataset.screen==='home'&&t&&t.hidden&&"
+                    + "Date.now()-(window.PMM_LAST_BACK_NAV_AT||0)>700})()",
+                    canExit -> { if ("true".equals(canExit) && !isFinishing()) finish(); });
             });
         }
 
@@ -264,10 +267,22 @@ public final class MainActivity extends Activity {
     @Override public void onBackPressed() {
         if (fullScreenVideo != null) { closeVideo(); return; }
         if (web == null) { super.onBackPressed(); return; }
-        web.evaluateJavascript("typeof screen==='string'?screen:'home'", screenName -> {
-            if ("\"home\"".equals(screenName)) finish();
-            else web.evaluateJavascript("typeof goBack==='function'&&goBack()", null);
-        });
+        // Read visible route as well as JS state; a Photo Quotes overlay must
+        // never be mistaken for Home and accidentally finish the Activity.
+        web.evaluateJavascript(
+            "(function(){try{var s=document.getElementById('scene');"
+            + "var t=document.getElementById('stage');"
+            + "var g=document.getElementById('gallery-scroll');"
+            + "var w=document.getElementById('wisdom-scroll');"
+            + "var atHome=typeof screen==='string'&&screen==='home'&&"
+            + "s&&!s.hidden&&s.dataset.screen==='home'&&t&&t.hidden&&"
+            + "g&&g.hidden&&w&&w.hidden;"
+            + "if(!atHome){if(typeof goBack==='function'){goBack();return 'handled';}"
+            + "return 'unknown';}return 'home';}catch(e){return 'unknown';}})()",
+            route -> {
+                // Never exit when page state is unknown or an inner screen is open.
+                if ("\"home\"".equals(route) && !isFinishing() && !isDestroyed()) finish();
+            });
     }
     @Override protected void onPause() { if (web!=null) web.onPause(); super.onPause(); }
     @Override protected void onResume() {
