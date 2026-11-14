@@ -1,0 +1,45 @@
+name: Publish V16 TEST APK for public browser download
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-v16-test-download.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish-navigation-test-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download exact verified test APK (do not rebuild app)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/v16-test"
+          gh run download 43629195067 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "PayeMenbareMola-V16-FRESH-INSTALL-APK" \
+            --dir "$RUNNER_TEMP/v16-test"
+      - name: Verify exact SHA-256 before making test APK public
+        run: |
+          APK="$RUNNER_TEMP/v16-test/PayeMenbareMola-V16-FRESH-INSTALL.apk"
+          test -s "$APK"
+          printf '6767e2f40d66449ee6688bc58dfc88c8085bd62c86818672d80b752aa711be09  %s\n' "$APK" | sha256sum --check --status
+          file "$APK"
+          cp "$APK" "$RUNNER_TEMP/PayeMenbareMola-V16-Back-Root-Fix-TEST.apk"
+      - name: Publish clearly labeled PRE-RELEASE asset (never official main release)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v16-navigation-backfix-TEST-20261114"
+          APK="$RUNNER_TEMP/PayeMenbareMola-V16-Back-Root-Fix-TEST.apk"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$APK" --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" "$APK" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target cbb58c0932ec94531e517652a08f29caffee5d8c \
+              --title "V16 TEST - Back navigation fix - NOT official release" \
+              --notes "نسخه آزمایشی نصب مستقل V16 برای آزمون رفع خروج ناخواسته از عکس نوشته و یک جمله مهمان مولا. این فایل با امضای DEBUG است و انتشار رسمی نیست. هیچ فایل برنامه برای این دانلود تغییر نکرده است. SHA256: 6767e2f40d66449ee6688bc58dfc88c8085bd62c86818672d80b752aa711be09" \
+              --prerelease
+          fi
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url,assets
