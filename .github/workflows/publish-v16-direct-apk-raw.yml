@@ -1,0 +1,49 @@
+name: Publish V16 independent test APK on direct-download branch
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-v16-direct-apk-raw.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch completed standalone test APK (no rebuilding or source changes)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/install"
+          gh run download 43629729134 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "PayeMenbareMola-V16-FRESH-INSTALL-APK" \
+            --dir "$RUNNER_TEMP/install"
+      - name: Verify APK binary and frozen-source build
+        run: |
+          APK="$RUNNER_TEMP/install/PayeMenbareMola-V16-FRESH-INSTALL.apk"
+          test -s "$APK"
+          printf '35e83c49e42e5afb2ea959bb9f7b79ffe413936083e2f20ccd8794a9f1753652  %s\n' "$APK" | sha256sum --check
+          unzip -tq "$APK" > /dev/null
+          echo 'Verified APK; distribution only, no code changes.'
+      - name: Publish APK to standalone raw-download branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --orphan v16-direct-download
+          mkdir -p downloads
+          cp "$RUNNER_TEMP/install/PayeMenbareMola-V16-FRESH-INSTALL.apk" \
+             downloads/PayeMenbareMola-V16-Independent-Android-TEST.apk
+          printf '%s\n' \
+             'Paye Menbare Mola V16 - Independent Android TEST APK (DEBUG SIGNED, NOT AN OFFICIAL RELEASE)' \
+             'Source code: cbb58c0932ec94531e517652a08f29caffee5d8c' \
+             'Build run: 43629729134' \
+             'SHA256: 35e83c49e42e5afb2ea959bb9f7b79ffe413936083e2f20ccd8794a9f1753652' \
+             > downloads/README.txt
+          git add downloads/
+          git commit -m "distribute: independent V16 Android TEST APK for direct browser download"
+          git push origin HEAD:refs/heads/v16-direct-download
