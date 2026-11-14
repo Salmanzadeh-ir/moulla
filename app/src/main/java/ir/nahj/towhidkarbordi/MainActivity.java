@@ -58,6 +58,23 @@ public final class MainActivity extends Activity {
                 launchEitaa(target);
             });
         }
+
+        /** Copies a vetted Nahj al-Balagha wisdom only; exposed JS must be restricted. */
+        @JavascriptInterface
+        public void copyText(final String value) {
+            if (value == null || value.length() < 1 || value.length() > 20000
+                    || !value.startsWith("نهج‌البلاغه — ")
+                    || !value.endsWith("https://eitaa.com/joinchat/2066481246Cb13f0be69d")) return;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || web == null
+                        || !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                android.content.ClipboardManager manager = (android.content.ClipboardManager)
+                        getSystemService(CLIPBOARD_SERVICE);
+                if (manager != null) manager.setPrimaryClip(
+                        android.content.ClipData.newPlainText("حکمت نهج‌البلاغه", value));
+            });
+        }
+
     }
 
     private static Uri verifiedEitaaUri(String raw) {

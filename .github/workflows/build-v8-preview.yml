@@ -1,4 +1,4 @@
-name: Paye Menbare Mola — New Iwan V9 Android Preview APK
+name: Paye Menbare Mola — V16 Android Preview APK
 on:
   workflow_dispatch:
   push:
@@ -19,17 +19,20 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-      - name: Assemble test APK
+      - name: Verify locked source before assembling
+        run: |
+          python3 scripts/verify_v16_preview.py
+          python3 scripts/verify_current_preview_lock.py
+      - name: Assemble TEST APK (not an official release)
         run: gradle --no-daemon :app:assembleDebug --stacktrace
-      - name: Confirm package and verify APK signature
+      - name: Verify package and signature
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep '^package:'
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "ir.nahj.towhidkarbordi.newiwanv16"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "ir.nahj.towhidkarbordi.newiwanv9"
       - uses: actions/upload-artifact@v4
         with:
-          name: PayeMenbareMola-New-Iwan-V9-Preview-APK
+          name: PayeMenbareMola-V16-TEST-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 20
