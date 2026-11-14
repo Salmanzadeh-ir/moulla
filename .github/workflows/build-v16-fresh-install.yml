@@ -27,13 +27,15 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import os
           f = Path('app/build.gradle')
           old = "applicationIdSuffix '.newiwanv16'"
-          new = "applicationIdSuffix '.freshinstallv16'"
+          suffix = '.freshinstallv16r' + os.environ['GITHUB_RUN_ID']
+          new = f"applicationIdSuffix '{suffix}'"
           contents = f.read_text(encoding='utf-8')
           assert contents.count(old) == 1, 'Expected exactly one original V16 debug package suffix'
           f.write_text(contents.replace(old, new), encoding='utf-8')
-          print('Fresh-install app ID: ir.nahj.towhidkarbordi.freshinstallv16')
+          print('Fresh-install app ID: ir.nahj.towhidkarbordi' + suffix)
           PY
       - name: Build standalone debug-signed installable APK
         run: gradle --no-daemon :app:assembleDebug --stacktrace
@@ -41,7 +43,7 @@ jobs:
         run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='ir.nahj.towhidkarbordi.freshinstallv16'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='ir.nahj.towhidkarbordi.freshinstallv16r$GITHUB_RUN_ID'"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           mkdir -p dist
           cp "$APK" dist/PayeMenbareMola-V16-FRESH-INSTALL.apk
