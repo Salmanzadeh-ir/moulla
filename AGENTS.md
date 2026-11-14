@@ -1,8 +1,16 @@
-# Current working source: owner-requested New Iwan V9 PREVIEW (2026-11-12)
+# Active development baseline: owner-authorized V16 (2026-11-14)
 
-The owner explicitly asked to replace the repository's **active source** with the separately tested V9 seven-option New Iwan prototype. This authorization is for source/development only; do NOT publish or sign an official release without fresh owner approval.
+The owner explicitly authorized updating the active source in this repository with the latest combined preview (V15 photo gallery plus V16 wisdom typography/tools). **No official release is authorized.** The historical signed V10.4.9 and tag `v10.4.9` stay unchanged.
 
-The previously approved V10.4.9 must remain preserved byte-for-byte in historical tag `v10.4.9`, old releases, and `design/v10.4.9-lock.json`. The older freeze rules below describe the **historical V10.4.9 reference**, not the now-authorized V9 preview changes on `main`. Run V9 checks using `python3 scripts/verify_v9_preview.py` and historical verification on `v10.4.9`. For details see `docs/V9_NEW_IWAN_FA.md`.
+## Owner-controlled freeze for ALL active app sections
+
+Every active app screen and feature is frozen after this merge, including seven-button gold/blue home, audio/course menus, videos, About, navigation, 93-photo random 3D gallery without Share, 489 offline wisdoms, original Amiri Arabic, Sahel SemiBold Persian translation, intention/draw animation, copy-text tool with exact Eitaa invitation and link, and four-level Arabic/Persian text enlargement. **Do not change any part unless the owner explicitly requests that precise change.** Do not silently change artwork, copy, font, data, order, dimension, text, behavior, identifiers, signing or dependencies. Never create/publish an official release without separate explicit authorization.
+
+Active checks: `python3 scripts/verify_v16_preview.py` and `python3 scripts/verify_current_preview_lock.py`; hashes: `design/v16-current-preview-lock.json`. Historical check: `v10.4.9` tag via `scripts/verify_layout_lock.py`. A future OWNER-APPROVED change must be implemented in a separate branch, have a preview/test, update the current lock with owner authorization and be reviewed before merge. Use CODEOWNERS and branch protection in GitHub settings to enforce owner review. SHA locks alone are tamper-detection, not administrator-proof.
+
+---
+
+# Historical approvals and owner restrictions
 
 ---
 

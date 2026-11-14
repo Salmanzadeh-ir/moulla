@@ -1,11 +1,2 @@
-# All approved V10.4.6 source, design, release assets and lock controls require express owner permission.
-# Enforce CODEOWNER review in GitHub Settings -> Rulesets for main.
-/app/ @Salmanzadeh-ir
-/design/ @Salmanzadeh-ir
-/AGENTS.md @Salmanzadeh-ir
-/releases/ @Salmanzadeh-ir
-/scripts/verify_layout_lock.py @Salmanzadeh-ir
-/.github/CODEOWNERS @Salmanzadeh-ir
-/.github/workflows/verify-layout-lock.yml @Salmanzadeh-ir
-/.github/workflows/archive-approved-v10-4-3.yml @Salmanzadeh-ir
-/.github/workflows/archive-approved-v10-4-6.yml @Salmanzadeh-ir
+# Only the repository owner may authorize changes to any frozen UI section.
+* @Salmanzadeh-ir

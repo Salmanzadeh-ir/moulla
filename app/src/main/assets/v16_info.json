@@ -1,0 +1,29 @@
+{
+  "preview": "V16",
+  "officialApprovedTag": "v10.4.9",
+  "officialReleaseAuthorized": false,
+  "debugPackageId": "ir.nahj.towhidkarbordi.newiwanv16",
+  "wisdom": {
+    "count": 489,
+    "hikmat": 480,
+    "gharaib": 9,
+    "shuffleWithoutRepeats": true,
+    "persianFont": "Sahel SemiBold",
+    "arabicFont": "Amiri",
+    "copyIncludes": "number, Arabic, Persian, invitation, exact Eitaa URL",
+    "textSizeLevels": [
+      1,
+      1.19,
+      1.38,
+      1.57
+    ]
+  },
+  "photoQuotes": {
+    "count": 93,
+    "offline": true,
+    "randomInitial": true,
+    "randomNeighbors": true,
+    "sendButton": false
+  },
+  "freezeRequiresExplicitOwnerApproval": true
+}
