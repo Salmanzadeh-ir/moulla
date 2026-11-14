@@ -858,6 +858,28 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 {touch-action:pan-y!important;-webkit-user-select:none;user-select:none}
 #scene .pmm-wheel-canvas,#stage .pmm-wheel-canvas{overscroll-behavior-x:contain}
 #back-top,#legacy-back-top{z-index:55!important;pointer-events:auto!important;visibility:visible}
+
+/* WISDOM OFFLINE DRAW: visual spinning happens only inside the existing fixed iwan aperture. */
+.wisdom-intro{margin:1.5% 2% 0;padding:3.7% 3.5% 4.2%;border:3px solid #c28b29;border-radius:26px;background:linear-gradient(150deg,#fff6d8,#ffdf8c 70%,#f3c26b);box-shadow:inset 0 0 0 3px #fff6d6,0 8px 18px #7c4b2a40;text-align:center}
+.intention-emblem{font-size:clamp(22px,4.8cqw,37px);color:#b7821d;line-height:1.5}
+.intention-message{font:900 clamp(17px,3.6cqw,30px)/1.78 Tahoma,'Noto Naskh Arabic',sans-serif;color:#063468;white-space:normal;margin:1% 0 4%;text-align:center;text-wrap:balance}
+.wisdom-start-button{width:100%;padding:3.8% 2%;line-height:1.9;min-height:56px}
+.intention-hint{color:#835d2f;font-size:clamp(11px,1.95cqw,19px);line-height:1.7;margin:2% 0 0}
+.wisdom-drawing{margin:4% 1.2% 0;padding:6% 2% 8%;border:3px solid #bc893b;border-radius:24px;background:linear-gradient(#fff7dc,#efc881);box-shadow:inset 0 0 0 3px #fff4d3;text-align:center}
+.drawing-caption{font-size:clamp(16px,3.4cqw,29px);color:#093b6b;font-weight:900;margin:0 0 4%;line-height:1.7}
+.draw-window{position:relative;height:clamp(185px,47cqw,350px);overflow:hidden;background:linear-gradient(180deg,#e8c274,#fff3ce 18%,#fff4d2 50%,#fff0bd 82%,#deba6e);border:2px solid #b98b43;border-radius:17px;box-shadow:inset 0 0 22px #805d2147}
+.draw-window::before,.draw-window::after{content:'';position:absolute;left:0;right:0;height:22%;z-index:2;pointer-events:none}
+.draw-window::before{top:0;background:linear-gradient(#ebca8c,transparent)}
+.draw-window::after{bottom:0;background:linear-gradient(transparent,#e6c079)}
+.draw-reel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-around;gap:3%;padding:4% 2%}
+.draw-item{direction:rtl;color:#0b3c6b;font-size:clamp(13px,2.7cqw,23px);font-weight:800;line-height:1.8;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;padding:2% 3%;max-height:32%}
+.draw-item.fade{opacity:.32;filter:blur(.35px)}
+.draw-item.active{border:2px solid #bc8728;background:#fff6d8;border-radius:14px;box-shadow:0 3px 12px #83551c47}
+.draw-reel.draw-sweep{animation:pmmWisdomSweep .2s ease-in-out both}
+@keyframes pmmWisdomSweep{from{transform:translateY(23%);opacity:.35}to{transform:translateY(-8%);opacity:1}}
+.drawing-hint{font-size:clamp(12px,2.1cqw,19px);color:#76501e;margin:5% 0 0}
+#wisdom-result{padding-bottom:2%}
+@media(prefers-reduced-motion:reduce){.draw-reel.draw-sweep{animation:none}}
 </style>
 </head>
 <body>
@@ -877,27 +899,42 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
       </div>
     </div>
   </section>
-  <section class="wisdom-scroll" id="wisdom-scroll" aria-labelledby="wisdom-title" hidden tabindex="0">
+  <section class="wisdom-scroll" id="wisdom-scroll" aria-label="یک جمله مهمان مولا" hidden tabindex="0">
     <div class="wisdom-body">
-      <h1 class="wisdom-title" id="wisdom-title">یک جمله مهمان مولا</h1>
-      <div class="wisdom-flourish" aria-hidden="true"><span>❖</span></div>
-      <div class="mode-alert" id="demo-warning">پیش‌نمایش آزمایشی: ترجمه‌های نمونه صرفاً برای آزمایش طراحی هستند. متن‌های سایت معرفی‌شده متعلق به استاد حسین انصاریان است؛ بانک کامل و دارای مجوز هنوز وارد نشده است.</div>
+      <div class="mode-alert" id="demo-warning" hidden>پیش‌نمایش آزمایشی: ترجمه‌های نمونه صرفاً برای آزمایش طراحی هستند. متن‌های سایت معرفی‌شده متعلق به استاد حسین انصاریان است؛ بانک کامل و دارای مجوز هنوز وارد نشده است.</div>
+      <section id="wisdom-intro" class="wisdom-intro" aria-label="نیت و آغاز قرعه حکمت">
+        <div class="intention-emblem" aria-hidden="true">✦</div>
+        <p class="intention-message">نیت کن و یک یک جمله مهمان کلام امیرالمومنین علیه السلام باش.</p>
+        <button type="button" id="wisdom-draw-action" class="gold-button wisdom-start-button">نیت کردم؛ کلامی برایم انتخاب کن</button>
+        <p class="intention-hint">۴۸۰ حکمت و ۹ کلام از غرائب‌الحدیث • متن و ترجمه، آفلاین</p>
+      </section>
+      <section id="wisdom-drawing" class="wisdom-drawing" hidden aria-label="در حال انتخاب تصادفی">
+        <p class="drawing-caption">✦ کلام‌ها در گذرند… ✦</p>
+        <div class="draw-window"><div id="wisdom-draw-reel" class="draw-reel" aria-hidden="true">
+          <div id="wisdom-draw-prev" class="draw-item fade"></div>
+          <div id="wisdom-draw-active" class="draw-item active"></div>
+          <div id="wisdom-draw-next" class="draw-item fade"></div>
+        </div></div>
+        <p class="drawing-hint">لحظه‌ای نیت خود را در دل نگه دار…</p>
+      </section>
+      <section id="wisdom-result" hidden aria-live="polite">
       <div class="numberplate" id="wisdom-number" aria-live="polite">حکمت شماره —</div>
       <section class="wisdom-panel arabic" aria-label="متن عربی حکمت">
         <p class="panel-label">✦ متن عربی حکمت ✦</p>
         <p class="panel-text" id="wisdom-arabic" lang="ar">—</p>
       </section>
       <section class="wisdom-panel translation" aria-label="ترجمه فارسی حکمت">
-        <p class="panel-label" id="translation-label">✦ ترجمه آزمایشی فارسی ✦</p>
+        <p class="panel-label" id="translation-label">✦ ترجمه فارسی ✦</p>
         <p class="panel-text" id="wisdom-persian" lang="fa">—</p>
       </section>
       <div class="source-note" id="source-note"></div>
       <div class="control-stack">
         <button type="button" id="audio-action" class="navy-button"><span aria-hidden="true">🎧</span> شرح این حکمت را بشنوید</button>
-        <button type="button" id="other-action" class="gold-button"><span aria-hidden="true">✦</span> حکمت دیگری ببینم</button>
+        <button type="button" id="other-action" class="gold-button"><span aria-hidden="true">✦</span> کلام دیگری ببینم</button>
       </div>
       <div id="audio-box" class="audio-box" hidden><audio id="audio-player" controls preload="none"></audio></div>
-      <p class="wisdom-footer-hint">تمام متن در همین قاب اسکرول می‌شود؛ ایوان و دکمه بازگشت ثابت می‌مانند.</p>
+      <p class="wisdom-footer-hint">متن عربی و ترجمه به‌صورت آفلاین در همین قاب اسکرول می‌شوند؛ ایوان ثابت می‌ماند.</p>
+      </section>
     </div>
   </section>
   <div class="scroll-rail" aria-hidden="true"><div class="scroll-thumb" id="scroll-thumb"></div></div>
@@ -925,8 +962,8 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   <button type="button" id="back-top" class="back-action" aria-label="بازگشت به صفحه جدید" hidden>بازگشت</button>
   <output class="toast" id="new-toast" role="status" aria-live="polite" hidden></output>
 </main>
-<!-- This prototype reads a local data file; the bank remains empty until separately vetted and licensed 480 records are supplied. -->
-<script>window.PMM_HIKMAT_480 = [];</script>
+<!-- Fully offline data file, packed inside the APK. No web request is necessary. -->
+<script src="hikam_bank.js"></script>
 <script>
 (()=>{
 'use strict';
@@ -935,38 +972,28 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  The reference bitmap is not altered. NO GitHub, release or Android integration.
  The complete wisdom bank will later replace window.PMM_HIKMAT_480 (480 vetted entries).
 */
-const EXPECTED_TRANSLATOR = null; // Translator is stored and validated per record; do not reattribute.
-// Public-domain Arabic extracts + ORIGINAL provisional Persian renderings strictly for UI testing.
-// Never present these Persian drafts as Makarem's translation or publish them as official content.
-const SAMPLE_WISDOM = Object.freeze([
-  {number:1,arabic:'كُنْ فِي الْفِتْنَةِ كَابْنِ اللَّبُونِ، لَا ظَهْرٌ فَيُرْكَبَ وَلَا ضَرْعٌ فَيُحْلَبَ.',persian:'در هنگام فتنه مانند شتر جوان باش؛ نه پشتی برای سواری دادن دارد و نه پستانی برای دوشیدن.',audio:null},
-  {number:11,arabic:'إِذَا قَدَرْتَ عَلَى عَدُوِّكَ فَاجْعَلِ الْعَفْوَ عَنْهُ شُكْراً لِلْقُدْرَةِ عَلَيْهِ.',persian:'هنگامی که بر دشمن خود توانایی یافتی، گذشت از او را سپاسِ این توانایی قرار بده.',audio:null},
-  {number:14,arabic:'مَنْ ضَيَّعَهُ الْأَقْرَبُ أُتِيحَ لَهُ الْأَبْعَدُ.',persian:'کسی که نزدیکان او را واگذار کنند، ممکن است افراد دورتر به یاری او برسند.',audio:null},
-  {number:23,arabic:'مَنْ أَبْطَأَ بِهِ عَمَلُهُ لَمْ يُسْرِعْ بِهِ نَسَبُهُ.',persian:'کسی که کردارش او را عقب نگه دارد، نسب و تبارش او را پیش نخواهد برد.',audio:null},
-  {number:44,arabic:'طُوبَى لِمَنْ ذَكَرَ الْمَعَادَ وَعَمِلَ لِلْحِسَابِ وَقَنِعَ بِالْكَفَافِ وَرَضِيَ عَنِ اللهِ.',persian:'خوشا به حال کسی که بازگشت را یاد کند، برای حسابرسی عمل کند، به اندازه کفایت بسنده کند و از خدا خشنود باشد.',audio:null}
-]);
+const sourceBank=Array.isArray(window.PMM_HIKMAT_ALL)?window.PMM_HIKMAT_ALL:[];
 function validateCompleteBank(bank){
-  const errors=[];
-  if(!Array.isArray(bank))return{valid:false,errors:['بانک داده باید آرایه باشد.']};
-  if(bank.length!==480)errors.push(`تعداد رکوردها ${bank.length} است؛ باید دقیقاً ۴۸۰ باشد.`);
-  const seen=new Set();
-  for(const item of bank){
-    if(!item || !Number.isInteger(item.number) || item.number<1 || item.number>480){errors.push('شماره حکمت نامعتبر است.');continue}
-    if(seen.has(item.number))errors.push(`حکمت تکراری: ${item.number}`);
-    seen.add(item.number);
-    if(typeof item.arabic!=='string'||!item.arabic.trim())errors.push(`متن عربی حکمت ${item.number} خالی است.`);
-    if(typeof item.persian!=='string'||!item.persian.trim())errors.push(`ترجمه حکمت ${item.number} خالی است.`);
-    if(typeof item.translator!=='string'||!item.translator.trim())errors.push(`مترجم حکمت ${item.number} نامشخص است.`);
-    if(item.translator==='آزمایشی')errors.push(`ترجمه آزمایشی در بانک رسمی مجاز نیست: ${item.number}`);
-    if(typeof item.sourceUrl!=='string'||!item.sourceUrl.startsWith('https://'))errors.push(`پیوند منبع حکمت ${item.number} نامعتبر است.`);
+  const errors=[],h=new Set(),g=new Set(),ids=new Set();
+  if(!Array.isArray(bank))return{valid:false,errors:['بانک داده در قالب آرایه نیست.']};
+  if(bank.length!==489)errors.push('تعداد موارد باید ۴۸۹ باشد: ۴۸۰ حکمت و ۹ غرائب.');
+  for(const w of bank){
+    if(!w || typeof w.id!=='string' || ids.has(w.id)){errors.push('شناسه خالی یا تکراری');continue}
+    ids.add(w.id);
+    if(w.kind==='hikmat'&&Number.isInteger(w.number)&&w.number>=1&&w.number<=480)h.add(w.number);
+    else if(w.kind==='gharaib'&&Number.isInteger(w.number)&&w.number>=1&&w.number<=9)g.add(w.number);
+    else errors.push('نوع یا شماره نامعتبر: '+w.id);
+    if(typeof w.arabic!=='string'||!w.arabic.trim()||typeof w.persian!=='string'||!w.persian.trim())errors.push('عربی یا فارسی خالی: '+w.id);
   }
-  for(let n=1;n<=480;n++)if(!seen.has(n))errors.push(`حکمت ${n} موجود نیست.`);
+  for(let i=1;i<=480;i++)if(!h.has(i))errors.push('حکمت جاافتاده: '+i);
+  for(let i=1;i<=9;i++)if(!g.has(i))errors.push('غرائب جاافتاده: '+i);
   return{valid:errors.length===0,errors};
 }
-const inputBank=Array.isArray(window.PMM_HIKMAT_480)?window.PMM_HIKMAT_480:[];
-const bankReport=validateCompleteBank(inputBank);
-const demoMode=!bankReport.valid;
-const wisdoms=demoMode?SAMPLE_WISDOM:inputBank;
+const bankReport=validateCompleteBank(sourceBank);
+const demoMode=false;
+const wisdoms=bankReport.valid?sourceBank:[];
+const wisdomLookup=new Map(wisdoms.map(w=>[w.id,w]));
+const STORAGE_KEY='pmm_hikmat_489_drawbag_v1';
 const scene=document.getElementById('scene');
 const mainScroll=document.getElementById('main-scroll');
 const wisdomScroll=document.getElementById('wisdom-scroll');
@@ -974,7 +1001,11 @@ const thumb=document.getElementById('scroll-thumb');
 const toast=document.getElementById('new-toast');
 const audioPlayer=document.getElementById('audio-player');
 const audioBox=document.getElementById('audio-box');
-let lastNumber=null,bag=[],current=null,noticeTimer=null,originalFocus=null;
+let lastId=null,bag=[],current=null,noticeTimer=null,originalFocus=null;
+let drawTimer=null,drawRun=0,isDrawing=false;
+const wisdomIntro=document.getElementById('wisdom-intro');
+const wisdomDrawing=document.getElementById('wisdom-drawing');
+const wisdomResult=document.getElementById('wisdom-result');
 function randInt(max){
   if(max<=1)return 0;
   if(typeof crypto!=='undefined'&&typeof crypto.getRandomValues==='function'){
@@ -984,16 +1015,71 @@ function randInt(max){
   }
   return Math.floor(Math.random()*max);
 }
+function saveBag(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({bag,lastId}))}catch(_){}
+}
+function recoverBag(){
+  try{
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if(!data||!Array.isArray(data.bag)||data.bag.length>wisdoms.length)return;
+    if(new Set(data.bag).size!==data.bag.length || data.bag.some(id=>!wisdomLookup.has(id)))return;
+    bag=data.bag;lastId=wisdomLookup.has(data.lastId)?data.lastId:null;
+  }catch(_){}
+}
 function refillBag(){
-  bag=wisdoms.map(w=>w.number);
+  bag=wisdoms.map(w=>w.id);
   for(let i=bag.length-1;i>0;i--){const j=randInt(i+1);[bag[i],bag[j]]=[bag[j],bag[i]]}
-  // We pop from the end; never repeat the last displayed item across a bag boundary.
-  if(bag.length>1&&bag[bag.length-1]===lastNumber){[bag[bag.length-1],bag[0]]=[bag[0],bag[bag.length-1]]}
+  if(bag.length>1&&bag[bag.length-1]===lastId){[bag[bag.length-1],bag[0]]=[bag[0],bag[bag.length-1]]}
+  saveBag();
 }
 function pickWisdom(){
   if(!bag.length)refillBag();
-  const num=bag.pop();lastNumber=num;
-  return wisdoms.find(item=>item.number===num);
+  const id=bag.pop();lastId=id;saveBag();
+  return wisdomLookup.get(id);
+}
+recoverBag();
+function wisdomLabel(w){return w.kind==='gharaib'?`غرائب الحدیث ${w.number}`:`حکمت شماره ${w.number}`}
+function stopDraw(){drawRun++;clearTimeout(drawTimer);drawTimer=null;isDrawing=false;}
+function renderDrawFrame(w){
+  const active=document.getElementById('wisdom-draw-active');
+  const before=document.getElementById('wisdom-draw-prev');
+  const after=document.getElementById('wisdom-draw-next');
+  before.textContent=active.textContent||'✦';
+  active.textContent=wisdomLabel(w)+' — '+w.persian.replace(/\s+/g,' ').slice(0,64)+(w.persian.length>64?'…':'');
+  after.textContent='✦ '+w.arabic.replace(/\s+/g,' ').slice(0,50)+'…';
+  const reel=document.getElementById('wisdom-draw-reel');
+  reel.classList.remove('draw-sweep');void reel.offsetWidth;reel.classList.add('draw-sweep');
+}
+function showInvitation(){
+  stopDraw();stopSound();current=null;
+  wisdomIntro.hidden=false;wisdomDrawing.hidden=true;wisdomResult.hidden=true;
+  wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
+}
+function startWisdomDraw(){
+  if(isDrawing)return;
+  if(!bankReport.valid||wisdoms.length!==489){showToast('خطا در بانک آفلاین حکمت‌ها؛ انتخاب متوقف شد.');return}
+  stopDraw();const token=++drawRun;isDrawing=true;
+  const finalWisdom=pickWisdom();
+  wisdomIntro.hidden=true;wisdomResult.hidden=true;wisdomDrawing.hidden=false;
+  wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
+  // The draw target is chosen ONCE with shuffled, no-repeat offline selection;
+  // rapid snippets are visual animation only and do not consume future draws.
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const delays=reduced?[140,170,230]:[58,61,65,70,74,82,95,110,130,150,175,205,245,295,365];
+  let step=0,lastPreview=null;
+  const tick=()=>{
+    if(token!==drawRun||scene.dataset.screen!=='wisdom')return;
+    if(step>=delays.length){
+      isDrawing=false;drawTimer=null;wisdomDrawing.hidden=true;
+      showSelectedWisdom(finalWisdom);
+      return;
+    }
+    let preview=wisdoms[randInt(wisdoms.length)];
+    if(preview.id===lastPreview&&wisdoms.length>1)preview=wisdoms[(wisdoms.indexOf(preview)+1)%wisdoms.length];
+    lastPreview=preview.id;renderDrawFrame(preview);
+    drawTimer=setTimeout(tick,delays[step++]);
+  };
+  tick();
 }
 function showToast(message){
   toast.textContent=message;toast.hidden=false;
@@ -1009,27 +1095,32 @@ function updateScrollbar(){
   thumb.style.top=`${5+fraction*(90-thumbHeight)}%`;
 }
 function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true}
-function showRandomWisdom(){
-  stopSound();current=pickWisdom();
-  document.getElementById('wisdom-number').textContent=`حکمت شماره ${current.number}`;
+function showSelectedWisdom(w){
+  if(!w)return;
+  stopSound();current=w;
+  wisdomIntro.hidden=true;wisdomDrawing.hidden=true;wisdomResult.hidden=false;
+  document.getElementById('wisdom-number').textContent=wisdomLabel(current);
   document.getElementById('wisdom-arabic').textContent=current.arabic;
   document.getElementById('wisdom-persian').textContent=current.persian;
-  document.getElementById('translation-label').textContent=demoMode?'✦ ترجمه آزمایشی — فقط برای مشاهده چیدمان ✦':`✦ ترجمه: ${current.translator} ✦`;
-  document.getElementById('demo-warning').hidden=!demoMode;
-  document.getElementById('source-note').textContent=demoMode?'این متن برای بررسی ظاهر و عملکرد تصادفی است؛ محتوای نهایی هنوز تأیید نشده است.':`منبع حکمت ${current.number}: ${current.sourceUrl}`;
+  document.getElementById('translation-label').textContent='✦ ترجمه فارسی ✦';
+  document.getElementById('demo-warning').hidden=true;
+  document.getElementById('source-note').textContent='بر پایه فایل‌های متن و ترجمه ارائه‌شده؛ توضیحات سید رضی از نمایش حذف شده‌اند.';
   wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
-  window.dispatchEvent(new CustomEvent('pmm:wisdom-selected',{detail:{number:current.number,demo:demoMode}}));
+  window.dispatchEvent(new CustomEvent('pmm:wisdom-selected',{detail:{id:current.id,number:current.number,kind:current.kind,demo:false}}));
 }
+function showRandomWisdom(){startWisdomDraw()}
 function enterWisdom(){
   originalFocus=document.activeElement;
   mainScroll.hidden=true;wisdomScroll.hidden=false;
   document.getElementById('exit').hidden=true;document.getElementById('about').hidden=true;
   document.getElementById('back-top').hidden=false;document.getElementById('wisdom-floor-cover').hidden=false;
-  scene.dataset.screen='wisdom';window.PMM_V7&&window.PMM_V7.markWisdom();toast.hidden=true;showRandomWisdom();
+  scene.dataset.screen='wisdom';window.PMM_V7&&window.PMM_V7.markWisdom();toast.hidden=true;
+  showInvitation();
+  if(!bankReport.valid)showToast('بانک آفلاین کامل نیست: '+bankReport.errors[0]);
   document.getElementById('back-top').focus({preventScroll:true});
 }
 function leaveWisdom(){
-  stopSound();wisdomScroll.hidden=true;mainScroll.hidden=false;
+  stopDraw();stopSound();wisdomScroll.hidden=true;mainScroll.hidden=false;
   document.getElementById('exit').hidden=false;document.getElementById('about').hidden=false;
   document.getElementById('back-top').hidden=true;document.getElementById('wisdom-floor-cover').hidden=true;
   scene.dataset.screen='home';window.PMM_V7&&window.PMM_V7.markHome();toast.hidden=true;requestAnimationFrame(updateScrollbar);
@@ -1060,7 +1151,8 @@ document.querySelectorAll('[data-menu]').forEach(button=>button.addEventListener
   if(button.dataset.menu==='guest_sentence_new'){enterWisdom();return}
   if(window.PMM_V7)window.PMM_V7.openMenu(button.dataset.menu);else showToast('خطا در راه‌اندازی بخش‌ها.');
 }));
-document.getElementById('other-action').addEventListener('click',showRandomWisdom);
+document.getElementById('other-action').addEventListener('click',startWisdomDraw);
+document.getElementById('wisdom-draw-action').addEventListener('click',startWisdomDraw);
 document.getElementById('audio-action').addEventListener('click',playExplanation);
 document.getElementById('back-top').addEventListener('click',()=>{if(window.PMM_V7)window.PMM_V7.goBack();else leaveWisdom()});
 
@@ -1073,9 +1165,10 @@ window.addEventListener('load',updateScrollbar);
 
 // Read-only test hooks for controlled preview/testing; do not integrate until owner authorizes.
 Object.defineProperty(window,'PMM_WISDOM_PROTOTYPE',{value:Object.freeze({
-  open:enterWisdom,back:leaveWisdom,chooseAnother:showRandomWisdom,
-  validateCompleteBank,bankStatus:bankReport,hasFullBank:!demoMode,
-  getCurrent:()=>current?{number:current.number,demo:demoMode}:null
+  open:enterWisdom,back:leaveWisdom,chooseAnother:startWisdomDraw,start:startWisdomDraw,
+  validateCompleteBank,bankStatus:bankReport,hasFullBank:bankReport.valid,
+  getCurrent:()=>current?{id:current.id,number:current.number,kind:current.kind,demo:false}:null,
+  getDrawState:()=>({running:isDrawing,remaining:bag.length})
 }),writable:false});
 
 window.PMM_NEW_UI=Object.freeze({

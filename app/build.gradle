@@ -13,8 +13,8 @@ android {
         applicationId 'ir.nahj.towhidkarbordi'
         minSdk 23
         targetSdk 34
-        versionCode 15
-        versionName '10.5.0-v9-preview'
+        versionCode 16
+        versionName '10.5.1-hikam-preview'
     }
 
     signingConfigs {
@@ -33,7 +33,7 @@ android {
     buildTypes {
         debug {
             // Install next to the live signed app for safe testing.
-            applicationIdSuffix '.newiwanv9'
+            applicationIdSuffix '.newiwann1'
             versionNameSuffix '-debug'
         }
         release {

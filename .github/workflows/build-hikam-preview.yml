@@ -1,0 +1,39 @@
+name: Offline Hikam 489 — Independent Android Preview
+on:
+  push:
+    branches:
+      - feature/offline-hikam-489-intention-draw
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source (historical official release is never touched)
+        uses: actions/checkout@v4
+      - name: Validate full offline bank and random UI source
+        run: python3 scripts/verify_hikam_offline.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Build installable Android preview
+        run: gradle --no-daemon :app:assembleDebug --stacktrace
+      - name: Verify package id and standard APK signing
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep 'ir.nahj.towhidkarbordi.newiwann1'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+      - name: Upload independently installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-489-Hikam-Offline-Preview-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 60
