@@ -31,6 +31,7 @@ public final class MainActivity extends Activity {
     private WebChromeClient.CustomViewCallback videoCallback;
     private int priorOrientation;
     private long lastEitaaLaunchMs = 0L;
+    private boolean eitaaReturnPending = false;
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
@@ -101,6 +102,7 @@ public final class MainActivity extends Activity {
         web = new WebView(this);
         web.setBackgroundColor(Color.rgb(18, 23, 29));
         web.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        web.setFocusableInTouchMode(true);
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -232,12 +234,31 @@ public final class MainActivity extends Activity {
         try {
             // No browser, no intermediary screen from *this* app, no new task flag.
             startActivity(direct);
+            eitaaReturnPending = true;
         } catch (ActivityNotFoundException | SecurityException notAvailable) {
             // If Eitaa is missing, do not silently route through a browser/web page.
             Toast.makeText(this, "برای شنیدن این جلسه، برنامه ایتا را نصب کنید", Toast.LENGTH_LONG).show();
         } catch (Exception ex) {
             Toast.makeText(this, "باز کردن ایتا ممکن نشد", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** Restore WebView input and route when the Android window actually regains focus. */
+    private void restoreAfterEitaaIfFocused() {
+        if (!eitaaReturnPending || !hasWindowFocus() || isFinishing() || isDestroyed() || web == null) return;
+        web.post(() -> {
+            if (!eitaaReturnPending || !hasWindowFocus() || isFinishing() || isDestroyed() || web == null) return;
+            eitaaReturnPending = false;
+            web.requestFocus();
+            if ("file:///android_asset/index.html".equals(web.getUrl())) {
+                web.evaluateJavascript("window.dispatchEvent(new Event('pmm:external-return'))", null);
+            }
+        });
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) restoreAfterEitaaIfFocused();
     }
 
     @Override public void onBackPressed() {
@@ -249,7 +270,11 @@ public final class MainActivity extends Activity {
         });
     }
     @Override protected void onPause() { if (web!=null) web.onPause(); super.onPause(); }
-    @Override protected void onResume() { super.onResume(); if (web!=null) web.onResume(); }
+    @Override protected void onResume() {
+        super.onResume();
+        if (web != null) web.onResume();
+        restoreAfterEitaaIfFocused();
+    }
     @Override protected void onDestroy() {
         if (web!=null) {
             web.loadUrl("about:blank");

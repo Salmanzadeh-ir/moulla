@@ -2053,14 +2053,24 @@ function recoverReload(){
  try{localStorage.removeItem(STAMP)}catch(_){}
  displayReturn();
 }
-// Capture at document level; unlike a stale per-page listener it survives
-// returning from external activities and does not double-navigate.
-document.addEventListener('click',e=>{
+// Android WebView may deliver touch/pointer release after returning from Eitaa
+// without synthesizing a click. Route both cases through the same back action.
+// A short guard prevents touchend/pointerup and the later click from navigating twice.
+let lastBackTap=-1000;
+function handleOnScreenBack(e){
  const target=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
  if(!target||target.hidden)return;
+ if(e.type==='pointerup'&&e.pointerType==='mouse')return;
+ if(e.type==='touchend'&&e.changedTouches&&e.changedTouches.length!==1)return;
  e.preventDefault();e.stopImmediatePropagation();
+ const now=performance.now();
+ if(now-lastBackTap<500)return;
+ lastBackTap=now;
  goBack();
-},true);
+}
+document.addEventListener('pointerup',handleOnScreenBack,true);
+document.addEventListener('touchend',handleOnScreenBack,{capture:true,passive:false});
+document.addEventListener('click',handleOnScreenBack,true);
 window.addEventListener('focus',resumed);
 window.addEventListener('pageshow',resumed);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resumed()});
