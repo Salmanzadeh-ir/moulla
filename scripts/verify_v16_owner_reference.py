@@ -21,13 +21,13 @@ assert apk["sha256"]=="35e83c49e42e5afb2ea959bb9f7b79ffe413936083e2f20ccd8794a9f
 # The complete approved file set and Git blob content hashes must remain EXACT.
 lock_file=ROOT/ref["source_lock_file"]
 lock_data=lock_file.read_bytes()
-lock_sha=hashlib.sha1(b"blob "+str(len(lock_data)).encode()+b"\\0"+lock_data).hexdigest()
+lock_sha=hashlib.sha1(b"blob "+str(len(lock_data)).encode()+b"\0"+lock_data).hexdigest()
 assert lock_sha==ref["source_lock_git_blob_sha"], "Approved owner lock file changed"
 lock=json.loads(lock_data)
 assert lock["lockedFileCount"]==164 and len(lock["files"])==164
 for rel,want in lock["files"].items():
     data=(ROOT/rel).read_bytes()
-    actual=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\\0"+data).hexdigest()
+    actual=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
     assert actual==want, "Application file differs from owner reference: "+rel
 
 # Compare the entire app tree with the baseline source commit; no app file may drift.
