@@ -1,0 +1,31 @@
+{
+  "schema": "pmm-owner-approved-v16-reference-v1",
+  "approved_date": "2026-11-14",
+  "owner_decision": "This last direct-download independently installable V16 test APK is the sole reference for continuing work. Do not change any application section without new separate explicit owner permission.",
+  "reference_label": "V16 owner-approved post-navigation-fix baseline",
+  "reference_tag": "v16-owner-reference-2026-11-14",
+  "reference_source_commit": "cbb58c0932ec94531e517652a08f29caffee5d8c",
+  "reference_build_commit": "224aa588e24487fce8bf85ae60aed89d7f06025b",
+  "source_lock_file": "design/v16-current-preview-lock.json",
+  "source_lock_git_blob_sha": "ae7c1c20d9931ccc516808f035142b90684a0070",
+  "source_locked_file_count": 164,
+  "test_apk": {
+    "classification": "independently installable debug-signed TEST APK; not a signed production release",
+    "build_run_id": 43629729134,
+    "application_id": "ir.nahj.towhidkarbordi.freshinstallv16r43629729134",
+    "version_name": "10.5.4-v16-preview-debug",
+    "download_branch": "v16-direct-download",
+    "download_branch_commit": "789f1670776b461638fb71074b115ff09942a494",
+    "download_path": "downloads/PayeMenbareMola-V16-Independent-Android-TEST.apk",
+    "git_blob_sha": "8d3e0efabdcb1d80d5cf7571bee0a054c9596c70",
+    "size_bytes": 28981850,
+    "sha256": "35e83c49e42e5afb2ea959bb9f7b79ffe413936083e2f20ccd8794a9f1753652",
+    "download_url": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/v16-direct-download/downloads/PayeMenbareMola-V16-Independent-Android-TEST.apk"
+  },
+  "historical_official_tag_preserved": "v10.4.9",
+  "restrictions": {
+    "source_changes": "No modification, deletion, addition, content replacement, visual/UI re-layout, or behavior changes to any app/ file without new explicit owner permission for that particular change.",
+    "reference_promotion": "No replacement of the source baseline, APK, SHA-256, build ID, download ref, or official reference tag without explicit owner approval.",
+    "github_ruleset": "GitHub administrative branch/tag protections require owner settings and are not asserted to exist."
+  }
+}

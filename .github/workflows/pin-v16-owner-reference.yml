@@ -1,0 +1,33 @@
+name: Pin owner-approved V16 reference tag once
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pin-v16-owner-reference.yml']
+permissions:
+  contents: write
+jobs:
+  pin-owner-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout owner-approved V16 metadata and unchanged source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Verify exact source files, screenshot content and archived APK
+        run: |
+          python3 scripts/verify_v16_preview.py
+          python3 scripts/verify_current_preview_lock.py
+          node scripts/test_v16_back_navigation.js
+          python3 scripts/verify_v16_owner_reference.py
+      - name: Create permanent owner-baseline reference tag (do not retag)
+        run: |
+          TAG=v16-owner-reference-2026-11-14
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Reference tag already exists; never move it."
+            exit 0
+          fi
+          git tag -a "$TAG" "$GITHUB_SHA" -m "Owner-approved V16 baseline; source cbb58c0932ec94531e517652a08f29caffee5d8c; APK sha256 35e83c49e42e5afb2ea959bb9f7b79ffe413936083e2f20ccd8794a9f1753652. No changes without new owner approval."
+          git push origin "refs/tags/$TAG"
