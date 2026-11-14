@@ -1,0 +1,134 @@
+name: Owner-requested V16 signed release APK and ZIP
+on:
+  push:
+    branches:
+      - release-v16-signed-build-20261114
+    paths:
+      - .github/workflows/build-v16-official-distribution.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout unchanged V16 source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify V16 frozen application and regression tests
+        run: |
+          set -euo pipefail
+          git diff --exit-code cbb58c0932ec94531e517652a08f29caffee5d8c HEAD -- app/
+          python3 scripts/verify_current_preview_lock.py
+          python3 scripts/verify_v16_preview.py
+          node scripts/test_v16_back_navigation.js
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android 35 tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Restore official signing keystore only from repository secrets
+        env:
+          KEY_DATA: ${{ secrets.PMM_KEYSTORE_BASE64 }}
+          KEY_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$KEY_DATA" || { echo 'Release keystore missing: PMM_KEYSTORE_BASE64'; exit 1; }
+          test -n "$KEY_PASSWORD" || { echo 'Release keystore password missing: PMM_KEYSTORE_PASSWORD'; exit 1; }
+          umask 077
+          printf '%s' "$KEY_DATA" | base64 --decode > "$RUNNER_TEMP/release.p12"
+          test -s "$RUNNER_TEMP/release.p12"
+
+      - name: Build actual Release variant (no Debug signing)
+        env:
+          PMM_KEYSTORE_PATH: ${{ runner.temp }}/release.p12
+          PMM_KEYSTORE_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :app:assembleRelease
+          test -s app/build/outputs/apk/release/app-release.apk
+
+      - name: Verify signature AND match historical official signing certificate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/release/app-release.apk
+          SIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          "$SIGNER" verify --verbose --print-certs "$APK"
+          mkdir -p "$RUNNER_TEMP/old-official"
+          gh release download v10.4.9-official --repo "$GITHUB_REPOSITORY" --pattern 'PayeMenbareMola_V10_4_9_Official_Install.apk' --dir "$RUNNER_TEMP/old-official"
+          OLD="$RUNNER_TEMP/old-official/PayeMenbareMola_V10_4_9_Official_Install.apk"
+          echo "80cd77cdb6fbd967bfb7a3ccfde8d8ee598b4d675f2c4410fc7fda8d781d212b  $OLD" | sha256sum -c -
+          OLD_CERT=$("$SIGNER" verify --print-certs "$OLD" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
+          NEW_CERT=$("$SIGNER" verify --print-certs "$APK" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
+          test -n "$OLD_CERT" && test -n "$NEW_CERT"
+          if [ "$OLD_CERT" != "$NEW_CERT" ]; then
+            echo 'The Release certificate is DIFFERENT from v10.4.9 official. Refusing to publish an incompatible update.'
+            exit 1
+          fi
+          echo "Release APK certificate matches archived official v10.4.9 certificate."
+
+      - name: Package identical signed APK for direct download and ZIP
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk dist/PayeMenbareMola-V16-Official-Release.apk
+          cd dist
+          sha256sum PayeMenbareMola-V16-Official-Release.apk > SHA256SUMS.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
+          apk = Path('PayeMenbareMola-V16-Official-Release.apk')
+          with ZipFile('PayeMenbareMola-V16-Official-Release.zip', 'w', ZIP_DEFLATED) as z:
+              z.write(apk, apk.name)
+              z.write('SHA256SUMS.txt')
+          PY
+          unzip -tq PayeMenbareMola-V16-Official-Release.zip
+          sha256sum -c SHA256SUMS.txt
+
+      - name: Upload files as Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-V16-Signed-Release-Downloads
+          path: dist/
+          if-no-files-found: error
+
+      - name: Publish downloadable signed APK and ZIP without replacing the frozen V16 reference
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh release view v16-official-signed-20261114 --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo 'Release tag already exists. Refusing to overwrite.'
+            exit 1
+          fi
+          gh release create v16-official-signed-20261114 \
+            dist/PayeMenbareMola-V16-Official-Release.apk \
+            dist/PayeMenbareMola-V16-Official-Release.zip \
+            dist/SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title 'پای منبر مولا — بسته Release امضاشده V16' \
+            --notes 'Build of the exact unchanged owner-approved V16 application sources. Release-signed with the historical official certificate; not the debug-signed TEST APK. The reference APK, reference tag, historical release, 164 locked app files, and main remain untouched. Both direct APK and ZIP contain the same signed binary. The versionName is inherited unchanged from frozen source: 10.5.4-v16-preview. Installation and on-device regression testing are not asserted.'
+
+      - name: Remove ephemeral signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.p12"
