@@ -1279,7 +1279,7 @@ window.addEventListener('resize',updateWisdomFontSize);
 updateWisdomFontSize();
 // Visible Back buttons use the single delegated navigation handler below.
 
-document.getElementById('exit').addEventListener('click',()=>{if(window.PMMNative&&typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();else showToast('خروج از برنامه در نسخه اندروید فعال است.');});
+// Exit is centralized and requires a deliberate press on Home (see V16 navigation guard).
 document.getElementById('about').addEventListener('click',()=>window.PMM_V7&&window.PMM_V7.openLegacy('about'));
 mainScroll.addEventListener('scroll',updateScrollbar,{passive:true});
 wisdomScroll.addEventListener('scroll',updateScrollbar,{passive:true});
@@ -1616,7 +1616,7 @@ function showGuestFull(){
  if(guestTicker){clearInterval(guestTicker);guestTicker=null}
 }
 function closeGuestFull(){document.getElementById('guest-fullview').hidden=true;resetGuestTicker()}
-document.getElementById('home-exit').addEventListener('click',()=>{if(screen!=='home')return;if(window.PMMNative&&typeof window.PMMNative.exitApp==='function')window.PMMNative.exitApp();else toast('دکمه خروج فقط در برنامه اندروید فعال است.');});
+// The legacy Home Exit uses the same centralized deliberate-exit guard.
 document.getElementById('hit-guest').addEventListener('click',enterGuest);
 document.getElementById('guest-return').addEventListener('click',()=>{if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home')});
 document.getElementById('guest-full-close').addEventListener('click',closeGuestFull);
@@ -1671,7 +1671,15 @@ setState=function(mode,s=null,v=null){
 };
 const oldGoBack=goBack;
 goBack=function(){
- window.PMM_LAST_BACK_NAV_AT=Date.now(); // Keep Exit disarmed after an inner-page Back.
+ // Back is navigation only. Never permit the overlapping Exit to activate
+ // until the touch/keyboard gesture has fully ended and Home is stable.
+ window.PMM_LAST_BACK_NAV_AT=Date.now();
+ window.PMM_EXIT_AUTHORIZED_AT=0;
+ for(const id of ['exit','home-exit']){const b=document.getElementById(id);if(b)b.disabled=true;}
+ clearTimeout(window.PMM_EXIT_UNLOCK_TIMER);
+ window.PMM_EXIT_UNLOCK_TIMER=setTimeout(()=>{
+  for(const id of ['exit','home-exit']){const b=document.getElementById(id);if(b)b.disabled=false;}
+ },1000);
  if(screen==='wisdom'){window.PMM_NEW_UI.leaveWisdom();screen='home';return;}
  if(screen==='gallery'){
    if(galleryIndex!==null){galleryRenderGrid();return;}
@@ -2051,13 +2059,12 @@ function recoverReload(){
  try{localStorage.removeItem(STAMP)}catch(_){}
  displayReturn();
 }
-// V16 fix: Back and Exit share the same coordinates. Navigating on pointerup
-// or touchend unmasks Exit before WebView emits click, which can wrongly exit.
-// Only a completed click performs Back; no route mutation during touch release.
+// One Back click handler for both new and legacy inner-page routes.
+// Never navigate on touchend/pointerup: Exit overlaps Back on the Home image.
 let lastBackClick=-1000;
 function handleOnScreenBack(e){
- const target=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
- if(!target||target.hidden)return;
+ const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
+ if(!btn||btn.hidden)return;
  e.preventDefault();e.stopImmediatePropagation();
  const now=performance.now();
  if(now-lastBackClick<350)return;
@@ -2066,31 +2073,48 @@ function handleOnScreenBack(e){
 }
 document.addEventListener('click',handleOnScreenBack,true);
 
-// Exit must be pressed intentionally from an already visible Home screen,
-// never as the re-targeted final click of the same Back gesture.
-let exitPressTarget=null;
-function exitFromEvent(e){
+// A completed Back never authorizes Exit, even if Android re-targets a late
+// synthetic click at the same screen coordinates. Exit requires its own DOWN
+// event while Home is already visible, or an accessibility/keyboard action.
+let exitStart=null,exitStartAt=0;
+function exitButton(e){
  return e.target instanceof Element?e.target.closest('#exit,#home-exit'):null;
 }
-function exitVisibleOnHome(btn){
- if(!btn||btn.hidden||screen!=='home')return false;
+function exitOnHome(btn){
+ if(!btn||btn.disabled||btn.hidden||screen!=='home')return false;
  if(btn.id==='exit')return !scene.hidden&&stage.hidden&&scene.dataset.screen==='home';
  return !stage.hidden&&scene.hidden;
 }
-function rememberExitPress(e){
- const btn=exitFromEvent(e);
- exitPressTarget=exitVisibleOnHome(btn)?btn:null;
+function armExit(e){
+ const btn=exitButton(e);
+ exitStart=exitOnHome(btn)?btn:null;
+ exitStartAt=exitStart?Date.now():0;
 }
-document.addEventListener('pointerdown',rememberExitPress,true);
-document.addEventListener('touchstart',rememberExitPress,{capture:true,passive:true});
+document.addEventListener('pointerdown',armExit,true);
+document.addEventListener('touchstart',armExit,{capture:true,passive:true});
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Enter'&&e.key!==' ')return;
+ const btn=document.activeElement instanceof Element?
+   document.activeElement.closest('#exit,#home-exit'):null;
+ if(exitOnHome(btn)){exitStart=btn;exitStartAt=Date.now();}
+},true);
 document.addEventListener('click',e=>{
- const btn=exitFromEvent(e);
+ const btn=exitButton(e);
  if(!btn)return;
- const valid=exitVisibleOnHome(btn)&&
-   (e.detail===0||exitPressTarget===btn)&&
-   Date.now()-(window.PMM_LAST_BACK_NAV_AT||0)>700;
- exitPressTarget=null;
- if(!valid){e.preventDefault();e.stopImmediatePropagation();}
+ // No other listener may send Exit: this capture handler owns authorization.
+ e.preventDefault();e.stopImmediatePropagation();
+ const now=Date.now();
+ const deliberate=exitStart===btn&&now-exitStartAt>=0&&now-exitStartAt<1600;
+ const accessible=e.detail===0&&e.isTrusted===true&&document.activeElement===btn;
+ const allowed=exitOnHome(btn)&&(deliberate||accessible)&&
+   now-(window.PMM_LAST_BACK_NAV_AT||0)>1000;
+ exitStart=null;exitStartAt=0;
+ if(!allowed)return;
+ window.PMM_EXIT_AUTHORIZED_AT=now;
+ if(window.PMMNative&&typeof window.PMMNative.exitApp==='function'){
+  window.PMMNative.exitApp();
+ }else if(btn.id==='exit')window.PMM_NEW_UI.showToast('خروج فقط در برنامه اندروید فعال است.');
+ else toast('خروج فقط در برنامه اندروید فعال است.');
 },true);
 window.addEventListener('focus',resumed);
 window.addEventListener('pageshow',resumed);

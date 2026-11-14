@@ -32,6 +32,7 @@ public final class MainActivity extends Activity {
     private int priorOrientation;
     private long lastEitaaLaunchMs = 0L;
     private boolean eitaaReturnPending = false;
+    private android.window.OnBackInvokedCallback platformBackCallback;
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
@@ -41,11 +42,20 @@ public final class MainActivity extends Activity {
             runOnUiThread(() -> {
                 if (isFinishing() || isDestroyed() || web == null || !"file:///android_asset/index.html".equals(web.getUrl())) return;
                 web.evaluateJavascript(
-                    "(function(){var s=document.getElementById('scene');var t=document.getElementById('stage');"
-                    + "return typeof screen==='string'&&screen==='home'&&s&&!s.hidden&&"
-                    + "s.dataset.screen==='home'&&t&&t.hidden&&"
-                    + "Date.now()-(window.PMM_LAST_BACK_NAV_AT||0)>700})()",
-                    canExit -> { if ("true".equals(canExit) && !isFinishing()) finish(); });
+                    "(function(){try{var s=document.getElementById('scene');"
+                    + "var t=document.getElementById('stage');var now=Date.now();"
+                    + "var home=typeof screen==='string'&&screen==='home'&&s&&t&&"
+                    + "((!s.hidden&&s.dataset.screen==='home'&&t.hidden)||(s.hidden&&!t.hidden));"
+                    + "return !!home&&window.PMM_EXIT_AUTHORIZED_AT>0&&"
+                    + "now-window.PMM_EXIT_AUTHORIZED_AT>=0&&now-window.PMM_EXIT_AUTHORIZED_AT<1700&&"
+                    + "now-(window.PMM_LAST_BACK_NAV_AT||0)>1000;"
+                    + "}catch(e){return false;}})()",
+                    canExit -> {
+                        if ("true".equals(canExit) && !isFinishing() && !isDestroyed()) {
+                            web.evaluateJavascript("window.PMM_EXIT_AUTHORIZED_AT=0", null);
+                            finish();
+                        }
+                    });
             });
         }
 
@@ -158,6 +168,14 @@ public final class MainActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         setContentView(root);
         web.loadUrl("file:///android_asset/index.html");
+        // Android 13+ predictive/system Back may bypass the deprecated Activity
+        // callback. Intercept it explicitly and send it to the same JS router.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            platformBackCallback = this::handleBackNavigation;
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                    platformBackCallback);
+        }
     }
 
     private void closeVideo() {
@@ -264,26 +282,21 @@ public final class MainActivity extends Activity {
         if (hasFocus) restoreAfterEitaaIfFocused();
     }
 
-    @Override public void onBackPressed() {
+    /** System Back is navigation ONLY. The separate Home Exit button is the
+     *  sole path that may finish this Activity. */
+    private void handleBackNavigation() {
         if (fullScreenVideo != null) { closeVideo(); return; }
-        if (web == null) { super.onBackPressed(); return; }
-        // Read visible route as well as JS state; a Photo Quotes overlay must
-        // never be mistaken for Home and accidentally finish the Activity.
-        web.evaluateJavascript(
-            "(function(){try{var s=document.getElementById('scene');"
-            + "var t=document.getElementById('stage');"
-            + "var g=document.getElementById('gallery-scroll');"
-            + "var w=document.getElementById('wisdom-scroll');"
-            + "var atHome=typeof screen==='string'&&screen==='home'&&"
-            + "s&&!s.hidden&&s.dataset.screen==='home'&&t&&t.hidden&&"
-            + "g&&g.hidden&&w&&w.hidden;"
-            + "if(!atHome){if(typeof goBack==='function'){goBack();return 'handled';}"
-            + "return 'unknown';}return 'home';}catch(e){return 'unknown';}})()",
-            route -> {
-                // Never exit when page state is unknown or an inner screen is open.
-                if ("\"home\"".equals(route) && !isFinishing() && !isDestroyed()) finish();
-            });
+        if (isFinishing() || isDestroyed() || web == null) return;
+        if ("file:///android_asset/index.html".equals(web.getUrl())) {
+            web.evaluateJavascript(
+                    "(function(){if(typeof goBack==='function'){goBack();return true;}return false;})()",
+                    null);
+        } else if (web.canGoBack()) {
+            web.goBack();
+        }
     }
+
+    @Override public void onBackPressed() { handleBackNavigation(); }
     @Override protected void onPause() { if (web!=null) web.onPause(); super.onPause(); }
     @Override protected void onResume() {
         super.onResume();
@@ -291,6 +304,10 @@ public final class MainActivity extends Activity {
         restoreAfterEitaaIfFocused();
     }
     @Override protected void onDestroy() {
+        if (android.os.Build.VERSION.SDK_INT >= 33 && platformBackCallback != null) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(platformBackCallback);
+            platformBackCallback = null;
+        }
         if (web!=null) {
             web.loadUrl("about:blank");
             web.destroy(); web=null;
