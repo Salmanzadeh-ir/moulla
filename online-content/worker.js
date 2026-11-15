@@ -141,6 +141,7 @@ export default {
         if(old.items.length>=MAX_ITEMS)return deny(409,'حداکثر تعداد مطالب ثبت شده است.');
         let data;try{data=await req.json()}catch(_){return deny(400,'داده نامعتبر است.')}
         let item;try{item=normalizeItem(data,u.origin)}catch(e){return deny(400,e.message)}
+        item.revision=old.revision+1;
         const next={schema:1,revision:old.revision+1,updatedAt:new Date().toISOString(),
           items:[...old.items,item]};
         if(JSON.stringify(next).length>MAX_MANIFEST_BYTES)return deny(413,'حجم فهرست بیش از حد است.');
