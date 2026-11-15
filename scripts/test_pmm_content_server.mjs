@@ -3,17 +3,15 @@ import {webcrypto} from 'node:crypto';
 if(!globalThis.crypto)globalThis.crypto=webcrypto;
 const {default:app}=await import('../online-content/worker.js');
 const memory=new Map();
-const objects=new Map();
+const metadata=new Map();
 const env={
  PMM_ADMIN_PASSWORD:'VERY-LONG-UNIQUE-ADMIN-PASSWORD-TEST-ONLY',
  PMM_SESSION_SECRET:'VERY-LONG-SESSION-HMAC-SECRET-TEST-ONLY-1234',
  PMM_CONTENT:{
    async get(k,fmt){const value=memory.get(k);return fmt==='json'&&value?JSON.parse(value):value??null;},
-   async put(k,v){memory.set(k,v);}
- },
- PMM_MEDIA:{
-   async put(id,bytes,{httpMetadata}){objects.set(id,{body:bytes,httpMetadata});},
-   async get(id){return objects.get(id)||null;}
+   async put(k,v,options){memory.set(k,v);if(options?.metadata)metadata.set(k,options.metadata);},
+   async getWithMetadata(k,fmt){assert.equal(fmt,'arrayBuffer');return {value:memory.get(k)||null,metadata:metadata.get(k)||null};},
+   async delete(k){memory.delete(k);metadata.delete(k);}
  }
 };
 const origin='https://owner-content.test';
@@ -46,10 +44,21 @@ assert.equal(res.status,400,'Reject untrusted media URL');
 const png=new Uint8Array([137,80,78,71,13,10,26,10,0,0,0,0]);
 res=await call('/api/admin/upload',{method:'POST',headers:{'content-type':'image/png'},cookie,body:png});
 data=await res.json();assert.equal(res.status,200);assert(data.url.includes('/media/'));
-res=await call(new URL(data.url).pathname);assert.equal(res.status,200);
+const photoUrl=data.url;
+res=await call(new URL(photoUrl).pathname);assert.equal(res.status,200);
 assert.equal(res.headers.get('cache-control'),'private, no-store, max-age=0');
+assert.equal(res.headers.get('content-type'),'image/png');
+res=await call('/api/admin/publish',{method:'POST',headers:{'content-type':'application/json'},cookie,
+ body:JSON.stringify({section:'photo_quotes',title:'عکس‌نوشته تازه',url:photoUrl})});
+data=await res.json();assert.equal(res.status,200);assert.equal(data.manifest.revision,2);
+const photoId=data.manifest.items.find(x=>x.section==='photo_quotes').id;
+res=await call('/api/admin/remove',{method:'POST',headers:{'content-type':'application/json'},cookie,
+ body:JSON.stringify({id:photoId})});
+data=await res.json();assert.equal(data.manifest.revision,3);
+assert.equal(memory.has('media:'+photoUrl.split('/').pop()),false,'Deleted photos free up KV space');
+res=await call(new URL(photoUrl).pathname);assert.equal(res.status,404);
 const id=(await (await call('/api/manifest')).json()).items[0].id;
 res=await call('/api/admin/remove',{method:'POST',headers:{'content-type':'application/json'},cookie,body:JSON.stringify({id})});
-data=await res.json();assert.equal(data.manifest.revision,2);assert.equal(data.manifest.items.length,0);
+data=await res.json();assert.equal(data.manifest.revision,4);assert.equal(data.manifest.items.length,0);
 res=await call('/admin');assert.equal(res.status,200);assert((await res.text()).includes('پنل مدیریت'));
-console.log('PASS: private login, cookie, publish, revision, URL filtering, image upload, no-store streaming, deletion');
+console.log('PASS: free-tier KV-only auth, publishing, image upload/streaming/removal, no-store headers, revisions');
