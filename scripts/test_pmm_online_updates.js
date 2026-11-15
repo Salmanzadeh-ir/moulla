@@ -13,7 +13,7 @@ assert(html.includes('addOnlinePhotos:function(urls)'));
 assert(java.includes('settings.setCacheMode(WebSettings.LOAD_NO_CACHE)'));
 assert(java.includes('settings.setAllowUniversalAccessFromFileURLs(false)'));
 assert(java.includes('checkContentUpdates();'));
-assert(java.includes('PMM_CONTENT_MANIFEST_URL = ""'),'No unverified hosted URL may be used');
+assert(java.includes('PMM_CONTENT_MANIFEST_URL = "https://pmm-content-updates.kazeminia-mohamad110.workers.dev/api/manifest"'),'Use only owner-confirmed HTTPS content endpoint');
 assert(!/localStorage\.setItem\([^,]+,\s*JSON\.stringify\(manifest\)/.test(js));
 
 class Elem {
