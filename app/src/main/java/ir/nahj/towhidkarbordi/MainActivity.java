@@ -35,7 +35,7 @@ import android.os.SystemClock;
 public final class MainActivity extends Activity {
     // Set ONLY after deploying the owner's private content publishing service.
     // HTTPS endpoint is public/read-only; administrator credentials never enter the APK.
-    private static final String PMM_CONTENT_MANIFEST_URL = "";
+    private static final String PMM_CONTENT_MANIFEST_URL = "https://pmm-content-updates.kazeminia-mohamad110.workers.dev/api/manifest";
     private static final int PMM_MAX_MANIFEST_BYTES = 1024 * 1024;
     private final ExecutorService contentExecutor = Executors.newSingleThreadExecutor();
     private WebView web;
