@@ -936,6 +936,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 #wisdom-scroll .wisdom-a-plus small{font-size:17px;align-self:flex-start}
 @media (max-width:355px){#wisdom-scroll .wisdom-heading-actions{gap:3px}#wisdom-scroll .wisdom-utility-button{flex-basis:40px;width:40px;min-width:40px;height:40px;min-height:40px}#wisdom-scroll .wisdom-heading-actions .numberplate{padding:3px 4px;font-size:13px!important}}
 </style>
+<link rel="stylesheet" href="pmm_online_updates.css">
 </head>
 <body>
 <main class="scene" id="scene" data-screen="home" aria-label="صفحه جدید پای منبر مولا">
@@ -2184,9 +2185,17 @@ window.PMM_V9=Object.freeze({
  window.addEventListener('pagehide',closePhoto);
  window.PMM_PHOTO_QUOTES_VIEW=Object.freeze({
    count:photos.length,open:openPhoto,close:closePhoto,
-   isOpen:()=>isOpen,paths:()=>photos.slice()
+   isOpen:()=>isOpen,paths:()=>photos.slice(),
+   addOnlinePhotos:function(urls){
+     if(!Array.isArray(urls))return;
+     urls.forEach(function(src){
+       if(typeof src!=='string'||!/^https:\/\//.test(src)||paths.includes(src))return;
+       paths.push(src);photos.push(src);
+     });
+   }
  });
 })();
 </script>
+<script src="pmm_online_updates.js"></script>
 </body>
 </html>
