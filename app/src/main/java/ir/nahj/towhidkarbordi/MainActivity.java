@@ -18,6 +18,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import java.util.Locale;
+import java.net.URL;
+import java.net.HttpURLConnection;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.json.JSONObject;
 import android.os.SystemClock;
 
 /**
@@ -25,6 +33,11 @@ import android.os.SystemClock;
  * The iwan and gallery are stored as local assets; media links may require Internet.
  */
 public final class MainActivity extends Activity {
+    // Set ONLY after deploying the owner's private content publishing service.
+    // HTTPS endpoint is public/read-only; administrator credentials never enter the APK.
+    private static final String PMM_CONTENT_MANIFEST_URL = "";
+    private static final int PMM_MAX_MANIFEST_BYTES = 1024 * 1024;
+    private final ExecutorService contentExecutor = Executors.newSingleThreadExecutor();
     private WebView web;
     private FrameLayout root;
     private View fullScreenVideo;
@@ -119,6 +132,8 @@ public final class MainActivity extends Activity {
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        // Do not keep fetched online photo/media responses in persistent HTTP cache.
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setAllowFileAccess(true);
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
@@ -141,8 +156,9 @@ public final class MainActivity extends Activity {
                 return openExternal(Uri.parse(url));
             }
             @Override public void onPageFinished(WebView view, String url) {
-                if (url.startsWith("file:///android_asset/")) {
+                if ("file:///android_asset/index.html".equals(url)) {
                     view.evaluateJavascript("window.PMM_ANDROID=true", null);
+                    checkContentUpdates();
                 }
             }
         });
@@ -176,6 +192,66 @@ public final class MainActivity extends Activity {
                     android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,
                     platformBackCallback);
         }
+    }
+
+
+    /**
+     * Fetch ONLY the owner's fixed, HTTPS public manifest. Avoid granting file://
+     * JavaScript universal network access or exposing a generic URL-fetch bridge.
+     * The manifest is held in memory; no remote media or JSON is written to disk.
+     */
+    private void checkContentUpdates() {
+        if (PMM_CONTENT_MANIFEST_URL.isEmpty() || web == null) return;
+        final URL endpoint;
+        try {
+            endpoint = new URL(PMM_CONTENT_MANIFEST_URL);
+            if (!"https".equalsIgnoreCase(endpoint.getProtocol()) ||
+                endpoint.getUserInfo() != null ||
+                !"/api/manifest".equals(endpoint.getPath()) ||
+                endpoint.getQuery() != null || endpoint.getRef() != null) return;
+        } catch (Exception invalid) { return; }
+
+        contentExecutor.execute(() -> {
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) endpoint.openConnection();
+                connection.setInstanceFollowRedirects(false);
+                connection.setConnectTimeout(6500);
+                connection.setReadTimeout(6500);
+                connection.setUseCaches(false);
+                connection.setRequestProperty("Accept", "application/json");
+                if (connection.getResponseCode() != 200) return;
+                if (connection.getContentLengthLong() > PMM_MAX_MANIFEST_BYTES) return;
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                try (InputStream input = connection.getInputStream()) {
+                    byte[] bytes = new byte[8192];
+                    int read;
+                    while ((read = input.read(bytes)) != -1) {
+                        if (buffer.size() + read > PMM_MAX_MANIFEST_BYTES) return;
+                        buffer.write(bytes, 0, read);
+                    }
+                }
+                final String body = buffer.toString(StandardCharsets.UTF_8.name());
+                // A syntax check before handing the untrusted data to the vetted JS parser.
+                JSONObject manifest = new JSONObject(body);
+                if (manifest.optInt("schema", -1) != 1 ||
+                    manifest.optJSONArray("items") == null) return;
+                final String origin = endpoint.getProtocol() + "://" + endpoint.getAuthority();
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || web == null ||
+                        !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                    // JSONObject.quote makes raw JSON a JS string literal, never JS code.
+                    web.evaluateJavascript(
+                        "window.PMM_UPDATE_ORIGIN=" + JSONObject.quote(origin) + ";" +
+                        "if(window.PMM_CONTENT_UPDATES)window.PMM_CONTENT_UPDATES.receiveManifest(" +
+                        JSONObject.quote(body) + ");", null);
+                });
+            } catch (Exception ignored) {
+                // No internet or publishing service: keep the original offline V16 usable.
+            } finally {
+                if (connection != null) connection.disconnect();
+            }
+        });
     }
 
     private void closeVideo() {
@@ -304,6 +380,7 @@ public final class MainActivity extends Activity {
         restoreAfterEitaaIfFocused();
     }
     @Override protected void onDestroy() {
+        contentExecutor.shutdownNow();
         if (android.os.Build.VERSION.SDK_INT >= 33 && platformBackCallback != null) {
             getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(platformBackCallback);
             platformBackCallback = null;
