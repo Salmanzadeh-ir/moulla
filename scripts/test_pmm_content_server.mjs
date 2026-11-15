@@ -47,7 +47,7 @@ res=await call('/api/admin/upload',{method:'POST',headers:{'content-type':'image
 data=await res.json();assert.equal(res.status,200);assert(data.url.includes('/media/'));
 const photoUrl=data.url;
 res=await call(new URL(photoUrl).pathname);assert.equal(res.status,200);
-assert.equal(res.headers.get('cache-control'),'private, no-store, max-age=0');
+assert.match(res.headers.get('cache-control'),/^private, no-store(?:, max-age=0)?$/,'Both modular and actual deployed worker must not cache remote photos');
 assert.equal(res.headers.get('content-type'),'image/png');
 res=await call('/api/admin/publish',{method:'POST',headers:{'content-type':'application/json'},cookie,
  body:JSON.stringify({section:'photo_quotes',title:'عکس‌نوشته تازه',url:photoUrl})});
