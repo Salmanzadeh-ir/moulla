@@ -46,6 +46,7 @@ jobs:
           node --check online-content/worker.js
           node --check online-content/admin-page.js
           node scripts/test_pmm_online_updates.js
+          node scripts/test_pmm_content_server.mjs
 
       - name: Java 17
         uses: actions/setup-java@v4
