@@ -1,6 +1,9 @@
 import { ADMIN_HTML } from './admin-page.js';
 
 const KEY = 'manifest-v1';
+// One free-tier Workers KV namespace holds both the manifest and image objects.
+// This deliberately avoids activating the optional recurring R2 subscription.
+const MEDIA_PREFIX = 'media:';
 const SECTIONS = new Set([
   'nahj_audio', 'towhid', 'see_god', 'kafi', 'videos', 'photo_quotes', 'guest_sentence_new'
 ]);
@@ -95,13 +98,14 @@ export default {
       return response(await getManifest(env));
     }
     if(path.startsWith('/media/')&&method==='GET'){
-      if(!env.PMM_MEDIA)return deny(503,'فضای تصاویر هنوز تنظیم نشده است.');
+      if(!env.PMM_CONTENT)return deny(503,'فضای محتوا هنوز تنظیم نشده است.');
       const id=path.slice(7);
       if(!/^[a-f0-9-]{36}$/.test(id))return deny(404,'تصویر یافت نشد');
-      const obj=await env.PMM_MEDIA.get(id);
-      if(!obj)return deny(404,'تصویر یافت نشد');
-      const type=obj.httpMetadata?.contentType||'application/octet-stream';
-      return new Response(obj.body,{headers:mediaHeaders(type)});
+      const obj=await env.PMM_CONTENT.getWithMetadata(MEDIA_PREFIX+id,'arrayBuffer');
+      if(!obj||!obj.value)return deny(404,'تصویر یافت نشد');
+      const type=obj.metadata?.contentType;
+      if(!ALLOWED_MEDIA_TYPES.has(type))return deny(404,'تصویر معتبر نیست');
+      return new Response(obj.value,{headers:mediaHeaders(type)});
     }
     if(path==='/api/login'&&method==='POST'){
       if(!sameOrigin(req,u))return deny();
@@ -126,14 +130,13 @@ export default {
         const res=response({ok:true});res.headers.append('set-cookie','pmm_admin=; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=0');return res;
       }
       if(path==='/api/admin/upload'&&method==='POST'){
-        if(!env.PMM_MEDIA)return deny(503,'فضای تصاویر تنظیم نشده است.');
         const type=(req.headers.get('content-type')||'').split(';')[0].toLowerCase();
         const reported=Number(req.headers.get('content-length')||0);
         if(!ALLOWED_MEDIA_TYPES.has(type)||reported>MAX_IMAGE_BYTES)return deny(413,'فقط تصویر JPEG/PNG/WebP تا ۸ مگابایت مجاز است.');
         const buf=await req.arrayBuffer();
         if(buf.byteLength>MAX_IMAGE_BYTES||!validImageMagic(new Uint8Array(buf),type))return deny(400,'فایل تصویر معتبر نیست.');
         const key=crypto.randomUUID();
-        await env.PMM_MEDIA.put(key,buf,{httpMetadata:{contentType:type}});
+        await env.PMM_CONTENT.put(MEDIA_PREFIX+key,buf,{metadata:{contentType:type}});
         return response({ok:true,url:u.origin+'/media/'+key});
       }
       if(path==='/api/admin/publish'&&method==='POST'){
@@ -155,6 +158,16 @@ export default {
         if(nextItems.length===old.items.length)return deny(404,'مطلب پیدا نشد.');
         const next={schema:1,revision:old.revision+1,updatedAt:new Date().toISOString(),items:nextItems};
         await env.PMM_CONTENT.put(KEY,JSON.stringify(next));
+        // A deleted photo should not consume the owner's limited free KV storage.
+        const removed=old.items.find(item=>item.id===body.id);
+        if(removed?.section==='photo_quotes'){
+          try{
+            const uri=new URL(removed.url);
+            if(uri.origin===u.origin && /^\/media\/[a-f0-9-]{36}$/.test(uri.pathname)){
+              await env.PMM_CONTENT.delete(MEDIA_PREFIX+uri.pathname.slice(7));
+            }
+          }catch(_){/* The manifest removal itself has succeeded. */}
+        }
         return response({ok:true,manifest:next});
       }
     }
