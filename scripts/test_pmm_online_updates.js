@@ -7,37 +7,51 @@ const native=fs.readFileSync('app/src/main/assets/photo_quotes_manifest.js','utf
 
 assert(html.includes('<script src="pmm_online_updates.js"></script>'));
 
-// Exact Nahj counts and ordered, unique stable IDs (no Word audio data fabricated).
-const catalogStart=html.indexOf('const NAHJ_AUDIO_GROUPS=');
-const catalogEnd=html.indexOf('function toast(s)',catalogStart);
-assert(catalogStart>=0&&catalogEnd>catalogStart,'Nahj audio catalog exists');
-const nahjCatalog=vm.runInNewContext(html.slice(catalogStart,catalogEnd)+
-  ';({groups:NAHJ_AUDIO_GROUPS,items:NAHJ_AUDIO_ITEMS,parts:NAHJ_AUDIO_PARTS})',{
-    fa:n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)])
-  });
-assert.deepEqual(Array.from(nahjCatalog.groups,g=>g.title),['خطبه‌ها','نامه‌ها','حکمت‌ها']);
-assert.equal(nahjCatalog.items.sermons.length,241);
-assert.equal(nahjCatalog.items.letters.length,79);
-assert.equal(nahjCatalog.items.wisdoms.length,489);
-for(const [key,pos,title] of [
-  ['sermons',0,'خطبه ۱'],['sermons',240,'خطبه ۲۴۱'],
-  ['letters',0,'نامه ۱'],['letters',78,'نامه ۷۹'],
-  ['wisdoms',0,'حکمت ۱'],['wisdoms',259,'حکمت ۲۶۰'],
-  ['wisdoms',260,'غرائب الحدیث ۱'],['wisdoms',268,'غرائب الحدیث ۹'],
-  ['wisdoms',269,'حکمت ۲۶۱'],['wisdoms',488,'حکمت ۴۸۰']]) {
-  assert.equal(nahjCatalog.items[key][pos].title,title);
+// Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
+const audioJs=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');
+assert(html.includes('<script src="nahj_audio_links.js"></script>'));
+const audioContext={window:{}};
+vm.runInNewContext(audioJs,audioContext);
+const nahjCatalog=audioContext.window.PMM_NAHJ_AUDIO_DATA;
+const groupItems=nahjCatalog.items,links=nahjCatalog.parts;
+assert.equal(groupItems.sermons.length,237,'Original 241 sermon numbers include three shared recordings');
+assert.equal(groupItems.letters.length,79);
+assert.equal(groupItems.wisdoms.length,487,'480 wisdom numbers, two shared recordings, nine pending gharaib');
+assert.equal(Object.values(links).reduce((n,arr)=>n+arr.length,0),1019);
+const allLinks=Object.values(links).flat();
+assert.equal(new Set(allLinks).size,1019,'Every source MP3 is represented once');
+assert(allLinks.every(u=>u.startsWith('https://dl.kazeminia110.ir/Audio/nahj-al-balaghe/tartibi/')));
+for(const [group,id,title,filename] of [
+ ['sermons','sermon-13-14','خطبه ۱۳ و ۱۴','khotbe/khotbe 13 & 14.mp3'],
+ ['sermons','sermon-52-53','خطبه ۵۲ و ۵۳','khotbe/khotbe 52 & 53.mp3'],
+ ['sermons','sermon-58-59-60','خطبه ۵۸ و ۵۹ و ۶۰','khotbe/khotbe 58 & 59 & 60.mp3'],
+ ['wisdoms','wisdom-40-41','حکمت ۴۰ و ۴۱','hekmat/hekmat 40 & 41.mp3'],
+ ['wisdoms','wisdom-111-112','حکمت ۱۱۱ و ۱۱۲','hekmat/hekmat 111& 112.mp3']
+]){
+ assert.equal(groupItems[group].find(x=>x.id===id).title,title);
+ assert.equal(links[id][0],'https://dl.kazeminia110.ir/Audio/nahj-al-balaghe/tartibi/'+filename);
+ assert.equal(links[id].length,1);
 }
-assert.equal(new Set([
-  ...Array.from(nahjCatalog.items.sermons,x=>x.id),
-  ...Array.from(nahjCatalog.items.letters,x=>x.id),
-  ...Array.from(nahjCatalog.items.wisdoms,x=>x.id)
-]).size,809);
-assert.equal(Object.keys(nahjCatalog.parts).length,0,'No unverified audio part counts or links');
+assert.equal(links['sermon-1'].length,9);
+assert.equal(links['letter-31'].length,31);
+assert.equal(links['letter-53'].length,27);
+assert.equal(links['wisdom-192'].length,1);
+const wisdomOrder=groupItems.wisdoms;
+const beforeGh=wisdomOrder.findIndex(x=>x.id==='wisdom-260');
+const afterGh=wisdomOrder.findIndex(x=>x.id==='wisdom-261');
+assert.equal(afterGh-beforeGh,10);
+for(let i=1;i<=9;i++){
+ assert.equal(wisdomOrder[beforeGh+i].id,'gharaib-'+i);
+ assert.deepEqual(Array.from(links['gharaib-'+i]),[],'Pending gharaib must not have fabricated audio');
+}
 const nahjRenderList=html.slice(html.indexOf('function renderList(){'),html.indexOf('function drawRows(){'));
 assert(nahjRenderList.includes('renderNahjAudioCatalog()'));
 assert(!nahjRenderList.includes('نمایش آرشیو سایت')&&!nahjRenderList.includes('باز کردن آرشیو ایتا'));
+const playerSource=html.slice(html.indexOf('function renderPlayer(){'),html.indexOf('function goBack(){'));
+assert(playerSource.includes('<audio class="nahj-audio-player" controls preload="none"'));
+assert(playerSource.includes('safe(encodeURI(link))'));
 const nahjBack=html.slice(html.indexOf('function goBack(){'),html.indexOf('// V10.0:',html.indexOf('function goBack(){')));
-assert(nahjBack.includes("item.nahjEntry")&&nahjBack.includes("item.nahjGroup"));
+assert(nahjBack.includes('item?.nahjReturn')&&nahjBack.includes('item.nahjEntry'));
 
 assert(html.includes('pmm_online_updates.css'));
 const aboutBlock=html.slice(html.indexOf('function renderAbout(){'),html.indexOf('function renderBiography(){'));

@@ -23,6 +23,7 @@ jobs:
           allowed = {
             "app/build.gradle",
             "app/src/main/assets/index.html",
+            "app/src/main/assets/nahj_audio_links.js",
             "app/src/main/assets/pmm_online_updates.js",
             "app/src/main/assets/pmm_online_updates.css",
             "app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java"
