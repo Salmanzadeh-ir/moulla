@@ -1635,7 +1635,9 @@ const pmmShell=document.getElementById('scene');
 const pmmOldStage=document.getElementById('stage');
 const galleryEl=document.getElementById('gallery-scroll');
 const galleryGrid=document.getElementById('gallery-grid');
-const album=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES:[];
+// Keep the 93 approved bundled images frozen; online entries live in this separate RAM-only list.
+window.PMM_IMAGE_ALBUM=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES.slice():[];
+const album=window.PMM_IMAGE_ALBUM;
 let galleryIndex=null;
 function galleryRenderGrid(){
  galleryIndex=null;document.getElementById('gallery-detail').hidden=true;galleryGrid.hidden=false;
@@ -1727,7 +1729,7 @@ syncOldTitle();
 // opacity and z-index calculations as updateGuestWheel() in approved repository.
 (function(){
 'use strict';
-const photoFilesBase=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES:[];
+const photoFilesBase=window.PMM_IMAGE_ALBUM;
 const PHOTO_STORAGE_KEY='pmm_photo_quotes_drawbag_v1';
 // Use a gallery-local PRNG: the wheel must never depend on the wisdom script.
 function photoRandInt(max){
@@ -2134,7 +2136,7 @@ window.PMM_V9=Object.freeze({
  * The photo list is supplied later in photo_quotes_manifest.js. No dummy entries. */
 (function(){
  'use strict';
- const paths=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES:[];
+ const paths=window.PMM_IMAGE_ALBUM;
  const safe=/^images\/photo_quotes\/[a-zA-Z0-9_.-]+\.(?:jpg|jpeg|png|webp)$/i;
  const photos=paths.filter(x=>typeof x==='string'&&safe.test(x));
  const fullscreen=document.getElementById('photo-fullscreen');
