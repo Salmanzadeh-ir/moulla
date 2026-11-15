@@ -47,6 +47,8 @@ jobs:
           node --check online-content/admin-page.js
           node scripts/test_pmm_online_updates.js
           node scripts/test_pmm_content_server.mjs
+          node --check online-content/cloudflare-dashboard-single-file.js
+          node scripts/test_pmm_content_server.mjs --single-file
 
       - name: Java 17
         uses: actions/setup-java@v4
