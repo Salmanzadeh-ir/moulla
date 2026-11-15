@@ -13,8 +13,8 @@ android {
         applicationId 'ir.nahj.towhidkarbordi'
         minSdk 23
         targetSdk 34
-        versionCode 16
-        versionName '10.5.4-v16-preview'
+        versionCode 17
+        versionName '1.0.0'
     }
 
     signingConfigs {
