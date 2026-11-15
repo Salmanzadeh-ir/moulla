@@ -7,6 +7,12 @@ const native=fs.readFileSync('app/src/main/assets/photo_quotes_manifest.js','utf
 
 assert(html.includes('<script src="pmm_online_updates.js"></script>'));
 assert(html.includes('pmm_online_updates.css'));
+const aboutBlock=html.slice(html.indexOf('function renderAbout(){'),html.indexOf('function renderBiography(){'));
+assert(aboutBlock.includes('window.PMMNative.getAppVersion()'),'About must read installed APK versionName');
+assert(aboutBlock.indexOf('class="about-version"')>aboutBlock.indexOf('class="gallery-viewport"'),
+  'Version must come after the gallery inside About scroll');
+assert(java.includes('getPackageInfo(MainActivity.this.getPackageName(), 0).versionName'),
+  'Native getter must use APK metadata');
 assert(native.includes('Object.freeze(['),'The original photo source remains immutable');
 assert(html.includes('window.PMM_IMAGE_ALBUM=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES.slice():[];'));
 assert(html.includes('addOnlinePhotos:function(urls)'));

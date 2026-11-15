@@ -834,6 +834,10 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  padding:6px 0!important}
 #stage .gallery-tile{width:80px!important;height:80px!important}
 #stage .gallery-group{align-items:center!important}
+/* Version footer is the final item in About's existing scroll area. */
+#stage .about-version{margin:clamp(12px,3cqw,20px) 4px 0;padding:9px 2px 5px;text-align:center;
+ direction:rtl;color:#07365f;font:700 clamp(11px,2.5cqw,16px)/1.8 var(--pmm-text-font)}
+#stage .about-version span{display:inline-block;direction:ltr;unicode-bidi:isolate}
 @media(prefers-reduced-motion:reduce){.pmm-wheel-board{transition:none!important}}
 
 
@@ -1458,6 +1462,12 @@ function openEitaa(url){
 }
 
 function renderAbout(){
+  // Always read the installed APK versionName, never hard-code a UI version.
+  let installedVersion='';
+  try {
+    if(window.PMMNative && typeof window.PMMNative.getAppVersion==='function')
+      installedVersion=String(window.PMMNative.getAppVersion()||'');
+  } catch(error) { installedVersion=''; }
   const group=USER_PHOTOS.map((src,i)=>`<button type="button" class="gallery-tile" data-photo="${i}" aria-label="نمایش تصویر ${fa(i+1)}"><img src="${src}" alt="تصویر ${fa(i+1)} از فعالیت‌های آموزشی" loading="lazy"></button>`).join('');
   contents.innerHTML=`<div class="about-menu">
       <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>درباره ما</span></button>
@@ -1465,6 +1475,7 @@ function renderAbout(){
       <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
         <div class="gallery-track"><div class="gallery-group">${group}</div><div class="gallery-group" aria-hidden="true">${group}</div></div>
       </div>
+      <div class="about-version" aria-label="نسخه برنامه">نسخه <span>${safe(fa(installedVersion||'—'))}</span></div>
     </div>`;
   document.getElementById('about-biography').addEventListener('click',()=>setState('biography'));
   document.getElementById('about-contact').addEventListener('click',()=>openEitaa(CONTACT_URL));

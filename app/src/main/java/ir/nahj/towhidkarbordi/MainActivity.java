@@ -49,6 +49,18 @@ public final class MainActivity extends Activity {
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
+        /** Read-only installed application version from APK package metadata. */
+        @JavascriptInterface
+        public String getAppVersion() {
+            try {
+                String name = MainActivity.this.getPackageManager()
+                        .getPackageInfo(MainActivity.this.getPackageName(), 0).versionName;
+                return name == null ? "" : name;
+            } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {
+                return "";
+            }
+        }
+
         /** App exit is accepted only when the trusted main page is on the home screen. */
         @android.webkit.JavascriptInterface
         public void exitApp() {
