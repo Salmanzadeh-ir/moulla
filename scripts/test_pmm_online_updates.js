@@ -6,6 +6,39 @@ const java=fs.readFileSync('app/src/main/java/ir/nahj/towhidkarbordi/MainActivit
 const native=fs.readFileSync('app/src/main/assets/photo_quotes_manifest.js','utf8');
 
 assert(html.includes('<script src="pmm_online_updates.js"></script>'));
+
+// Exact Nahj counts and ordered, unique stable IDs (no Word audio data fabricated).
+const catalogStart=html.indexOf('const NAHJ_AUDIO_GROUPS=');
+const catalogEnd=html.indexOf('function toast(s)',catalogStart);
+assert(catalogStart>=0&&catalogEnd>catalogStart,'Nahj audio catalog exists');
+const nahjCatalog=vm.runInNewContext(html.slice(catalogStart,catalogEnd)+
+  ';({groups:NAHJ_AUDIO_GROUPS,items:NAHJ_AUDIO_ITEMS,parts:NAHJ_AUDIO_PARTS})',{
+    fa:n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)])
+  });
+assert.deepEqual(Array.from(nahjCatalog.groups,g=>g.title),['خطبه‌ها','نامه‌ها','حکمت‌ها']);
+assert.equal(nahjCatalog.items.sermons.length,241);
+assert.equal(nahjCatalog.items.letters.length,79);
+assert.equal(nahjCatalog.items.wisdoms.length,489);
+for(const [key,pos,title] of [
+  ['sermons',0,'خطبه ۱'],['sermons',240,'خطبه ۲۴۱'],
+  ['letters',0,'نامه ۱'],['letters',78,'نامه ۷۹'],
+  ['wisdoms',0,'حکمت ۱'],['wisdoms',259,'حکمت ۲۶۰'],
+  ['wisdoms',260,'غرائب الحدیث ۱'],['wisdoms',268,'غرائب الحدیث ۹'],
+  ['wisdoms',269,'حکمت ۲۶۱'],['wisdoms',488,'حکمت ۴۸۰']]) {
+  assert.equal(nahjCatalog.items[key][pos].title,title);
+}
+assert.equal(new Set([
+  ...Array.from(nahjCatalog.items.sermons,x=>x.id),
+  ...Array.from(nahjCatalog.items.letters,x=>x.id),
+  ...Array.from(nahjCatalog.items.wisdoms,x=>x.id)
+]).size,809);
+assert.equal(Object.keys(nahjCatalog.parts).length,0,'No unverified audio part counts or links');
+const nahjRenderList=html.slice(html.indexOf('function renderList(){'),html.indexOf('function drawRows(){'));
+assert(nahjRenderList.includes('renderNahjAudioCatalog()'));
+assert(!nahjRenderList.includes('نمایش آرشیو سایت')&&!nahjRenderList.includes('باز کردن آرشیو ایتا'));
+const nahjBack=html.slice(html.indexOf('function goBack(){'),html.indexOf('// V10.0:',html.indexOf('function goBack(){')));
+assert(nahjBack.includes("item.nahjEntry")&&nahjBack.includes("item.nahjGroup"));
+
 assert(html.includes('pmm_online_updates.css'));
 const aboutBlock=html.slice(html.indexOf('function renderAbout(){'),html.indexOf('function renderBiography(){'));
 assert(aboutBlock.includes('window.PMMNative.getAppVersion()'),'About must read installed APK versionName');
