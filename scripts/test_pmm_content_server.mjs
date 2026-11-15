@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 if(!globalThis.crypto)globalThis.crypto=webcrypto;
-const {default:app}=await import('../online-content/worker.js');
+const modulePath=process.argv.includes('--single-file')?'../online-content/cloudflare-dashboard-single-file.js':'../online-content/worker.js';
+const {default:app}=await import(modulePath);
 const memory=new Map();
 const metadata=new Map();
 const env={
