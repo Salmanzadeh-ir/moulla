@@ -1,0 +1,38 @@
+/* Owner-approved feature: clear full-home modal, golden iwan remains visible behind blur. */
+#scene .pmm-update-overlay[hidden]{display:none!important}
+#scene .pmm-update-overlay{
+ position:absolute;inset:0;z-index:2500;
+ display:flex;align-items:center;justify-content:center;
+ padding:4.5%;direction:rtl;
+ background:rgba(17,38,59,.50);
+ -webkit-backdrop-filter:blur(7px) saturate(1.35);
+ backdrop-filter:blur(7px) saturate(1.35);
+}
+#scene .pmm-update-card{
+ width:min(96%,620px);max-height:91%;overflow-y:auto;
+ text-align:center;padding:clamp(17px,4.6cqw,35px);
+ color:#092f58;border-radius:clamp(18px,4cqw,32px);
+ border:3px solid #e0ad47;
+ background:linear-gradient(157deg,rgba(255,250,228,.97),rgba(248,221,157,.98) 65%,rgba(255,245,211,.98));
+ box-shadow:0 16px 55px #07192e8c, inset 0 0 0 2px #fff6d8;
+ font-family:Tahoma,Arial,sans-serif;line-height:1.75;
+}
+#scene .pmm-update-emblem{color:#aa7421;font-size:clamp(22px,7cqw,55px);line-height:1.05}
+#scene .pmm-update-card h2{font-size:clamp(18px,4.5cqw,35px);color:#073c76;margin:.4em 0;font-weight:900}
+#scene .pmm-update-subtitle{font-size:clamp(13px,2.9cqw,23px);font-weight:700;margin:0 0 .8em}
+#scene .pmm-update-summary{background:rgba(255,251,236,.74);border:1px solid #d6ac54;border-radius:14px;padding:.7em .85em;text-align:right;font-size:clamp(12px,2.7cqw,22px);font-weight:700}
+#scene .pmm-update-summary p{margin:.18em 0}
+#scene .pmm-update-footnote{font-size:clamp(11px,2.25cqw,17px);margin:1em auto;color:#72561d}
+#scene .pmm-update-actions{display:grid;gap:clamp(9px,2.6cqw,19px);margin-top:1em}
+#scene .pmm-update-actions button{display:block;width:100%;min-height:48px;border-radius:999px;padding:.7em 1em;font-size:clamp(14px,3.45cqw,26px);font-weight:900;box-shadow:0 4px 12px #573f2042}
+#scene .pmm-update-confirm{border:2px solid #b6801a;color:#093364;background:linear-gradient(#ffe8a1,#efbd50,#d79526)}
+#scene .pmm-update-later{border:2px solid #aab9c4;color:#19496e;background:linear-gradient(#fff,#e8f0f2)}
+#scene .pmm-update-actions button:focus-visible{outline:4px solid #0755a5;outline-offset:2px}
+.pmm-fresh-content{padding:12px;margin:12px 0;border:2px solid #cfa34b;border-radius:16px;background:#fff7e2}
+.pmm-fresh-content h3{margin:0 0 10px;text-align:center;color:#184a7a}
+.pmm-fresh-link{display:block;width:100%;text-align:right;margin:7px 0;padding:12px;border:1px solid #bc943f;border-radius:11px;background:#fff0c9;color:#174574;font-weight:700}
+.pmm-fresh-wisdom{margin-top:18px;padding:12px;border-top:2px solid #bb8c2f}
+.pmm-fresh-wisdom h2{text-align:center;color:#0b427a}
+.pmm-fresh-wisdom-item{background:#fff7df;border:1px solid #d7aa4f;border-radius:14px;padding:12px;margin:9px 0}
+.pmm-fresh-wisdom-item h3{text-align:center;color:#0b427a}.pmm-fresh-wisdom-item p{line-height:2;white-space:pre-wrap;overflow-wrap:anywhere}
+.pmm-fresh-ar{font-family:Amiri,'Noto Naskh Arabic',serif;font-size:1.18em}
