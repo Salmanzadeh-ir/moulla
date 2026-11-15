@@ -1,184 +1,136 @@
-/* پای منبر مولا — کد یک‌فایلی مخصوص Cloudflare Workers
- * این فایل را فقط در Edit code میزبان pmm-content-updates قرار دهید.
- * برای اجرا به KV binding با نام PMM_CONTENT و دو Secret با نام‌های
- * PMM_ADMIN_PASSWORD و PMM_SESSION_SECRET نیاز دارد.
- * هیچ رمز، کلید خصوصی APK یا اطلاعات پرداخت داخل این کد وجود ندارد.
- * این نسخه از R2 استفاده نمی‌کند.
- */
+/* Paye Menbare Mola | Cloudflare Workers (KV only, no R2)
+   Required bindings: PMM_CONTENT (KV), PMM_ADMIN_PASSWORD (Secret),
+   PMM_SESSION_SECRET (Secret, 32+ chars). */
+const HTML = `<!doctype html><html lang="fa" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مدیریت پای منبر مولا</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f7f0df;color:#1a3857;font:16px Tahoma,Arial;line-height:1.9}
+header{text-align:center;background:linear-gradient(120deg,#072e59,#14547b);color:#ffe5a2;padding:23px;border-bottom:4px solid #c79638}
+main{max-width:800px;margin:auto;padding:15px}.card{background:#fffdf7;border:1px solid #ddc89b;padding:19px;margin:15px 0;border-radius:16px}
+h1{font-size:24px}h2{font-size:19px}label{display:block;margin-top:12px;font-weight:bold}
+input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #b6aca0;border-radius:9px}textarea{min-height:100px}
+button{border:0;border-radius:10px;padding:11px 17px;margin:9px 3px;font:inherit;font-weight:bold;background:#dcb05b;color:#183954}
+.item{padding:10px;border-bottom:1px solid #ded0b2}.item button{background:#ffdfd9;color:#992a24}
+#msg{padding:12px;background:#eaf1f4;border-radius:10px;white-space:pre-wrap}[hidden]{display:none!important}
+</style></head><body><header><h1>پنل مدیریت پای منبر مولا</h1>انتشار آنلاین مطالب جدید</header><main>
+<section class="card" id="login"><h2>ورود مدیر</h2><form id="lf"><label>رمز مدیریت</label>
+<input id="pass" type="password" required><button>ورود</button></form></section>
+<div id="panel" hidden><section class="card"><h2>وضعیت انتشار</h2><p id="status"></p>
+<button type="button" id="reload">تازه‌سازی</button><button type="button" id="logout">خروج</button></section>
+<section class="card"><h2>انتشار مطلب جدید</h2><form id="pf"><label>بخش مقصد</label><select id="section">
+<option value="nahj_audio">شرح صوتی نهج‌البلاغه</option><option value="towhid">توحید کاربردی</option>
+<option value="see_god">دیدن خدا در زندگی</option><option value="kafi">شرح اصول کافی</option>
+<option value="videos">کلیپ‌های تصویری</option><option value="photo_quotes">عکس‌نوشته</option>
+<option value="guest_sentence_new">یک جمله مهمان مولا</option></select>
+<label>عنوان</label><input id="title" maxlength="180" required>
+<div id="links"><label>پیوند ایتا یا آپارات</label><input id="url" type="url"></div>
+<div id="photos" hidden><label>انتخاب تصویر (حداکثر ۸ مگابایت)</label>
+<input type="file" id="photo" accept="image/png,image/jpeg,image/webp"></div>
+<div id="wisdom" hidden><label>متن عربی</label><textarea id="ar"></textarea>
+<label>ترجمه فارسی</label><textarea id="fa"></textarea></div>
+<button id="submit">انتشار مطلب</button></form></section>
+<section class="card"><h2>مطالب منتشرشده</h2><div id="items"></div></section></div>
+<p id="msg" role="status">برای مدیریت وارد شوید.</p></main>
+<script>(function(){'use strict';const $=id=>document.getElementById(id);let state={revision:0,items:[]};
+function say(s){$('msg').textContent=s}
+async function req(path,options={}){let r=await fetch(path,{credentials:'same-origin',cache:'no-store',...options});
+let j=await r.json();if(!r.ok)throw Error(j.error||'خطا در اتصال');return j}
+function json(value){return {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(value)}}
+function choose(){let s=$('section').value;$('links').hidden=s==='photo_quotes'||s==='guest_sentence_new';
+$('photos').hidden=s!=='photo_quotes';$('wisdom').hidden=s!=='guest_sentence_new';
+$('url').required=!$('links').hidden;$('photo').required=!$('photos').hidden;
+$('ar').required=!$('wisdom').hidden;$('fa').required=!$('wisdom').hidden}
+function render(){ $('status').textContent='نسخه محتوا: '+state.revision+' | تعداد مطالب: '+state.items.length;
+let area=$('items');area.textContent='';if(!state.items.length)area.textContent='هنوز مطلبی منتشر نشده است.';
+state.items.slice().reverse().forEach(item=>{let div=document.createElement('div');div.className='item';
+let title=document.createElement('strong');title.textContent=item.title+' — '+item.section;
+let button=document.createElement('button');button.type='button';button.textContent='حذف';
+button.onclick=async()=>{if(!confirm('این مطلب حذف شود؟'))return;try{state=(await req('/api/admin/remove',json({id:item.id}))).manifest;render();say('مطلب حذف شد.')}catch(e){say(e.message)}};
+div.append(title,button);area.append(div)})}
+async function refresh(){try{state=(await req('/api/admin/state')).manifest;$('login').hidden=true;$('panel').hidden=false;render();say('پنل آماده است.')}catch(e){$('login').hidden=false;$('panel').hidden=true}}
+$('lf').onsubmit=async e=>{e.preventDefault();try{await req('/api/login',json({password:$('pass').value}));$('pass').value='';await refresh()}catch(err){say(err.message)}};
+$('section').onchange=choose;choose();$('reload').onclick=refresh;
+$('logout').onclick=async()=>{await req('/api/admin/logout',{method:'POST'});$('panel').hidden=true;$('login').hidden=false;say('خارج شدید.')};
+$('pf').onsubmit=async e=>{e.preventDefault();$('submit').disabled=true;try{
+let section=$('section').value,item={section,title:$('title').value.trim()};
+if(section==='photo_quotes'){let f=$('photo').files[0];if(!f)throw Error('تصویر انتخاب نشده');
+item.url=(await req('/api/admin/upload',{method:'POST',headers:{'content-type':f.type},body:f})).url;
+}else if(section==='guest_sentence_new'){item.arabic=$('ar').value.trim();item.persian=$('fa').value.trim()}
+else item.url=$('url').value.trim();state=(await req('/api/admin/publish',json(item))).manifest;
+render();$('pf').reset();choose();say('مطلب جدید منتشر شد.')
+}catch(err){say(err.message)}finally{$('submit').disabled=false}};refresh()})();</script></body></html>`;
 
-const ADMIN_HTML = "<!doctype html>\n<html lang=\"fa\" dir=\"rtl\"><head><meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>پنل مدیریت مطالب پای منبر مولا</title>\n<style>\n:root{color-scheme:light;font-family:Tahoma,Arial,sans-serif;background:#f7f0df;color:#203653}\n*{box-sizing:border-box}body{margin:0;line-height:1.75}header{background:linear-gradient(130deg,#082958,#0b4974);color:#fff5d6;padding:28px 16px;text-align:center;border-bottom:5px solid #bc8a30}\nh1{font-size:clamp(22px,5vw,32px);margin:0 0 8px}h2{font-size:20px;color:#124165}header p{margin:0;color:#ffe8b6}\nmain{max-width:850px;margin:auto;padding:18px 14px 50px}.card{padding:22px;margin:16px 0;background:#fffdf8;border:1px solid #d9c69d;border-radius:18px;box-shadow:0 4px 18px #56401116}\nlabel{display:block;font-weight:bold;margin:14px 0 4px;color:#174266}input,select,textarea{width:100%;border:1.5px solid #bcb09a;border-radius:11px;padding:12px;background:#fff;font:inherit;color:#102f51}\ntextarea{min-height:120px}input:focus,textarea:focus,select:focus{outline:3px solid #f0d99b;border-color:#a47a25}\nbutton{border:0;border-radius:12px;font:inherit;font-weight:800;padding:12px 18px;cursor:pointer}\n.primary{background:linear-gradient(#ffe8a5,#d89a30);color:#1b3150;border:1px solid #ad771a}.secondary{background:#edf2f4;color:#23405c;border:1px solid #b1bec7}.danger{background:#ffefed;color:#ae2722;border:1px solid #eac1bb}\nbutton:disabled{opacity:.55;cursor:wait}.stack{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}.message{font-size:14px;color:#53707c}#notice{padding:12px 15px;border-radius:10px;background:#f0f7fb;color:#103b62;white-space:pre-wrap}\n.list{display:grid;gap:10px}.item{border:1px solid #e2d4b7;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}\n.item strong{display:block}.item small{display:block;color:#5f717e}#image-preview{max-width:160px;max-height:210px;border-radius:12px;object-fit:contain}\n[hidden]{display:none!important}.chip{display:inline-block;border-radius:999px;background:#f7eacb;color:#75500e;padding:4px 9px;margin-inline:3px;font-size:13px}\n</style></head>\n<body>\n<header><h1>پنل مدیریت پای منبر مولا</h1><p>انتشار مطالب جدید برای مخاطبان اندروید — قابل استفاده در گوشی و ویندوز</p></header>\n<main>\n<section class=\"card\" id=\"login-card\">\n<h2>ورود مدیر</h2><p class=\"message\">این رمز با رمز GitHub یا کلید امضای APK ارتباطی ندارد. رمز مدیریت فقط روی سرور بررسی می‌شود.</p>\n<form id=\"login-form\"><label for=\"password\">رمز مدیریت محتوا</label><input id=\"password\" type=\"password\" required autocomplete=\"current-password\">\n<div class=\"stack\"><button class=\"primary\" type=\"submit\">ورود به مدیریت</button></div></form></section>\n<div id=\"panel\" hidden>\n<section class=\"card\"><h2>وضعیت انتشار</h2><p id=\"summary\">—</p><div class=\"stack\"><button id=\"refresh\" type=\"button\" class=\"secondary\">تازه‌سازی فهرست</button><button id=\"logout\" class=\"secondary\" type=\"button\">خروج از مدیریت</button></div></section>\n<section class=\"card\"><h2>افزودن مطلب تازه</h2>\n<p class=\"message\">فقط مطلب واقعی و تأییدشده منتشر کنید. با انتشار هر مطلب، شماره نسخه محتوایی افزایش می‌یابد و مخاطب هنگام بازکردن برنامه از آن آگاه می‌شود.</p>\n<form id=\"publish-form\">\n<label for=\"section\">بخش مقصد</label><select id=\"section\" required>\n<option value=\"nahj_audio\">شرح جامع صوتی نهج‌البلاغه</option>\n<option value=\"towhid\">توحید کاربردی</option>\n<option value=\"see_god\">دیدن خدا در زندگی</option>\n<option value=\"kafi\">شرح اصول کافی</option>\n<option value=\"videos\">کلیپ‌های تصویری</option>\n<option value=\"photo_quotes\">عکس‌نوشته</option>\n<option value=\"guest_sentence_new\">یک جمله مهمان مولا</option>\n</select>\n<label for=\"title\">عنوان مطلب</label><input id=\"title\" required maxlength=\"180\" placeholder=\"مثلاً جلسه جدید توحید کاربردی\">\n<div id=\"link-field\"><label for=\"url\">لینک معتبر ایتا یا آپارات</label><input id=\"url\" inputmode=\"url\" placeholder=\"https://eitaa.com/... یا https://www.aparat.com/v/...\"></div>\n<div id=\"photo-field\" hidden><label for=\"photo\">تصویر عکس‌نوشته (JPEG، PNG یا WebP؛ حداکثر ۸ مگابایت)</label>\n<input type=\"file\" id=\"photo\" accept=\"image/jpeg,image/png,image/webp\"><p class=\"message\">تصاویر روی سرور قرار می‌گیرند و هنگام مشاهده در برنامه دریافت می‌شوند؛ در برنامه به‌صورت دائمی ذخیره نمی‌شوند.</p><img id=\"image-preview\" hidden alt=\"پیش‌نمایش عکس‌نوشته\"></div>\n<div id=\"wisdom-fields\" hidden>\n<label for=\"arabic\">متن عربی</label><textarea id=\"arabic\" maxlength=\"3500\"></textarea>\n<label for=\"persian\">ترجمه فارسی</label><textarea id=\"persian\" maxlength=\"3500\"></textarea>\n</div>\n<div class=\"stack\"><button type=\"submit\" class=\"primary\" id=\"publish\">انتشار مطلب جدید</button></div>\n</form></section>\n<section class=\"card\"><h2>مطالب منتشرشده</h2><div class=\"list\" id=\"items\"></div></section>\n</div>\n<div id=\"notice\" role=\"status\" aria-live=\"polite\">اطلاعات پنل فقط پس از ورود نمایش داده می‌شود.</div>\n<p class=\"message\">پنل مدیریت محتوا کد برنامه یا APK را تغییر نمی‌دهد. انتشار تصویر یا لینک جدید، نسخه اصلی برنامه را جایگزین نمی‌کند.</p>\n</main>\n<script>\n(function(){\n'use strict';\nvar names={nahj_audio:'شرح جامع صوتی نهج‌البلاغه',towhid:'توحید کاربردی',see_god:'دیدن خدا در زندگی',\n kafi:'شرح اصول کافی',videos:'کلیپ‌های تصویری',photo_quotes:'عکس‌نوشته',guest_sentence_new:'یک جمله مهمان مولا'};\nvar $=function(id){return document.getElementById(id)};\nvar manifest={schema:1,revision:0,items:[]};\nfunction notice(message){$('notice').textContent=message}\nasync function api(path,options){\n var res=await fetch(path,Object.assign({credentials:'same-origin',cache:'no-store'},options||{}));\n var data=await res.json();\n if(!res.ok||!data.ok&&path!=='/api/manifest')throw Error(data.error||'ارتباط با سرور انجام نشد.');\n return data;\n}\nfunction displaySection(){\n var sec=$('section').value;\n $('link-field').hidden=sec==='photo_quotes'||sec==='guest_sentence_new';\n $('photo-field').hidden=sec!=='photo_quotes';\n $('wisdom-fields').hidden=sec!=='guest_sentence_new';\n $('url').required=!$('link-field').hidden;\n $('photo').required=sec==='photo_quotes';\n $('arabic').required=sec==='guest_sentence_new';\n $('persian').required=sec==='guest_sentence_new';\n}\nfunction render(){\n $('summary').textContent='نسخه محتوایی '+manifest.revision+' — تعداد مطالب منتشرشده: '+manifest.items.length+\n  (manifest.updatedAt?' — آخرین انتشار: '+new Date(manifest.updatedAt).toLocaleString('fa-IR'):'');\n var place=$('items');place.textContent='';\n if(!manifest.items.length){place.textContent='هنوز مطلب جدیدی منتشر نشده است.';return}\n manifest.items.slice().reverse().forEach(function(item){\n  var div=document.createElement('div');div.className='item';\n  var info=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');\n  strong.textContent=item.title;small.textContent=names[item.section]||item.section;\n  info.appendChild(strong);info.appendChild(small);\n  var btn=document.createElement('button');btn.type='button';btn.className='danger';btn.textContent='حذف';\n  btn.addEventListener('click',async function(){\n   if(!confirm('این مطلب از فهرست مخاطبان حذف شود؟'))return;\n   btn.disabled=true;try{var d=await api('/api/admin/remove',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:item.id})});manifest=d.manifest;render();notice('مطلب حذف شد.')}catch(e){notice(e.message)}finally{btn.disabled=false}\n  });\n  div.appendChild(info);div.appendChild(btn);place.appendChild(div);\n });\n}\nasync function refresh(){\n try{var d=await api('/api/admin/state');manifest=d.manifest;$('login-card').hidden=true;$('panel').hidden=false;render();notice('ارتباط امن با پنل مدیریت برقرار است.')}\n catch(e){$('login-card').hidden=false;$('panel').hidden=true;notice('برای ورود، رمز مدیریت را وارد کنید.')}\n}\n$('login-form').addEventListener('submit',async function(e){\n e.preventDefault();var pass=$('password').value;\n try{await api('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass})});$('password').value='';await refresh()}\n catch(e){notice(e.message)}\n});\n$('section').addEventListener('change',displaySection);displaySection();\n$('photo').addEventListener('change',function(){\n var f=$('photo').files[0];\n if(!f){$('image-preview').hidden=true;return}\n var preview=$('image-preview');preview.src=URL.createObjectURL(f);preview.hidden=false;\n preview.onload=function(){URL.revokeObjectURL(preview.src)};\n});\n$('publish-form').addEventListener('submit',async function(e){\n e.preventDefault();var btn=$('publish');btn.disabled=true;\n try{\n  var section=$('section').value;\n  var payload={section:section,title:$('title').value.trim()};\n  if(section==='photo_quotes'){\n   var file=$('photo').files[0];\n   if(!file)throw Error('تصویر را انتخاب کنید.');\n   var d=await api('/api/admin/upload',{method:'POST',headers:{'content-type':file.type},body:file});\n   payload.url=d.url;\n  }else if(section==='guest_sentence_new'){\n   payload.arabic=$('arabic').value.trim();payload.persian=$('persian').value.trim();\n  }else payload.url=$('url').value.trim();\n  var pub=await api('/api/admin/publish',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});\n  manifest=pub.manifest;render();$('publish-form').reset();displaySection();$('image-preview').hidden=true;notice('مطلب منتشر شد. از این پس در اعلان به‌روزرسانی مخاطبان دیده می‌شود.');\n }catch(err){notice('انتشار انجام نشد: '+err.message)}\n finally{btn.disabled=false}\n});\n$('refresh').addEventListener('click',refresh);\n$('logout').addEventListener('click',async function(){\n try{await api('/api/admin/logout',{method:'POST'});}catch(_){}\n $('panel').hidden=true;$('login-card').hidden=false;notice('از پنل مدیریت خارج شدید.');\n});\nrefresh();\n})();\n</script>\n</body></html>";
-
-const KEY = 'manifest-v1';
-// One free-tier Workers KV namespace holds both the manifest and image objects.
-// This deliberately avoids activating the optional recurring R2 subscription.
-const MEDIA_PREFIX = 'media:';
-const SECTIONS = new Set([
-  'nahj_audio', 'towhid', 'see_god', 'kafi', 'videos', 'photo_quotes', 'guest_sentence_new'
-]);
-const ALLOWED_MEDIA_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const MAX_ITEMS = 3000;
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
-const MAX_MANIFEST_BYTES = 1024 * 1024;
-const jsonHeaders = {'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'};
-const textHeaders = {'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer',
-  'content-security-policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"};
-
-function response(data, status=200) {return new Response(JSON.stringify(data), {status,headers:jsonHeaders});}
-function deny(status=403, error='دسترسی مجاز نیست') {return response({ok:false,error},status);}
-function encode(input) {return btoa(String.fromCharCode(...new TextEncoder().encode(input))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
-function decode(input) {return new TextDecoder().decode(Uint8Array.from(atob(input.replace(/-/g,'+').replace(/_/g,'/')), c=>c.charCodeAt(0)));}
-function equal(a,b) {
-  if(a.length!==b.length)return false;
-  let diff=0;for(let i=0;i<a.length;i++)diff|=a[i]^b[i];return diff===0;
+const KEY='manifest-v1',PREFIX='media:',MAX=8*1024*1024;
+const SECTIONS=new Set(['nahj_audio','towhid','see_god','kafi','videos','photo_quotes','guest_sentence_new']);
+const TYPES=new Set(['image/jpeg','image/png','image/webp']);
+const HEAD={'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'};
+const out=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:HEAD});
+const fail=(message,status=400)=>out({ok:false,error:message},status);
+const enc=s=>new TextEncoder().encode(s);
+const b64=bytes=>btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function sig(value,secret){const key=await crypto.subtle.importKey('raw',enc(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+return b64(new Uint8Array(await crypto.subtle.sign('HMAC',key,enc(value))))}
+function equal(a,b){if(a.length!==b.length)return false;let n=0;for(let i=0;i<a.length;i++)n|=a.charCodeAt(i)^b.charCodeAt(i);return n===0}
+async function authed(request,env){const c=(request.headers.get('cookie')||'').match(/(?:^|;\s*)pmm_admin=([^;]+)/);
+if(!c||!env.PMM_SESSION_SECRET)return false;let [payload,signature]=c[1].split('.');if(!signature)return false;
+try{let decoded=Uint8Array.from(atob(payload.replace(/-/g,'+').replace(/_/g,'/')),x=>x.charCodeAt(0));
+let data=JSON.parse(new TextDecoder().decode(decoded));return Number.isInteger(data.exp)&&data.exp>Date.now()&&
+data.exp<=Date.now()+43200000&&equal(signature,await sig(payload,env.PMM_SESSION_SECRET))}catch{return false}}
+function media(url){try{let u=new URL(url);if(u.protocol!=='https:'||u.username||u.password||u.port)return false;
+if(u.hostname==='eitaa.com')return /^\/(?:[a-zA-Z0-9_]+\/[0-9]+|joinchat\/[a-zA-Z0-9]+)\/?$/.test(u.pathname);
+return (u.hostname==='aparat.com'||u.hostname==='www.aparat.com')&&/^\/v\/[a-zA-Z0-9_-]+\/?$/.test(u.pathname)}catch{return false}}
+async function list(env){return await env.PMM_CONTENT.get(KEY,'json')||{schema:1,revision:0,updatedAt:null,items:[]}}
+function picture(bytes,type){return type==='image/jpeg'?bytes[0]===255&&bytes[1]===216&&bytes[2]===255:
+ type==='image/png'?bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71&&bytes[4]===13&&bytes[5]===10:
+ type==='image/webp'?String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP':false}
+export default {async fetch(request,env){const u=new URL(request.url),p=u.pathname,m=request.method;
+if(p==='/admin'&&m==='GET')return new Response(HTML,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff',
+ 'content-security-policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"}});
+if(p==='/api/manifest'&&m==='GET'){if(!env.PMM_CONTENT)return fail('فضای KV تنظیم نشده',503);return out(await list(env))}
+if(p.startsWith('/media/')&&m==='GET'){if(!env.PMM_CONTENT)return fail('KV تنظیم نشده',503);
+let id=p.slice(7);if(!/^[a-f0-9-]{36}$/.test(id))return fail('تصویر یافت نشد',404);
+let obj=await env.PMM_CONTENT.getWithMetadata(PREFIX+id,'arrayBuffer');if(!obj?.value||!TYPES.has(obj.metadata?.contentType))return fail('تصویر یافت نشد',404);
+return new Response(obj.value,{headers:{'content-type':obj.metadata.contentType,'cache-control':'private, no-store','x-content-type-options':'nosniff'}})}
+if(p==='/api/login'&&m==='POST'){if(request.headers.get('origin')!==u.origin)return fail('دسترسی غیرمجاز',403);
+if(!env.PMM_ADMIN_PASSWORD||!env.PMM_SESSION_SECRET||env.PMM_ADMIN_PASSWORD.length<16||env.PMM_SESSION_SECRET.length<32)return fail('رمز مدیریت تنظیم نشده',503);
+let body;try{body=await request.json()}catch{return fail('اطلاعات نامعتبر')}
+if(typeof body.password!=='string'||body.password.length>500)return fail('رمز نامعتبر');
+let h=async v=>new Uint8Array(await crypto.subtle.digest('SHA-256',enc(v))),a=await h(body.password),b=await h(env.PMM_ADMIN_PASSWORD);
+let d=0;for(let i=0;i<a.length;i++)d|=a[i]^b[i];if(d)return fail('رمز اشتباه است',401);
+let payload=b64(enc(JSON.stringify({exp:Date.now()+43200000,nonce:crypto.randomUUID()})));
+let res=out({ok:true});res.headers.set('set-cookie','pmm_admin='+payload+'.'+await sig(payload,env.PMM_SESSION_SECRET)+'; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=43200');return res}
+if(p.startsWith('/api/admin/')){
+if(!await authed(request,env))return fail('ابتدا وارد شوید',401);
+if(m!=='GET'&&request.headers.get('origin')!==u.origin)return fail('دسترسی غیرمجاز',403);
+if(!env.PMM_CONTENT)return fail('KV تنظیم نشده',503);
+if(p==='/api/admin/state'&&m==='GET')return out({ok:true,manifest:await list(env)});
+if(p==='/api/admin/logout'&&m==='POST'){let res=out({ok:true});res.headers.set('set-cookie','pmm_admin=; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=0');return res}
+if(p==='/api/admin/upload'&&m==='POST'){
+let type=(request.headers.get('content-type')||'').split(';')[0],size=Number(request.headers.get('content-length')||0);
+if(!TYPES.has(type)||size>MAX)return fail('فقط تصویر JPEG، PNG یا WebP تا ۸ مگابایت',413);
+let bytes=await request.arrayBuffer();if(bytes.byteLength>MAX||!picture(new Uint8Array(bytes),type))return fail('تصویر نامعتبر');
+let id=crypto.randomUUID();await env.PMM_CONTENT.put(PREFIX+id,bytes,{metadata:{contentType:type}});return out({ok:true,url:u.origin+'/media/'+id})}
+if(p==='/api/admin/publish'&&m==='POST'){
+let body;try{body=await request.json()}catch{return fail('اطلاعات نامعتبر')}
+if(!SECTIONS.has(body.section)||typeof body.title!=='string'||body.title.trim().length<2||body.title.length>180)return fail('عنوان یا بخش نامعتبر');
+let item={id:crypto.randomUUID(),section:body.section,title:body.title.trim()};
+if(item.section==='guest_sentence_new'){
+if(typeof body.arabic!=='string'||typeof body.persian!=='string'||body.arabic.trim().length<3||body.persian.trim().length<3||body.arabic.length>3500||body.persian.length>3500)return fail('متن عربی یا فارسی نامعتبر');
+item.arabic=body.arabic.trim();item.persian=body.persian.trim();
+}else if(item.section==='photo_quotes'){
+try{let image=new URL(body.url);if(image.origin!==u.origin||!/^\/media\/[a-f0-9-]{36}$/.test(image.pathname))return fail('آدرس عکس نامعتبر');item.url=image.href}catch{return fail('آدرس عکس نامعتبر')}
+}else{if(!media(body.url))return fail('لینک ایتا یا آپارات نامعتبر');item.url=body.url}
+let old=await list(env);if(old.items.length>=3000)return fail('فهرست پر شده',409);
+item.revision=old.revision+1;let next={schema:1,revision:item.revision,updatedAt:new Date().toISOString(),items:[...old.items,item]};
+if(JSON.stringify(next).length>1024*1024)return fail('فهرست بزرگ است',413);
+await env.PMM_CONTENT.put(KEY,JSON.stringify(next));return out({ok:true,manifest:next})}
+if(p==='/api/admin/remove'&&m==='POST'){
+let body;try{body=await request.json()}catch{return fail('اطلاعات نامعتبر')}
+let old=await list(env),item=old.items.find(x=>x.id===body.id);if(!item)return fail('مطلب پیدا نشد',404);
+let next={schema:1,revision:old.revision+1,updatedAt:new Date().toISOString(),items:old.items.filter(x=>x.id!==body.id)};
+await env.PMM_CONTENT.put(KEY,JSON.stringify(next));if(item.section==='photo_quotes'){
+try{let image=new URL(item.url);if(image.origin===u.origin&&/^\/media\/[a-f0-9-]{36}$/.test(image.pathname))await env.PMM_CONTENT.delete(PREFIX+image.pathname.slice(7))}catch{}}
+return out({ok:true,manifest:next})}
 }
-async function hash(input) {return new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(input)));}
-async function sign(data, secret){
-  const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
-  return encode(String.fromCharCode(...new Uint8Array(await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(data)))));
-}
-async function authorized(req,env) {
-  if(!env.PMM_SESSION_SECRET)return false;
-  const cookie=(req.headers.get('cookie')||'').match(/(?:^|;\s*)pmm_admin=([^;]+)/);
-  if(!cookie)return false;
-  const value=cookie[1].split('.');
-  if(value.length!==2)return false;
-  try{
-    const payload=JSON.parse(decode(value[0]));
-    if(!Number.isInteger(payload.exp)||payload.exp<Date.now()||payload.exp>Date.now()+43200000)return false;
-    const expected=await sign(value[0],env.PMM_SESSION_SECRET);
-    return equal(new TextEncoder().encode(expected),new TextEncoder().encode(value[1]));
-  }catch(_){return false;}
-}
-function sameOrigin(req,url) {
-  const origin=req.headers.get('origin');
-  return origin===url.origin;
-}
-function httpsMedia(value) {
-  try{
-    const url=new URL(value);
-    return url.protocol==='https:'&&!url.username&&!url.password&&!url.port&&
-      ((url.hostname==='eitaa.com'&&/^\/(?:[a-zA-Z0-9_]+\/[0-9]+|joinchat\/[A-Za-z0-9]+)\/?$/.test(url.pathname))||
-       ((url.hostname==='aparat.com'||url.hostname==='www.aparat.com')&&/^\/v\/[a-zA-Z0-9_-]+\/?$/.test(url.pathname)));
-  }catch(_){return false}
-}
-function validText(value,min,max){return typeof value==='string'&&value.trim().length>=min&&value.length<=max}
-function normalizeItem(item,origin){
-  if(!item||typeof item!=='object'||!SECTIONS.has(item.section)||!validText(item.title,2,180))throw Error('عنوان یا بخش معتبر نیست.');
-  const section=item.section;
-  const result={id:crypto.randomUUID(),section,title:item.title.trim()};
-  if(section==='guest_sentence_new'){
-    if(!validText(item.arabic,3,3500)||!validText(item.persian,3,3500))throw Error('متن عربی و ترجمه فارسی الزامی است.');
-    result.arabic=item.arabic.trim();result.persian=item.persian.trim();
-  } else if(section==='photo_quotes'){
-    let image;try{image=new URL(item.url)}catch(_){throw Error('آدرس تصویر معتبر نیست.')}
-    if(image.origin!==origin||!/^\/media\/[a-f0-9-]{36}$/.test(image.pathname))throw Error('تصویر باید از پنل مدیریت بارگذاری شود.');
-    result.url=image.href;
-  }else{
-    if(!httpsMedia(item.url))throw Error('فقط پیوندهای معتبر ایتا یا آپارات پذیرفته می‌شوند.');
-    result.url=item.url;
-  }
-  return result;
-}
-async function getManifest(env){
-  let content=await env.PMM_CONTENT.get(KEY,'json');
-  if(!content)content={schema:1,revision:0,updatedAt:null,items:[]};
-  if(!Array.isArray(content.items)||!Number.isSafeInteger(content.revision)||content.schema!==1)throw Error('Invalid manifest format');
-  return content;
-}
-function mediaHeaders(type) {
-  return {'content-type':type,'cache-control':'private, no-store, max-age=0','x-content-type-options':'nosniff','referrer-policy':'no-referrer'};
-}
-function validImageMagic(bytes,type) {
-  if(type==='image/jpeg')return bytes.length>3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff;
-  if(type==='image/png')return bytes.length>8&&bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71&&bytes[4]===13&&bytes[5]===10&&bytes[6]===26&&bytes[7]===10;
-  if(type==='image/webp')return bytes.length>12&&String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP';
-  return false;
-}
-
-export default {
-  async fetch(req,env){
-    const u=new URL(req.url),path=u.pathname,method=req.method;
-    if(path==='/admin'&&method==='GET'){
-      return new Response(ADMIN_HTML,{headers:textHeaders});
-    }
-    if(path==='/api/manifest'&&method==='GET'){
-      if(!env.PMM_CONTENT)return deny(503,'پایگاه داده هنوز تنظیم نشده است.');
-      return response(await getManifest(env));
-    }
-    if(path.startsWith('/media/')&&method==='GET'){
-      if(!env.PMM_CONTENT)return deny(503,'فضای محتوا هنوز تنظیم نشده است.');
-      const id=path.slice(7);
-      if(!/^[a-f0-9-]{36}$/.test(id))return deny(404,'تصویر یافت نشد');
-      const obj=await env.PMM_CONTENT.getWithMetadata(MEDIA_PREFIX+id,'arrayBuffer');
-      if(!obj||!obj.value)return deny(404,'تصویر یافت نشد');
-      const type=obj.metadata?.contentType;
-      if(!ALLOWED_MEDIA_TYPES.has(type))return deny(404,'تصویر معتبر نیست');
-      return new Response(obj.value,{headers:mediaHeaders(type)});
-    }
-    if(path==='/api/login'&&method==='POST'){
-      if(!sameOrigin(req,u))return deny();
-      if(!env.PMM_ADMIN_PASSWORD||!env.PMM_SESSION_SECRET||
-         env.PMM_ADMIN_PASSWORD.length<16||env.PMM_SESSION_SECRET.length<32)return deny(503,'مدیریت هنوز ایمن پیکربندی نشده است.');
-      let data;try{data=await req.json()}catch(_){return deny(400,'درخواست نامعتبر است')}
-      const candidate=typeof data.password==='string'?data.password:'';
-      if(candidate.length>500)return deny(400);
-      if(!equal(await hash(candidate),await hash(env.PMM_ADMIN_PASSWORD)))return deny(401,'رمز مدیریت اشتباه است.');
-      const payload=encode(JSON.stringify({exp:Date.now()+12*60*60*1000,nonce:crypto.randomUUID()}));
-      const token=payload+'.'+await sign(payload,env.PMM_SESSION_SECRET);
-      const res=response({ok:true});
-      res.headers.append('set-cookie','pmm_admin='+token+'; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=43200');
-      return res;
-    }
-    if(path.startsWith('/api/admin/')){
-      if(!await authorized(req,env))return deny(401,'ابتدا وارد پنل مدیریت شوید.');
-      if(method!=='GET'&&!sameOrigin(req,u))return deny();
-      if(!env.PMM_CONTENT)return deny(503,'پایگاه داده تنظیم نشده است.');
-      if(path==='/api/admin/state'&&method==='GET')return response({ok:true,manifest:await getManifest(env)});
-      if(path==='/api/admin/logout'&&method==='POST'){
-        const res=response({ok:true});res.headers.append('set-cookie','pmm_admin=; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=0');return res;
-      }
-      if(path==='/api/admin/upload'&&method==='POST'){
-        const type=(req.headers.get('content-type')||'').split(';')[0].toLowerCase();
-        const reported=Number(req.headers.get('content-length')||0);
-        if(!ALLOWED_MEDIA_TYPES.has(type)||reported>MAX_IMAGE_BYTES)return deny(413,'فقط تصویر JPEG/PNG/WebP تا ۸ مگابایت مجاز است.');
-        const buf=await req.arrayBuffer();
-        if(buf.byteLength>MAX_IMAGE_BYTES||!validImageMagic(new Uint8Array(buf),type))return deny(400,'فایل تصویر معتبر نیست.');
-        const key=crypto.randomUUID();
-        await env.PMM_CONTENT.put(MEDIA_PREFIX+key,buf,{metadata:{contentType:type}});
-        return response({ok:true,url:u.origin+'/media/'+key});
-      }
-      if(path==='/api/admin/publish'&&method==='POST'){
-        const old=await getManifest(env);
-        if(old.items.length>=MAX_ITEMS)return deny(409,'حداکثر تعداد مطالب ثبت شده است.');
-        let data;try{data=await req.json()}catch(_){return deny(400,'داده نامعتبر است.')}
-        let item;try{item=normalizeItem(data,u.origin)}catch(e){return deny(400,e.message)}
-        item.revision=old.revision+1;
-        const next={schema:1,revision:old.revision+1,updatedAt:new Date().toISOString(),
-          items:[...old.items,item]};
-        if(JSON.stringify(next).length>MAX_MANIFEST_BYTES)return deny(413,'حجم فهرست بیش از حد است.');
-        await env.PMM_CONTENT.put(KEY,JSON.stringify(next));
-        return response({ok:true,manifest:next});
-      }
-      if(path==='/api/admin/remove'&&method==='POST'){
-        let body;try{body=await req.json()}catch(_){return deny(400)}
-        if(typeof body.id!=='string')return deny(400);
-        const old=await getManifest(env),nextItems=old.items.filter(item=>item.id!==body.id);
-        if(nextItems.length===old.items.length)return deny(404,'مطلب پیدا نشد.');
-        const next={schema:1,revision:old.revision+1,updatedAt:new Date().toISOString(),items:nextItems};
-        await env.PMM_CONTENT.put(KEY,JSON.stringify(next));
-        // A deleted photo should not consume the owner's limited free KV storage.
-        const removed=old.items.find(item=>item.id===body.id);
-        if(removed?.section==='photo_quotes'){
-          try{
-            const uri=new URL(removed.url);
-            if(uri.origin===u.origin && /^\/media\/[a-f0-9-]{36}$/.test(uri.pathname)){
-              await env.PMM_CONTENT.delete(MEDIA_PREFIX+uri.pathname.slice(7));
-            }
-          }catch(_){/* The manifest removal itself has succeeded. */}
-        }
-        return response({ok:true,manifest:next});
-      }
-    }
-    return deny(404,'مسیر یافت نشد.');
-  }
-};
+return fail('مسیر یافت نشد',404)
+}};
