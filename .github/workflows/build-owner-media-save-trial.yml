@@ -65,10 +65,10 @@ jobs:
           text=p.read_text()
           before="applicationIdSuffix '.remindtest107'"
           assert text.count(before)==1
-          text=text.replace(before,"applicationIdSuffix '.mediasavetrial108'")
+          text=text.replace(before,"applicationIdSuffix '.mediasavetrial109'")
           before="versionNameSuffix '-debug'"
           assert text.count(before)==1
-          text=text.replace(before,"versionNameSuffix '-media-save-trial-debug'")
+          text=text.replace(before,"versionNameSuffix '-media-save-trial2-debug'")
           p.write_text(text)
           PY
       - name: Build unsigned-for-store but signed-for-debug test APK
@@ -82,14 +82,14 @@ jobs:
           TOOLS="$ANDROID_HOME/build-tools/35.0.0"
           APK=app/build/outputs/apk/debug/app-debug.apk
           "$TOOLS/apksigner" verify --verbose "$APK"
-          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.mediasavetrial108'"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.mediasavetrial109'"
           mkdir -p dist
-          cp "$APK" dist/PMM-1.0.7-MEDIA-SAVE-TRIAL-DEBUG.apk
-          (cd dist && sha256sum PMM-1.0.7-MEDIA-SAVE-TRIAL-DEBUG.apk > SHA256SUMS.txt)
+          cp "$APK" dist/PMM-1.0.7-MEDIA-SAVE-TRIAL2-DEBUG.apk
+          (cd dist && sha256sum PMM-1.0.7-MEDIA-SAVE-TRIAL2-DEBUG.apk > SHA256SUMS.txt)
       - name: Publish recoverable ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PMM-Owner-MediaSave-DEBUG-Trial
+          name: PMM-Owner-MediaSave-DEBUG-Trial2
           path: dist/
           if-no-files-found: error
           retention-days: 30
@@ -99,7 +99,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          name='download/owner-media-save-trial-20261116'
+          name='download/owner-media-save-trial-v2-20261116'
           mkdir -p /tmp/pmm-media-save-artifact
           cp dist/* /tmp/pmm-media-save-artifact/
           cd /tmp/pmm-media-save-artifact
