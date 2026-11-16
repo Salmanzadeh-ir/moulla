@@ -849,7 +849,6 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  color:#ffe5a3;font-size:clamp(23px,5.5cqw,31px)}
 #stage .nahj-audio-group-copy{display:grid;gap:4px}
 #stage .nahj-audio-group-title{font-size:clamp(15px,3.6cqw,22px);font-weight:900}
-#stage .nahj-audio-group-subtitle{font-size:clamp(11px,2.4cqw,15px);font-weight:650}
 #stage .nahj-audio-caption{margin:5px 2px 12px;padding:8px 5px;text-align:center;border-bottom:2px solid #bd8634;
  color:#063866;font:800 clamp(14px,3.3cqw,20px)/1.7 var(--pmm-text-font)}
 #stage .nahj-audio-empty{margin:12px 2%;padding:18px 12px;text-align:center;direction:rtl;
@@ -1756,7 +1755,7 @@ function renderNahjAudioCatalog(){
       `<button class="nahj-audio-group" type="button" data-nahj-group="${group.id}" aria-label="${group.title}">
         <span class="nahj-audio-symbol" aria-hidden="true">${group.icon}</span>
         <span class="nahj-audio-group-copy"><span class="nahj-audio-group-title">${group.title}</span>
-        <span class="nahj-audio-group-subtitle">${fa(group.count)} شماره</span></span></button>`
+        </span></button>`
     ).join('')+'</div>';
     contents.querySelectorAll('[data-nahj-group]').forEach(button=>
       button.addEventListener('click',()=>setState('list','nahj',{nahjGroup:button.dataset.nahjGroup})));
@@ -1766,7 +1765,7 @@ function renderNahjAudioCatalog(){
   const records=NAHJ_AUDIO_ITEMS[chosen.id];
   const entryId=item&&typeof item==='object'?item.nahjEntry:null;
   if(!entryId){
-    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title} — ${fa(records.length)} مورد</div>`+
+    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title}</div>`+
        nahjResumeSummary(chosen.id)+`
       <div class="row-list nahj-audio-list">${records.map(record=>
         `<button class="session nahj-audio-entry" type="button" data-nahj-entry="${record.id}" aria-label="${record.title}">

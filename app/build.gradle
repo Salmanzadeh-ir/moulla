@@ -13,8 +13,8 @@ android {
         applicationId 'ir.nahj.towhidkarbordi'
         minSdk 23
         targetSdk 34
-        versionCode 21
-        versionName '1.0.4'
+        versionCode 22
+        versionName '1.0.5'
     }
 
     signingConfigs {
@@ -33,7 +33,7 @@ android {
     buildTypes {
         debug {
             // Owner-approved independent trial: do not replace official or prior debug installs.
-            applicationIdSuffix '.resumetrial104'
+            applicationIdSuffix '.resumetrial105'
             versionNameSuffix '-debug'
         }
         release {

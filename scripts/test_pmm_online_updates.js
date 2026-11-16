@@ -24,7 +24,7 @@ assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisd
 assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
 assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
 const versionGradle=fs.readFileSync('app/build.gradle','utf8');
-assert(/versionCode 21\s+versionName '1.0.4'/.test(versionGradle),'Version must progress monotonically');
+assert(/versionCode 22\s+versionName '1.0.5'/.test(versionGradle),'Version must progress monotonically');
 
 
 // Only owner-approved three-line-or-shorter wisdoms may enter the draw.
@@ -86,9 +86,10 @@ assert(drawAction.includes('let preview=candidates[randInt(candidates.length)]')
 assert(drawAction.includes("wisdoms.length!==489"),'Keep original complete bank integrity check');
 
 // Exactly the owner-authorized offline resume feature, with independent test package.
-assert(versionGradle.includes("applicationIdSuffix '.resumetrial104'"),
+assert(versionGradle.includes("applicationIdSuffix '.resumetrial105'"),
  'This APK must install alongside ALL previous apps, never as their update');
 assert(!versionGradle.includes("applicationIdSuffix '.newiwanv16'"));
+assert(!versionGradle.includes("applicationIdSuffix '.resumetrial104'"),'Previous 1.0.4 install ID remains independent');
 const progressFrom=html.indexOf('/* Offline-only learning history.');
 assert(progressFrom>0,'Progress script must be loaded before the Wisdom IIFE');
 const progressSource=html.slice(progressFrom,html.indexOf('</script>',progressFrom));
@@ -149,6 +150,15 @@ const wisdomEligibility=html.slice(html.indexOf('function threeLineWisdomCandida
 assert(wisdomEligibility.includes('fits(arabic,w.arabic)&&fits(persian,w.persian)'),
  'Both full sentences must fit within exactly three normal-size lines');
 assert(wisdomEligibility.includes('3*lineHeight+1'),'No arbitrary character cutoff');
+
+// Owner approved removing numerical totals from Nahj category tiles and list headings.
+const nahjCountView=html.slice(html.indexOf('function renderNahjAudioCatalog(){'),html.indexOf('function toast(s)'));
+assert(nahjCountView.includes('class="nahj-audio-group-title"'),'Category titles stay');
+assert(nahjCountView.includes('class="nahj-audio-caption">${chosen.title}</div>'),'List title stays');
+assert(!nahjCountView.includes('group.count'),'No category totals');
+assert(!nahjCountView.includes('records.length'),'No list totals');
+assert(!nahjCountView.includes('nahj-audio-group-subtitle'),'No subtitle');
+assert(nahjCountView.includes('attachNahjInlineAudio(chosen.id,record.id)'),'Inline playback intact');
 
 // Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
 const audioJs=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');
