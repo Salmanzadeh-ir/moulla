@@ -112,6 +112,26 @@ button:not(:disabled){cursor:pointer}
 #hit-towhid{left:18.4%;top:49.0%;width:28.9%;height:18.9%}#hit-life{left:51.4%;top:49.0%;width:28.9%;height:18.9%}#hit-kafi{left:18.4%;top:68.8%;width:28.9%;height:19.2%}#hit-nahj{left:51.4%;top:68.8%;width:28.9%;height:19.2%}
 .top-action{position:absolute;top:35.6%;height:3.8%;width:20%;background:transparent;border:0;z-index:5;border-radius:40%;touch-action:manipulation}.top-action:active{background:#60401933;box-shadow:inset 0 4px 9px #613f1a55;transform:translateY(1px)}.top-action:focus-visible{outline:3px solid white}
 #back-button{right:10.7%}
+/* Owner trial: numeric Nahj finder mirrors the legacy Back control without changing its art. */
+#stage #nahj-find-button{left:10.7%;right:auto;display:flex;justify-content:center;align-items:center;gap:3px;
+ border:2px solid #d9ac59;border-radius:999px;background:linear-gradient(155deg,#0a619c,#06366e,#062350);
+ color:#fff2c7;box-shadow:0 2px 6px #452b1766;font-weight:900;font-size:clamp(10px,2.35cqw,17px);
+ font-family:'PMM Estedad',Tahoma,Arial,sans-serif;padding:0 5px;cursor:pointer}
+#stage #nahj-find-button svg{width:clamp(15px,3.6cqw,22px);height:clamp(15px,3.6cqw,22px);flex:none}
+#stage #nahj-find-button[hidden],#stage #nahj-find-panel[hidden]{display:none!important}
+#stage #nahj-find-panel{position:absolute;z-index:20;top:47%;left:13%;width:74%;box-sizing:border-box;
+ padding:10px;border:2px solid #c38b36;border-radius:15px;direction:rtl;text-align:right;
+ background:linear-gradient(155deg,#fff8da,#f2d491);color:#073965;
+ box-shadow:0 6px 20px #34200c88;font-family:'PMM Estedad',Tahoma,Arial,sans-serif}
+#stage #nahj-find-panel label{display:block;font-size:clamp(12px,2.7cqw,18px);font-weight:900;margin-bottom:6px}
+#stage #nahj-find-row{display:flex;align-items:center;gap:5px}
+#stage #nahj-find-input{width:100%;min-width:0;flex:1;padding:7px;border:1.5px solid #a9792d;
+ border-radius:9px;background:#fffdf5;direction:ltr;text-align:center;color:#09345b;
+ font-family:'PMM Estedad',Tahoma,Arial,sans-serif;font-size:16px}
+#stage .nahj-find-action{flex:none;min-height:37px;padding:5px 9px;border:1px solid #a87722;border-radius:9px;
+ background:linear-gradient(#0e5d94,#042b5c);color:#fff1ca;font-weight:900;cursor:pointer}
+#stage #nahj-find-status{font-size:clamp(11px,2.4cqw,15px);color:#8b320c;min-height:0;margin-top:4px}
+#stage #nahj-find-status:empty{display:none}
 .list-title{position:absolute;left:30.5%;width:39%;top:42.5%;height:4.9%;object-fit:contain;z-index:4;pointer-events:none}
 .content-view{position:absolute;top:48.5%;left:15.55%;width:67.3%;height:38.8%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#a96b20 transparent;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:3;direction:ltr;mask-image:linear-gradient(to bottom,transparent 0,black 1.5%,black 97%,transparent 100%)}
 .content-view::-webkit-scrollbar{width:4px}.content-view::-webkit-scrollbar-thumb{background:#c48a36aa;border-radius:2px}
@@ -1643,6 +1663,12 @@ window.PMM_NEW_UI=Object.freeze({
 <div class="pane gone" id="list-pane">
 <div class="inner-gold-panel" aria-hidden="true"></div>
 <button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
+<button type="button" class="top-action" id="nahj-find-button" title="جستجوی شماره" aria-label="جستجوی شماره خطبه، نامه یا حکمت" aria-controls="nahj-find-panel" aria-expanded="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span>جستجو</span></button>
+<form id="nahj-find-panel" role="search" aria-label="جستجوی عددی در شرح نهج‌البلاغه" hidden>
+  <label id="nahj-find-label" for="nahj-find-input">شماره مورد</label>
+  <div id="nahj-find-row"><input id="nahj-find-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="شماره فارسی یا انگلیسی" aria-describedby="nahj-find-status"><button type="submit" class="nahj-find-action">برو</button><button type="button" id="nahj-find-close" class="nahj-find-action" aria-label="بستن جستجو">×</button></div>
+  <div id="nahj-find-status" role="status" aria-live="polite"></div>
+</form>
 <img class="list-title gone" id="dynamic-title" alt="عنوان بخش"><div class="clip-title gone" id="clips-page-title">کلیپ‌های تصویری</div>
 <div class="content-view" id="content-view"><h2 id="legacy-heading" aria-live="polite"></h2><div class="row-list" id="contents"></div></div>
 </div>
@@ -1675,6 +1701,24 @@ const stage=document.getElementById('stage'), backdrop=document.getElementById('
 let screen='home',section='',item=null,beforePlayerScroll=0;
 const fa=n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)]);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Owner trial: exact catalog-number lookup; Persian/Arabic/English numerals are equivalent.
+function pmmParseNahjNumber(raw){
+ const digits=String(raw??'').trim().replace(/[۰-۹٠-٩]/g,char=>{
+  const code=char.charCodeAt(0);
+  return String(code-(code>=0x6f0?0x6f0:0x660));
+ });
+ if(!/^[0-9]{1,4}$/.test(digits))return null;
+ const number=Number(digits);
+ return number>0?number:null;
+}
+function pmmFindNahjRecord(groupId,raw){
+ const number=pmmParseNahjNumber(raw);
+ if(number===null)return null;
+ const records=NAHJ_AUDIO_ITEMS[groupId];
+ if(!Array.isArray(records))return null;
+ return records.find(record=>record.kind!=='gharaib'&&
+   (record.number===number||record.id.split('-').slice(1).some(part=>Number(part)===number)))||null;
+}
 // Stable per-entry IDs for the owner's forthcoming Word-based part counts and exact audio links.
 const NAHJ_AUDIO_GROUPS=Object.freeze([
   Object.freeze({id:'sermons',title:'خطبه‌ها',singular:'خطبه',icon:'✦',count:241}),
@@ -1852,6 +1896,18 @@ function bindNahjResumes(){
   button.closest('.pmm-resume-card')?.remove();
  }));
 }
+function pmmSyncNahjFinder(){
+ const button=document.getElementById('nahj-find-button');
+ const panel=document.getElementById('nahj-find-panel');
+ const chosen=screen==='list'&&section==='nahj'&&item?.nahjGroup?
+   NAHJ_AUDIO_GROUPS.find(group=>group.id===item.nahjGroup):null;
+ button.hidden=!chosen;
+ button.setAttribute('aria-expanded','false');
+ panel.hidden=true;
+ document.getElementById('nahj-find-input').value='';
+ document.getElementById('nahj-find-status').textContent='';
+ if(chosen)document.getElementById('nahj-find-label').textContent='شماره '+chosen.singular+' را وارد کنید';
+}
 function renderNahjAudioCatalog(){
   const groupId=item&&typeof item==='object'?item.nahjGroup:null;
   const chosen=NAHJ_AUDIO_GROUPS.find(group=>group.id===groupId);
@@ -1935,6 +1991,7 @@ function render(){
  }
  if(screen==='list'&&section==='clips')renderClips();else if(screen==='list')renderList();else if(screen==='player')renderPlayer();
  else if(screen==='about')renderAbout();else if(screen==='biography')renderBiography();else if(screen==='photo')renderPhoto();
+ pmmSyncNahjFinder();
 }
 function renderClips(){
   const clips=VIDEO_CLIPS.length?VIDEO_CLIPS:Array.from({length:5},(_,i)=>({title:'کلیپ '+fa(i+1),url:''}));
@@ -2021,7 +2078,7 @@ function renderAbout(){
   } catch(error) { installedVersion=''; }
   const group=USER_PHOTOS.map((src,i)=>`<button type="button" class="gallery-tile" data-photo="${i}" aria-label="نمایش تصویر ${fa(i+1)}"><img src="${src}" alt="تصویر ${fa(i+1)} از فعالیت‌های آموزشی" loading="lazy"></button>`).join('');
   contents.innerHTML=`<div class="about-menu">
-      <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>درباره ما</span></button>
+      <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>معرفی‌نامه</span></button>
       <button class="about-entry" type="button" id="about-contact"><span class="about-entry-icon">✉</span><span>ارتباط با ما</span></button>
       <button class="about-entry" type="button" id="about-reminder"><span class="about-entry-icon">♧</span><span>تنظیم یادآور مهمانی مولا</span></button>
       <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
@@ -2258,6 +2315,32 @@ document.getElementById('guest-full-close').addEventListener('click',closeGuestF
 document.getElementById('home-about').addEventListener('click',()=>setState('about'));
 document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>setState('list',b.dataset.section)));
 document.getElementById('back-button').addEventListener('click',()=>goBack());
+document.getElementById('nahj-find-button').addEventListener('click',()=>{
+ const panel=document.getElementById('nahj-find-panel');
+ const opening=panel.hidden;
+ panel.hidden=!opening;
+ document.getElementById('nahj-find-button').setAttribute('aria-expanded',String(opening));
+ document.getElementById('nahj-find-status').textContent='';
+ if(opening)document.getElementById('nahj-find-input').focus();
+});
+document.getElementById('nahj-find-close').addEventListener('click',()=>{
+ document.getElementById('nahj-find-panel').hidden=true;
+ document.getElementById('nahj-find-button').setAttribute('aria-expanded','false');
+ document.getElementById('nahj-find-button').focus();
+});
+document.getElementById('nahj-find-panel').addEventListener('submit',event=>{
+ event.preventDefault();
+ const groupId=screen==='list'&&section==='nahj'&&item?.nahjGroup;
+ if(!NAHJ_AUDIO_GROUPS.some(group=>group.id===groupId))return;
+ const input=document.getElementById('nahj-find-input');
+ const match=pmmFindNahjRecord(groupId,input.value);
+ if(!match){
+  document.getElementById('nahj-find-status').textContent='این شماره در این بخش یافت نشد.';
+  input.focus();
+  return;
+ }
+ setState('list','nahj',{nahjGroup:groupId,nahjEntry:match.id});
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'&&document.activeElement?.tagName!=='INPUT'&&document.activeElement?.tagName!=='TEXTAREA'){e.preventDefault();goBack();}});
 render();
 
