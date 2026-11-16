@@ -1,0 +1,99 @@
+name: Export owner-frozen source for transfer
+
+on:
+  push:
+    branches:
+      - feature/owner-online-content-updates-20261115
+      - snapshot/owner-trial-v1.0.7-20261116
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export-sources:
+    name: Package all tracked source files and verify archive integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create full repository and lighter editable-source ZIP archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          import subprocess
+          import zipfile
+
+          tracked = [os.fsdecode(p) for p in subprocess.check_output(
+              ["git", "ls-files", "-z"]).split(b"\0") if p]
+          assert len(tracked) > 200, "Missing source tree; refusing incomplete ZIP"
+
+          def source_only(path):
+              # Preserve buildable source, resources, docs, workflows, server code.
+              # Remove only historical compiled release APKs and binary chunks.
+              return not (path.startswith("releases/") and
+                          path.lower().endswith((".apk", ".bin")))
+
+          variants = {
+              "PMM-v1.0.7-FULL-REPOSITORY-SOURCE.zip": tracked,
+              "PMM-v1.0.7-EDITABLE-SOURCE-NO-OLD-APKS.zip": [
+                  f for f in tracked if source_only(f)]
+          }
+          hashes = []
+          for name, paths in variants.items():
+              dest = Path("dist") / name
+              with zipfile.ZipFile(dest, "w",
+                                   compression=zipfile.ZIP_DEFLATED,
+                                   compresslevel=6,
+                                   allowZip64=True) as archive:
+                  for path in paths:
+                      if not Path(path).is_file():
+                          raise ValueError("Tracked file missing: "+path)
+                      archive.write(path, arcname=path)
+              with zipfile.ZipFile(dest) as archive:
+                  if archive.testzip() is not None:
+                      raise ValueError("Bad ZIP CRC: "+name)
+                  if len(archive.namelist()) != len(paths):
+                      raise ValueError("Missing archived paths: "+name)
+              digest = hashlib.sha256(dest.read_bytes()).hexdigest()
+              hashes.append(digest + "  " + name)
+              print(name, "files", len(paths), "bytes", dest.stat().st_size,
+                    "SHA256", digest)
+          (Path("dist")/"SOURCE_SHA256SUMS.txt").write_text(
+              "# Commit: " + subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True).strip() + "\n" +
+              "\n".join(hashes) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload complete repository source ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-V107-FULL-REPOSITORY-SOURCE
+          path: dist/PMM-v1.0.7-FULL-REPOSITORY-SOURCE.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 90
+
+      - name: Upload buildable editable source ZIP without historical compiled APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-V107-EDITABLE-SOURCE-LIGHTER
+          path: dist/PMM-v1.0.7-EDITABLE-SOURCE-NO-OLD-APKS.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 90
+
+      - name: Upload SHA-256 checksums and source commit
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-V107-SOURCE-SHA256
+          path: dist/SOURCE_SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 90
