@@ -224,7 +224,10 @@ assert(reminderJava.includes('getString(FREQUENCY, "daily")'),'Daily by default'
 assert(reminderJava.includes('new NotificationChannel(CHANNEL_ID'),'Dedicated silent reminder channel');
 assert(reminderJava.includes('channel.setSound(null, null)'),'No audio on Android 8+');
 assert(reminderJava.includes('channel.enableVibration(false)'),'No vibrations');
-assert(reminderJava.includes('builder.setSilent(true)'),'Notification silence on Android 8+');
+assert(reminderJava.includes('builder.setOnlyAlertOnce(true)'),'No repeated alert on replacement');
+assert(!reminderJava.includes('builder.setSilent(true)'),'Use platform Builder supported methods');
+assert(reminderJava.includes('setDefaults(0).setSound(null).setVibrate(null)'),
+ 'Enforce silence on all supported Android versions');
 assert(reminderJava.includes('setAndAllowWhileIdle('),'Energy-friendly, no exact alarm permission');
 assert(!manifest.includes('SCHEDULE_EXACT_ALARM'),'No restricted exact-alarm request');
 assert(!manifest.includes('USE_EXACT_ALARM'),'Do not abuse calendar alarm permission');

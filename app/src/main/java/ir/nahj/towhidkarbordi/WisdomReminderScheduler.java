@@ -171,8 +171,10 @@ public final class WisdomReminderScheduler {
                    .setContentTitle(TITLE).setContentText(MESSAGE).setAutoCancel(true)
                    .setContentIntent(action).setShowWhen(true)
                    .setDefaults(0).setSound(null).setVibrate(null);
-            if (Build.VERSION.SDK_INT >= 26) builder.setSilent(true);
-            else builder.setPriority(Notification.PRIORITY_LOW);
+            // Channel importance LOW, no sound/vibration and defaults=0 are
+            // supported on Android 8+; the platform Builder has no setSilent().
+            builder.setOnlyAlertOnce(true);
+            if (Build.VERSION.SDK_INT < 26) builder.setPriority(Notification.PRIORITY_LOW);
             try { mgr.notify(NOTIFICATION_ID, builder.build()); }
             catch (SecurityException ignored) { /* notification permission revoked */ }
         }
