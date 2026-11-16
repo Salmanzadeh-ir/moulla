@@ -51,10 +51,10 @@ jobs:
           text=p.read_text()
           old="applicationIdSuffix '.remindtest107'"
           assert text.count(old)==1
-          text=text.replace(old,"applicationIdSuffix '.nahjsearchtrial'")
+          text=text.replace(old,"applicationIdSuffix '.nahjsearchtrialfix2'")
           old_version="versionNameSuffix '-debug'"
           assert text.count(old_version)==1
-          text=text.replace(old_version,"versionNameSuffix '-trial-debug'")
+          text=text.replace(old_version,"versionNameSuffix '-trialfix2-debug'")
           p.write_text(text)
           PY
       - name: Build independent debug APK with no private keystore
@@ -68,14 +68,14 @@ jobs:
           TOOLS="$ANDROID_HOME/build-tools/35.0.0"
           APK='app/build/outputs/apk/debug/app-debug.apk'
           "$TOOLS/apksigner" verify --verbose "$APK"
-          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.nahjsearchtrial'"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.nahjsearchtrialfix2'"
           mkdir -p dist
-          cp "$APK" dist/PMM-1.0.7-NahjSearch-TRIAL-DEBUG.apk
-          (cd dist && sha256sum PMM-1.0.7-NahjSearch-TRIAL-DEBUG.apk > SHA256SUMS.txt)
+          cp "$APK" dist/PMM-1.0.7-NahjSearch-FIXED2-TRIAL-DEBUG.apk
+          (cd dist && sha256sum PMM-1.0.7-NahjSearch-FIXED2-TRIAL-DEBUG.apk > SHA256SUMS.txt)
       - name: Upload recoverable zipped trial artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PMM-v107-NahjNumberSearch-INTRO-DEBUG-TEST
+          name: PMM-v107-NahjNumberSearch-FIXED2-DEBUG-TEST
           path: dist/
           if-no-files-found: error
           retention-days: 30
@@ -85,9 +85,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          target='download/owner-nahj-search-intro-trial-v107-20261116'
+          target='download/owner-nahj-search-intro-trial-v107-fixed2-20261116'
           mkdir -p /tmp/pmm-trial-apk
-          cp dist/PMM-1.0.7-NahjSearch-TRIAL-DEBUG.apk /tmp/pmm-trial-apk/
+          cp dist/PMM-1.0.7-NahjSearch-FIXED2-TRIAL-DEBUG.apk /tmp/pmm-trial-apk/
           cp dist/SHA256SUMS.txt /tmp/pmm-trial-apk/
           cd /tmp/pmm-trial-apk
           git init --initial-branch="$target"
