@@ -50,6 +50,9 @@ public final class MainActivity extends Activity {
     private boolean eitaaReturnPending = false;
     private android.window.OnBackInvokedCallback platformBackCallback;
     private static final int REMINDER_PERMISSION_REQUEST = 9031;
+    private static final int MEDIA_STORAGE_PERMISSION_REQUEST = 9032;
+    private String pendingSaveMediaSource = null;
+    private boolean pendingSaveMediaVideo = false;
     private boolean visibleToUser = false;
     private boolean pendingWisdomOpen = false;
 
@@ -147,6 +150,20 @@ public final class MainActivity extends Activity {
                      !WisdomReminderScheduler.hasSystemPermission(MainActivity.this)))
                     requestReminderPermission();
             });
+        }
+
+        /** A user-selected installed/photo-quote poster, including the approved online CDN. */
+        @JavascriptInterface
+        public void savePhotoToGallery(final String source) {
+            if (!PmmMediaSaver.allowedPhoto(source)) return;
+            runOnUiThread(() -> requestMediaSave(false, source));
+        }
+
+        /** Only an owner's direct HTTPS MP4 file, never an Eitaa/Aparat page. */
+        @JavascriptInterface
+        public void saveVideoToGallery(final String source) {
+            if (!PmmMediaSaver.allowedVideo(source)) return;
+            runOnUiThread(() -> requestMediaSave(true, source));
         }
 
         @JavascriptInterface
@@ -461,9 +478,39 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void requestMediaSave(boolean video, String source) {
+        if (isFinishing() || isDestroyed() || !visibleToUser || web == null ||
+            !"file:///android_asset/index.html".equals(web.getUrl())) return;
+        if (video ? !PmmMediaSaver.allowedVideo(source) : !PmmMediaSaver.allowedPhoto(source)) return;
+        if (Build.VERSION.SDK_INT <= 28 &&
+            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            pendingSaveMediaVideo = video;
+            pendingSaveMediaSource = source;
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                MEDIA_STORAGE_PERMISSION_REQUEST);
+            return;
+        }
+        PmmMediaSaver.save(this, contentExecutor, video, source);
+    }
+
     @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                                        int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MEDIA_STORAGE_PERMISSION_REQUEST) {
+            final String source = pendingSaveMediaSource;
+            final boolean video = pendingSaveMediaVideo;
+            pendingSaveMediaSource = null;
+            pendingSaveMediaVideo = false;
+            if (source != null && grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestMediaSave(video, source);
+            } else {
+                Toast.makeText(this, "برای ذخیره در گالری، مجوز حافظه لازم است.",
+                        Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
         if (requestCode == REMINDER_PERMISSION_REQUEST) {
             boolean granted = grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED;
