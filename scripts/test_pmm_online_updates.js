@@ -24,8 +24,66 @@ assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisd
 assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
 assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
 const versionGradle=fs.readFileSync('app/build.gradle','utf8');
-assert(/versionCode 19\s+versionName '1.0.2'/.test(versionGradle),'Version must progress monotonically');
+assert(/versionCode 20\s+versionName '1.0.3'/.test(versionGradle),'Version must progress monotonically');
 
+
+// Only owner-approved three-line-or-shorter wisdoms may enter the draw.
+// Exercise layout-dependent selection through a mocked layout engine (no guessed char counts).
+const entireWisdomBank=fs.readFileSync('app/src/main/assets/hikam_bank.js','utf8');
+const bankCtx={window:{}};vm.runInNewContext(entireWisdomBank,bankCtx);
+assert.equal(bankCtx.window.PMM_HIKMAT_ALL.length,489,'All 480 wisdoms and 9 gharaib must remain intact');
+const shortLogic=html.slice(html.indexOf('let shortWisdoms=[],shortWisdomWidth=-1;'),html.indexOf('function saveBag(){'));
+assert(shortLogic.includes("getComputedStyle(element).lineHeight"),'Measure actual rendered lines');
+assert(shortLogic.includes('w.arabic)&&fits(persian,w.persian)'),'Check Arabic and Persian separately');
+assert(shortLogic.includes("scene.getBoundingClientRect().width"),'Use actual iwan dimensions');
+const styleValues=new Map([['--pmm-wisdom-ar-size','31px'],['--pmm-wisdom-fa-size','27px']]);
+const savedStyle={
+ getPropertyValue:key=>styleValues.get(key)||'',
+ setProperty:(key,value)=>styleValues.set(key,value),
+ removeProperty:key=>styleValues.delete(key)
+};
+const makeText=(kind,lineHeight)=>({
+ kind,textContent:'original-'+kind,
+ getBoundingClientRect(){
+   const lines=this.textContent.includes('LONG')?4:3;
+   return {height:lines*lineHeight};
+ }
+});
+const arEl=makeText('ar',44),faEl=makeText('fa',34);
+const testIntro={hidden:false},testDrawing={hidden:true},testResult={hidden:true,style:{visibility:'visible'}};
+const shortCandidates=[
+ {id:'ok',arabic:'short',persian:'short'},
+ {id:'long-ar',arabic:'LONG Arabic',persian:'short'},
+ {id:'long-fa',arabic:'short',persian:'LONG Persian'},
+ {id:'long-both',arabic:'LONG Arabic',persian:'LONG Persian'}
+];
+const threeLineCtx={
+ wisdomScroll:{getBoundingClientRect:()=>({width:250}),style:savedStyle},
+ wisdomIntro:testIntro,wisdomDrawing:testDrawing,wisdomResult:testResult,
+ document:{getElementById:id=>id==='wisdom-arabic'?arEl:faEl},
+ scene:{getBoundingClientRect:()=>({width:390})},
+ getComputedStyle:el=>({lineHeight:(el.kind==='ar'?44:34)+'px'}),
+ wisdoms:shortCandidates,Number,Math
+};
+const qualifying=vm.runInNewContext(shortLogic+';threeLineWisdomCandidates()',threeLineCtx);
+assert.deepEqual(Array.from(qualifying,x=>x.id),['ok'],'Exclude long Arabic or Persian, retain 3-line entries');
+assert.equal(testIntro.hidden,false,'Restore existing invitation state after measuring');
+assert.equal(testDrawing.hidden,true,'Restore animation state after measuring');
+assert.equal(testResult.hidden,true,'Restore selected wisdom state after measuring');
+assert.equal(testResult.style.visibility,'visible');
+assert.equal(arEl.textContent,'original-ar','Never alter original Arabic panel');
+assert.equal(faEl.textContent,'original-fa','Never alter original Persian panel');
+assert.equal(savedStyle.getPropertyValue('--pmm-wisdom-ar-size'),'31px','Restore user zoom');
+assert.equal(savedStyle.getPropertyValue('--pmm-wisdom-fa-size'),'27px','Restore Persian zoom');
+const drawCode=html.slice(html.indexOf('function refillBag(candidates){'),html.indexOf('recoverBag();',html.indexOf('function refillBag(candidates){')));
+assert(drawCode.includes('bag=bag.filter(id=>eligibleIds.has(id))'),'Purge old long entries from saved draw bag');
+assert(drawCode.includes('bag=candidates.map(w=>w.id)'),'Refill without unapproved long entries');
+const drawAction=html.slice(html.indexOf('async function startWisdomDraw(){'),html.indexOf('// V16: independent copy'));
+assert(drawAction.includes("document.fonts.load('400 24px"),'Wait for the approved Arabic font');
+assert(drawAction.includes("document.fonts.load('600 20px"),'Wait for the approved Persian font');
+assert(drawAction.includes('const finalWisdom=pickWisdom(candidates)'));
+assert(drawAction.includes('let preview=candidates[randInt(candidates.length)]'));
+assert(drawAction.includes("wisdoms.length!==489"),'Keep original complete bank integrity check');
 
 // Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
 const audioJs=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');

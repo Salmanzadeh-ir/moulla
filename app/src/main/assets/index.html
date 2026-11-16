@@ -1173,6 +1173,45 @@ function randInt(max){
   }
   return Math.floor(Math.random()*max);
 }
+// Only short wisdoms are eligible for «یک جمله مهمان مولا».
+// Measure BOTH complete texts in their real Amiri/Sahel reading panels at NORMAL font size.
+// Never remove, truncate or modify an entry in the owner-provided 489-item offline bank.
+let shortWisdoms=[],shortWisdomWidth=-1;
+function threeLineWisdomCandidates(){
+ const width=wisdomScroll.getBoundingClientRect().width;
+ if(width>0&&shortWisdomWidth===width&&shortWisdoms.length)return shortWisdoms;
+ const arabic=document.getElementById('wisdom-arabic');
+ const persian=document.getElementById('wisdom-persian');
+ const prev={intro:wisdomIntro.hidden,drawing:wisdomDrawing.hidden,result:wisdomResult.hidden,
+   visibility:wisdomResult.style.visibility,arabic:arabic.textContent,persian:persian.textContent,
+   arSize:wisdomScroll.style.getPropertyValue('--pmm-wisdom-ar-size'),
+   faSize:wisdomScroll.style.getPropertyValue('--pmm-wisdom-fa-size')};
+ try{
+   wisdomIntro.hidden=true;wisdomDrawing.hidden=true;wisdomResult.hidden=false;
+   wisdomResult.style.visibility='hidden';
+   const sceneWidth=Math.max(290,Math.min(800,scene.getBoundingClientRect().width||390));
+   wisdomScroll.style.setProperty('--pmm-wisdom-ar-size',
+     Math.max(22,Math.min(35,sceneWidth*.0425)).toFixed(2)+'px');
+   wisdomScroll.style.setProperty('--pmm-wisdom-fa-size',
+     Math.max(19,Math.min(31,sceneWidth*.0365)).toFixed(2)+'px');
+   const fits=(element,value)=>{
+     element.textContent=value;
+     const height=element.getBoundingClientRect().height;
+     const lineHeight=parseFloat(getComputedStyle(element).lineHeight);
+     return height>0&&Number.isFinite(lineHeight)&&lineHeight>0&&height<=3*lineHeight+1;
+   };
+   const candidates=wisdoms.filter(w=>fits(arabic,w.arabic)&&fits(persian,w.persian));
+   if(width>0&&candidates.length){shortWisdoms=candidates;shortWisdomWidth=width}
+   return candidates;
+ }finally{
+   arabic.textContent=prev.arabic;persian.textContent=prev.persian;
+   for(const [key,value] of [['--pmm-wisdom-ar-size',prev.arSize],['--pmm-wisdom-fa-size',prev.faSize]]){
+     if(value)wisdomScroll.style.setProperty(key,value);else wisdomScroll.style.removeProperty(key);
+   }
+   wisdomResult.style.visibility=prev.visibility;
+   wisdomResult.hidden=prev.result;wisdomDrawing.hidden=prev.drawing;wisdomIntro.hidden=prev.intro;
+ }
+}
 function saveBag(){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify({bag,lastId}))}catch(_){}
 }
@@ -1184,14 +1223,19 @@ function recoverBag(){
     bag=data.bag;lastId=wisdomLookup.has(data.lastId)?data.lastId:null;
   }catch(_){}
 }
-function refillBag(){
-  bag=wisdoms.map(w=>w.id);
+function refillBag(candidates){
+  bag=candidates.map(w=>w.id);
   for(let i=bag.length-1;i>0;i--){const j=randInt(i+1);[bag[i],bag[j]]=[bag[j],bag[i]]}
   if(bag.length>1&&bag[bag.length-1]===lastId){[bag[bag.length-1],bag[0]]=[bag[0],bag[bag.length-1]]}
   saveBag();
 }
-function pickWisdom(){
-  if(!bag.length)refillBag();
+function pickWisdom(candidates){
+  // Filter legacy saved draws too, so long wisdoms cannot reappear after an upgrade.
+  const eligibleIds=new Set(candidates.map(w=>w.id));
+  const previousCount=bag.length;
+  bag=bag.filter(id=>eligibleIds.has(id));
+  if(bag.length!==previousCount)saveBag();
+  if(!bag.length)refillBag(candidates);
   const id=bag.pop();lastId=id;saveBag();
   return wisdomLookup.get(id);
 }
@@ -1213,13 +1257,27 @@ function showInvitation(){
   wisdomIntro.hidden=false;wisdomDrawing.hidden=true;wisdomResult.hidden=true;
   wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
 }
-function startWisdomDraw(){
+async function startWisdomDraw(){
   if(isDrawing)return;
   if(!bankReport.valid||wisdoms.length!==489){showToast('خطا در بانک آفلاین حکمت‌ها؛ انتخاب متوقف شد.');return}
   stopDraw();const token=++drawRun;isDrawing=true;
-  const finalWisdom=pickWisdom();
   wisdomIntro.hidden=true;wisdomResult.hidden=true;wisdomDrawing.hidden=false;
   wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
+  // Wait for the bundled Amiri and Sahel font faces before measuring real line breaks.
+  try{
+    if(document.fonts&&document.fonts.load)await Promise.all([
+      document.fonts.load('400 24px "PMM Amiri"'),
+      document.fonts.load('600 20px "PMM Sahel SemiBold"')
+    ]);
+  }catch(_){}
+  if(token!==drawRun||scene.dataset.screen!=='wisdom')return;
+  const candidates=threeLineWisdomCandidates();
+  if(!candidates.length){
+    showInvitation();
+    showToast('در این اندازه صفحه، جمله کوتاه قابل نمایش یافت نشد.');
+    return;
+  }
+  const finalWisdom=pickWisdom(candidates);
   // The draw target is chosen ONCE with shuffled, no-repeat offline selection;
   // rapid snippets are visual animation only and do not consume future draws.
   const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1232,8 +1290,8 @@ function startWisdomDraw(){
       showSelectedWisdom(finalWisdom);
       return;
     }
-    let preview=wisdoms[randInt(wisdoms.length)];
-    if(preview.id===lastPreview&&wisdoms.length>1)preview=wisdoms[(wisdoms.indexOf(preview)+1)%wisdoms.length];
+    let preview=candidates[randInt(candidates.length)];
+    if(preview.id===lastPreview&&candidates.length>1)preview=candidates[(candidates.indexOf(preview)+1)%candidates.length];
     lastPreview=preview.id;renderDrawFrame(preview);
     drawTimer=setTimeout(tick,delays[step++]);
   };
