@@ -5,11 +5,13 @@ on:
       - feature/owner-online-content-updates-20261115
       - snapshot/owner-trial-v1.0.7-20261116
       - snapshot/owner-approved-nahj-search-intro-v107-20261116
+      - snapshot/owner-approved-media-gallery-v107-20261116
   pull_request:
     branches:
       - feature/owner-online-content-updates-20261115
       - snapshot/owner-trial-v1.0.7-20261116
       - snapshot/owner-approved-nahj-search-intro-v107-20261116
+      - snapshot/owner-approved-media-gallery-v107-20261116
   workflow_dispatch:
 
 permissions:
@@ -23,11 +25,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Verify every file is frozen at owner-approved 1.0.7 search/introduction state
+      - name: Verify every file is frozen at owner-approved 1.0.7 media-gallery state
         shell: bash
         run: |
           set -euo pipefail
-          locked="42d530b8d6e9d3152419ceb74f4ad5c0505e3b03"
+          locked="71e454a2a64fa286e675e4ad5d94c5d917804e8f"
           git cat-file -e "${locked}^{commit}"
           excluded=(':(exclude)OWNER_LOCK.md' ':(exclude).github/workflows/owner-locked-state.yml')
           echo "Checking repo against approved owner snapshot: ${locked}"
@@ -39,3 +41,5 @@ jobs:
           echo "PASS: full owner-approved source tree matches frozen reference (except documented lock-maintenance files)."
       - name: Regression guard — Nahj search, About label, visibility and protected audio links
         run: node scripts/test_owner_nahj_numeric_search.cjs
+      - name: Regression guard — media Gallery opt-in saving and owner originals
+        run: node scripts/test_owner_media_save.cjs
