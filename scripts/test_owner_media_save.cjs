@@ -13,7 +13,7 @@ const audio=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');
 
 for(const [label,re] of [
  ['photo save icon',/id="pmm-photo-save".*?ذخیره در گالری/],
- ['clip save icon',/id=\\"pmm-clip-save\\"/],
+ ['clip save icon',/id="pmm-clip-save"/],
  ['photo save handler',/savePhotoToGallery\(photos\[galleryIndex\]\)/],
  ['video save handler',/saveVideoToGallery\(link\)/],
  ['correct centered clip',/activeWheels\.get\('clips'\)\?\.getIndex\(\)/],
