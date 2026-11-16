@@ -1,6 +1,12 @@
 package ir.nahj.towhidkarbordi;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -46,6 +52,12 @@ public final class MainActivity extends Activity {
     private long lastEitaaLaunchMs = 0L;
     private boolean eitaaReturnPending = false;
     private android.window.OnBackInvokedCallback platformBackCallback;
+    private static final int REMINDER_PERMISSION_REQUEST = 9031;
+    private final Handler reminderHandler = new Handler(Looper.getMainLooper());
+    private final Runnable permissionPromptRunnable = this::maybeAskReminderConsent;
+    private boolean visibleToUser = false;
+    private boolean permissionDialogVisible = false;
+    private boolean pendingWisdomOpen = false;
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
@@ -114,6 +126,46 @@ public final class MainActivity extends Activity {
             });
         }
 
+
+        /** Small, validated on-device settings API for the trusted local reminder panel. */
+        @JavascriptInterface
+        public String getReminderSettings() {
+            JSONObject status = new JSONObject();
+            try {
+                status.put("frequency", WisdomReminderScheduler.frequency(MainActivity.this));
+                status.put("consent", WisdomReminderScheduler.hasConsent(MainActivity.this));
+                status.put("allowed", WisdomReminderScheduler.hasSystemPermission(MainActivity.this));
+                status.put("minutesAfterFirstOpen", 5);
+                status.put("silent", true);
+            } catch (Exception ignored) { }
+            return status.toString();
+        }
+
+        @JavascriptInterface
+        public void setReminderFrequency(final String value) {
+            if (!WisdomReminderScheduler.validFrequency(value)) return;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || web == null ||
+                    !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                WisdomReminderScheduler.setFrequency(MainActivity.this, value);
+                if (!"off".equals(value)) {
+                    if (!WisdomReminderScheduler.hasConsent(MainActivity.this)) showReminderConsent(true);
+                    else if (!WisdomReminderScheduler.hasSystemPermission(MainActivity.this))
+                        requestReminderPermission();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void askReminderPermission() {
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || !visibleToUser || web == null ||
+                    !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                if (!WisdomReminderScheduler.hasConsent(MainActivity.this)) showReminderConsent(true);
+                else requestReminderPermission();
+            });
+        }
+
     }
 
     private static Uri verifiedEitaaUri(String raw) {
@@ -130,6 +182,9 @@ public final class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WisdomReminderScheduler.initialize(this);
+        pendingWisdomOpen = getIntent() != null &&
+                getIntent().getBooleanExtra(WisdomReminderScheduler.EXTRA_OPEN_WISDOM, false);
         getWindow().setStatusBarColor(Color.rgb(18, 23, 29));
         getWindow().setNavigationBarColor(Color.rgb(18, 23, 29));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -171,6 +226,7 @@ public final class MainActivity extends Activity {
                 if ("file:///android_asset/index.html".equals(url)) {
                     view.evaluateJavascript("window.PMM_ANDROID=true", null);
                     checkContentUpdates();
+                    openWisdomIfPending();
                 }
             }
         });
@@ -384,14 +440,97 @@ public final class MainActivity extends Activity {
         }
     }
 
+
+    /** A runtime-permission dialog cannot legally be shown from background on Android 13+. */
+    private void maybeAskReminderConsent() {
+        reminderHandler.removeCallbacks(permissionPromptRunnable);
+        if (!visibleToUser || isFinishing() || isDestroyed() ||
+                WisdomReminderScheduler.wasAsked(this)) return;
+        long wait = WisdomReminderScheduler.firstOpen(this) +
+                WisdomReminderScheduler.FIRST_DELAY_MS - System.currentTimeMillis();
+        if (wait > 0) {
+            reminderHandler.postDelayed(permissionPromptRunnable, wait);
+            return;
+        }
+        showReminderConsent(false);
+    }
+
+    private void showReminderConsent(boolean manuallyRequested) {
+        if (!visibleToUser || permissionDialogVisible || isFinishing() || isDestroyed()) return;
+        if (!manuallyRequested && WisdomReminderScheduler.wasAsked(this)) return;
+        // The first invitation happens only AFTER the trial delay, never on first entry.
+        if (!manuallyRequested &&
+            System.currentTimeMillis() < WisdomReminderScheduler.firstOpen(this) +
+                    WisdomReminderScheduler.FIRST_DELAY_MS) return;
+        WisdomReminderScheduler.markAsked(this);
+        permissionDialogVisible = true;
+        new AlertDialog.Builder(this)
+                .setTitle("یادآور مهمانی مولا")
+                .setMessage("مایلید هر روز یک یادآوری بی‌صدا برای «یک جمله مهمان امیرالمومنین باش!» دریافت کنید؟ می‌توانید آن را به هفتگی یا ماهانه تغییر دهید.")
+                .setPositiveButton("بله، فعال شود", (dialog, which) -> {
+                    WisdomReminderScheduler.consent(this, true);
+                    requestReminderPermission();
+                })
+                .setNegativeButton("فعلاً نه", (dialog, which) ->
+                    WisdomReminderScheduler.consent(this, false))
+                .setOnDismissListener(dialog -> { permissionDialogVisible = false; })
+                .show();
+    }
+
+    private void requestReminderPermission() {
+        if (!visibleToUser || isFinishing() || isDestroyed()) return;
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    REMINDER_PERMISSION_REQUEST);
+        } else {
+            WisdomReminderScheduler.scheduleFirst(this);
+        }
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                       int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REMINDER_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                WisdomReminderScheduler.scheduleFirst(this);
+            else WisdomReminderScheduler.sync(this);
+        }
+    }
+
+    private void openWisdomIfPending() {
+        if (!pendingWisdomOpen || web == null ||
+                !"file:///android_asset/index.html".equals(web.getUrl())) return;
+        pendingWisdomOpen = false;
+        web.evaluateJavascript("(function(){if(window.PMM_WISDOM_PROTOTYPE)" +
+                "window.PMM_WISDOM_PROTOTYPE.open();})()", null);
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        pendingWisdomOpen = intent != null &&
+                intent.getBooleanExtra(WisdomReminderScheduler.EXTRA_OPEN_WISDOM, false);
+        openWisdomIfPending();
+    }
+
     @Override public void onBackPressed() { handleBackNavigation(); }
-    @Override protected void onPause() { if (web!=null) web.onPause(); super.onPause(); }
+    @Override protected void onPause() {
+        visibleToUser = false;
+        reminderHandler.removeCallbacks(permissionPromptRunnable);
+        if (web != null) web.onPause();
+        super.onPause();
+    }
     @Override protected void onResume() {
         super.onResume();
+        visibleToUser = true;
         if (web != null) web.onResume();
         restoreAfterEitaaIfFocused();
+        WisdomReminderScheduler.sync(this);
+        maybeAskReminderConsent();
     }
     @Override protected void onDestroy() {
+        reminderHandler.removeCallbacks(permissionPromptRunnable);
         contentExecutor.shutdownNow();
         if (android.os.Build.VERSION.SDK_INT >= 33 && platformBackCallback != null) {
             getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(platformBackCallback);

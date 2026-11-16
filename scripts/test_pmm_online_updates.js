@@ -24,7 +24,7 @@ assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisd
 assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
 assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
 const versionGradle=fs.readFileSync('app/build.gradle','utf8');
-assert(/versionCode 22\s+versionName '1.0.5'/.test(versionGradle),'Version must progress monotonically');
+assert(/versionCode 23\s+versionName '1.0.6'/.test(versionGradle),'Version must progress monotonically');
 
 
 // Only owner-approved three-line-or-shorter wisdoms may enter the draw.
@@ -86,7 +86,7 @@ assert(drawAction.includes('let preview=candidates[randInt(candidates.length)]')
 assert(drawAction.includes("wisdoms.length!==489"),'Keep original complete bank integrity check');
 
 // Exactly the owner-authorized offline resume feature, with independent test package.
-assert(versionGradle.includes("applicationIdSuffix '.resumetrial105'"),
+assert(versionGradle.includes("applicationIdSuffix '.remindtest106'"),
  'This APK must install alongside ALL previous apps, never as their update');
 assert(!versionGradle.includes("applicationIdSuffix '.newiwanv16'"));
 assert(!versionGradle.includes("applicationIdSuffix '.resumetrial104'"),'Previous 1.0.4 install ID remains independent');
@@ -174,6 +174,72 @@ assert.equal(Object.values(links).reduce((n,arr)=>n+arr.length,0),1019);
 const allLinks=Object.values(links).flat();
 assert.equal(new Set(allLinks).size,1019,'Every source MP3 is represented once');
 assert(allLinks.every(u=>u.startsWith('https://dl.kazeminia110.ir/Audio/nahj-al-balaghe/tartibi/')));
+
+// Wisely route every one of the 480 offline wisdoms to the exact source audio.
+const finderStart=html.indexOf('function wisdomExplanationTracks(w){');
+assert(finderStart>0,'Wisdom links resolve dynamically from the original Nahj catalog');
+const finderSource=html.slice(finderStart,html.indexOf('let selectedExplanation=null;',finderStart));
+const getWisdomTracks=vm.runInNewContext(finderSource+';wisdomExplanationTracks',
+ {window:{PMM_NAHJ_AUDIO_DATA:nahjCatalog},Number,Array});
+for(let n=1;n<=480;n++){
+ const found=getWisdomTracks({kind:'hikmat',number:n});
+ assert(found.record && found.urls.length>=1,'Real source MP3 must exist for wisdom '+n);
+ assert.equal(found.record.kind,'wisdom');
+ assert(found.urls.every(x=>links[found.record.id].includes(x)),'No invented URL for '+n);
+}
+for(let n=1;n<=9;n++){
+ const missing=getWisdomTracks({kind:'gharaib',number:n});
+ assert.equal(missing.record?.id,'gharaib-'+n);
+ assert.equal(missing.urls.length,0,'Never invent audio for Gharib '+n);
+}
+assert.equal(getWisdomTracks({kind:'hikmat',number:40}).record.id,'wisdom-40-41');
+assert.equal(getWisdomTracks({kind:'hikmat',number:41}).record.id,'wisdom-40-41');
+assert.equal(getWisdomTracks({kind:'hikmat',number:111}).record.id,'wisdom-111-112');
+assert.equal(getWisdomTracks({kind:'hikmat',number:112}).record.id,'wisdom-111-112');
+assert.equal(getWisdomTracks({kind:'hikmat',number:31}).urls.length,7);
+assert.equal(getWisdomTracks({kind:'hikmat',number:147}).urls.length,5);
+assert.equal(getWisdomTracks({kind:'hikmat',number:0}).urls.length,0);
+assert(!finderSource.includes('fetch('),'No remote API or guessed lookup for wisdom audio');
+assert(html.includes('id="wisdom-audio-parts"'),'Multi-part audio selector shares wisdom reading panel');
+assert(html.includes('audioPlayer.src=encodeURI(urls[index])'),'Play selected exact source audio');
+assert(html.includes('PMM_LEARNING_PROGRESS.setNahj('),'Keep original listen-progress tracking');
+assert(!html.includes('const media=current.audio;'),'Null Wisdom bank audio is no longer used');
+assert(html.includes('id="about-reminder"'),'Reminder settings accessible from About');
+assert(html.includes('function renderReminderSettings(){'),'Daily, weekly, monthly, off cadence UI');
+for(const freq of ['daily','weekly','monthly','off'])
+ assert(html.includes("['"+freq+"'"),'Reminder option: '+freq);
+assert(versionGradle.includes("applicationIdSuffix '.remindtest106'"),'New install does not update 1.0.5');
+assert(!versionGradle.includes("applicationIdSuffix '.resumetrial105'"),
+ 'Previously reviewed 1.0.5 is not replaced');
+
+const reminderJava=fs.readFileSync('app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java','utf8');
+const receiverJava=fs.readFileSync('app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java','utf8');
+const manifest=fs.readFileSync('app/src/main/AndroidManifest.xml','utf8');
+for(const p of ['POST_NOTIFICATIONS','RECEIVE_BOOT_COMPLETED'])
+ assert(manifest.includes('android.permission.'+p),'Manifest permission '+p);
+assert(manifest.includes('android:exported="false"')&&manifest.includes('WisdomReminderReceiver'),
+ 'Unexported local scheduled receiver');
+assert(reminderJava.includes('FIRST_DELAY_MS = 5L * 60L * 1000L'),'Trial first permission at 5min, not first launch');
+assert(reminderJava.includes('getString(FREQUENCY, "daily")'),'Daily by default');
+assert(reminderJava.includes('new NotificationChannel(CHANNEL_ID'),'Dedicated silent reminder channel');
+assert(reminderJava.includes('channel.setSound(null, null)'),'No audio on Android 8+');
+assert(reminderJava.includes('channel.enableVibration(false)'),'No vibrations');
+assert(reminderJava.includes('builder.setSilent(true)'),'Notification silence on Android 8+');
+assert(reminderJava.includes('setAndAllowWhileIdle('),'Energy-friendly, no exact alarm permission');
+assert(!manifest.includes('SCHEDULE_EXACT_ALARM'),'No restricted exact-alarm request');
+assert(!manifest.includes('USE_EXACT_ALARM'),'Do not abuse calendar alarm permission');
+assert(reminderJava.includes('Calendar.MONTH')&&reminderJava.includes('DAY_OF_YEAR, 7')&&
+ reminderJava.includes('DAY_OF_YEAR, 1'),'Daily/weekly/monthly calendar recurrence');
+assert(reminderJava.includes('یک جمله مهمان امیرالمومنین باش!'),'Exact approved notification title');
+assert(reminderJava.includes('یک دقیقه از ۳۶۰۰ دقیقه‌ای امروزت را وقف مولا کن'),
+ 'Exact owner-provided reminder body without silent editing');
+assert(receiverJava.includes('Intent.ACTION_BOOT_COMPLETED'),'Restore alarms after reboot');
+assert(receiverJava.includes('Intent.ACTION_TIMEZONE_CHANGED'),'Restore after time zone change');
+assert(java.includes('getBooleanExtra(WisdomReminderScheduler.EXTRA_OPEN_WISDOM'),
+ 'Notification taps enter Wisdom section');
+assert(java.includes('maybeAskReminderConsent()'),'Permission question deferred to 5min and foreground');
+assert(java.includes('if (!visibleToUser'),'Never show runtime permission from background');
+
 for(const [group,id,title,filename] of [
  ['sermons','sermon-13-14','خطبه ۱۳ و ۱۴','khotbe/khotbe 13 & 14.mp3'],
  ['sermons','sermon-52-53','خطبه ۵۲ و ۵۳','khotbe/khotbe 52 & 53.mp3'],

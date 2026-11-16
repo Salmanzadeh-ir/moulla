@@ -908,6 +908,24 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 #wisdom-scroll .pmm-resume-wisdom{display:block;width:min(100%,340px);margin:12px auto 5px;padding:9px 11px;min-height:45px;border:2px solid #b9852e;border-radius:14px;background:linear-gradient(#fff7de,#ebca84);color:#0b4268;line-height:1.65;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important;font-size:clamp(11px,2.7cqw,16px);font-weight:600;text-align:center;cursor:pointer}
 #wisdom-scroll .pmm-resume-wisdom:focus-visible{outline:3px solid #1c78b6;outline-offset:2px}
 
+
+/* Reminder preference panel: only inside the existing About content scroll. */
+#stage .pmm-reminder-settings{background:linear-gradient(#fff8df,#f3d89a);color:#153f63;
+ border:2px solid #a87835;border-radius:16px;padding:16px 12px;margin:8px 3px 16px;direction:rtl;line-height:1.85}
+#stage .pmm-reminder-settings h2{font-weight:900;margin:0 0 10px;font-size:clamp(15px,3.8cqw,22px)}
+#stage .pmm-reminder-settings label{font-weight:900;display:block;margin:10px 0 4px}
+#stage .pmm-reminder-settings select{width:100%;min-height:47px;border:2px solid #ba8a3f;border-radius:10px;
+ padding:7px;color:#093b68;background:#fff9eb;direction:rtl}
+#stage .pmm-reminder-settings .pmm-reminder-note{font-weight:600;margin:9px 0}
+#stage .pmm-reminder-settings .pmm-reminder-actions{display:grid;gap:8px;margin-top:11px}
+#stage .pmm-reminder-settings button{border:2px solid #be954e;border-radius:10px;min-height:43px;padding:7px 9px;
+ background:#0a4577;color:#ffedc3;font-weight:800;cursor:pointer}
+#stage .pmm-reminder-settings button:focus-visible,#stage .pmm-reminder-settings select:focus-visible{outline:3px solid #1384b9}
+#wisdom-scroll .wisdom-audio-parts{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 9px;direction:rtl}
+#wisdom-scroll .wisdom-audio-part{border:1px solid #a97925;background:#fff7e4;color:#063966;border-radius:9px;
+ padding:6px 10px;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important;font-size:14px;min-height:40px;cursor:pointer}
+#wisdom-scroll .wisdom-audio-part[aria-pressed="true"]{background:#083f73;color:#fff4c6;border-color:#e2b665}
+
 /* Version footer is the final item in About's existing scroll area. */
 #stage .about-version{margin:clamp(12px,3cqw,20px) 4px 0;padding:9px 2px 5px;text-align:center;
  direction:rtl;color:#07365f;font:700 clamp(11px,2.5cqw,16px)/1.8 var(--pmm-text-font)}
@@ -1097,7 +1115,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
         <button type="button" id="audio-action" class="navy-button"><span aria-hidden="true">🎧</span> شرح این جمله را بشنوید</button>
         <button type="button" id="other-action" class="gold-button"><span aria-hidden="true">✦</span> یک جمله‌ی دیگر مهمان حضرت باشید</button>
       </div>
-      <div id="audio-box" class="audio-box" hidden><audio id="audio-player" controls preload="none"></audio></div>
+      <div id="audio-box" class="audio-box" hidden><div class="wisdom-audio-parts" id="wisdom-audio-parts"></div><audio id="audio-player" controls preload="none"></audio></div>
       
       </section>
     </div>
@@ -1395,7 +1413,7 @@ function updateScrollbar(){
   thumb.style.height=`${thumbHeight}%`;
   thumb.style.top=`${5+fraction*(90-thumbHeight)}%`;
 }
-function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true}
+function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true;document.getElementById('wisdom-audio-parts').replaceChildren();selectedExplanation=null}
 function showSelectedWisdom(w){
   if(!w)return;
   stopSound();current=w;
@@ -1428,26 +1446,76 @@ function leaveWisdom(){
   scene.dataset.screen='home';window.PMM_V7&&window.PMM_V7.markHome();toast.hidden=true;requestAnimationFrame(updateScrollbar);
   if(originalFocus&&originalFocus.isConnected)originalFocus.focus({preventScroll:true});
 }
+// Select the exact owner-supplied MP3 for the displayed wisdom. Two wisdom
+// pairs (40/41, 111/112) share files; multi-part entries preserve every track.
+function wisdomExplanationTracks(w){
+ const catalog=window.PMM_NAHJ_AUDIO_DATA;
+ if(!w||!catalog||!catalog.items||!catalog.parts)return {record:null,urls:[]};
+ const records=catalog.items.wisdoms||[];
+ let id='';
+ if(w.kind==='gharaib')id='gharaib-'+w.number;
+ else if(w.kind==='hikmat'&&Number.isInteger(w.number)&&w.number>=1&&w.number<=480){
+   const found=records.find(record=>record.kind==='wisdom'&&
+     record.id.split('-').slice(1).some(num=>Number(num)===w.number));
+   id=found?found.id:'';
+ }
+ const record=records.find(value=>value.id===id)||null;
+ const links=record?catalog.parts[record.id]:null;
+ const valid=/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/hekmat\/hekmat [A-Za-z0-9. &]+\.mp3$/i;
+ return {record,urls:Array.isArray(links)?links.filter(url=>typeof url==='string'&&valid.test(url)):[]};
+}
+let selectedExplanation=null;
+function explanationSave(finished=false){
+ if(!selectedExplanation||audioPlayer.readyState<1)return;
+ const {record,index}=selectedExplanation;
+ PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,
+   finished?0:Math.floor(audioPlayer.currentTime||0),finished);
+}
+audioPlayer.addEventListener('timeupdate',()=>explanationSave(false));
+audioPlayer.addEventListener('pause',()=>explanationSave(audioPlayer.ended));
+audioPlayer.addEventListener('ended',()=>explanationSave(true));
 function playExplanation(){
-  if(!current)return;
-  const media=current.audio;
-  if(!media||typeof media.url!=='string'||!media.url.trim()){
-    showToast('شرح صوتی این حکمت هنوز به لینک معتبر وصل نشده است. متن و ترجمه آفلاین کار می‌کنند.');return;
-  }
-  let url;try{url=new URL(media.url)}catch{showToast('آدرس صوت معتبر نیست.');return}
-  if(url.protocol!=='https:'){showToast('برای امنیت، فقط پیوند HTTPS مجاز است.');return}
-  if(media.type==='audio'){
-    audioPlayer.src=url.href;audioBox.hidden=false;
-    if(Number.isFinite(media.startSeconds)&&media.startSeconds>=0){
-      audioPlayer.addEventListener('loadedmetadata',()=>{audioPlayer.currentTime=Math.min(media.startSeconds,Math.max(0,audioPlayer.duration||0))},{once:true});
-    }
-    audioPlayer.play().catch(()=>showToast('برای شروع پخش، دکمه پخش‌کننده را لمس کنید.'));
-    audioBox.scrollIntoView({block:'nearest',behavior:'smooth'});
-  }else{
-    window.dispatchEvent(new CustomEvent('pmm:wisdom-online-explanation',{detail:{number:current.number,url:url.href}}));
-    const tab=window.open(url.href,'_blank','noopener,noreferrer');
-    if(!tab)showToast('پیوند شرح آماده است؛ بازکردن پنجره در این پیش‌نمایش محدود شده است.');
-  }
+ if(!current)return;
+ const {record,urls}=wisdomExplanationTracks(current);
+ if(!record||!urls.length){
+   showToast('برای این مورد هنوز شرح صوتی در فهرست اصلی ثبت نشده است.');
+   return;
+ }
+ const selector=document.getElementById('wisdom-audio-parts');
+ selector.replaceChildren();
+ function choosePart(index){
+   if(index<0||index>=urls.length)return;
+   explanationSave(false);
+   audioPlayer.pause();
+   const last=PMM_LEARNING_PROGRESS.getNahj('wisdoms');
+   const seconds=last&&last.entryId===record.id&&last.part===index&&!last.finished?last.seconds:0;
+   selectedExplanation={record,index};
+   PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,seconds,false);
+   audioPlayer.src=encodeURI(urls[index]);audioPlayer.load();
+   if(seconds>0)audioPlayer.addEventListener('loadedmetadata',function restore(){
+      if(selectedExplanation?.record.id===record.id&&selectedExplanation.index===index&&
+         Number.isFinite(audioPlayer.duration)&&audioPlayer.duration>0)
+        audioPlayer.currentTime=Math.min(seconds,Math.max(0,audioPlayer.duration-1));
+   },{once:true});
+   selector.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+   audioBox.hidden=false;
+   audioPlayer.play().catch(()=>showToast('برای پخش، دکمه پخش‌کننده را لمس کنید یا اینترنت را بررسی کنید.'));
+ }
+ const ordinal=['اول','دوم','سوم','چهارم','پنجم','ششم','هفتم','هشتم','نهم','دهم'];
+ if(urls.length>1)urls.forEach((unused,index)=>{
+   const button=document.createElement('button');
+   button.type='button';button.className='wisdom-audio-part';
+   button.textContent='بخش '+(ordinal[index]||String(index+1));
+   button.setAttribute('aria-label','پخش '+button.textContent+' شرح این حکمت');
+   button.setAttribute('aria-pressed','false');
+   button.addEventListener('click',()=>choosePart(index));
+   selector.appendChild(button);
+ });
+ const previous=PMM_LEARNING_PROGRESS.getNahj('wisdoms');
+ const index=previous&&previous.entryId===record.id&&!previous.finished&&previous.part<urls.length?
+   previous.part:0;
+ choosePart(index);
+ audioBox.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 document.querySelectorAll('[data-menu]').forEach(button=>button.addEventListener('click',()=>{
   if(button.dataset.menu==='guest_sentence_new'){enterWisdom();return}
@@ -1911,6 +1979,7 @@ function renderAbout(){
   contents.innerHTML=`<div class="about-menu">
       <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>درباره ما</span></button>
       <button class="about-entry" type="button" id="about-contact"><span class="about-entry-icon">✉</span><span>ارتباط با ما</span></button>
+      <button class="about-entry" type="button" id="about-reminder"><span class="about-entry-icon">♧</span><span>تنظیم یادآور مهمانی مولا</span></button>
       <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
         <div class="gallery-track"><div class="gallery-group">${group}</div><div class="gallery-group" aria-hidden="true">${group}</div></div>
       </div>
@@ -1918,7 +1987,46 @@ function renderAbout(){
     </div>`;
   document.getElementById('about-biography').addEventListener('click',()=>setState('biography'));
   document.getElementById('about-contact').addEventListener('click',()=>openEitaa(CONTACT_URL));
+  document.getElementById('about-reminder').addEventListener('click',renderReminderSettings);
   contents.querySelectorAll('[data-photo]').forEach(b=>b.addEventListener('click',()=>setState('photo',null,Number(b.dataset.photo))));
+}
+function renderReminderSettings(){
+ let current={frequency:'daily',consent:false,allowed:false};
+ try{
+  if(window.PMMNative&&typeof window.PMMNative.getReminderSettings==='function'){
+    const value=JSON.parse(window.PMMNative.getReminderSettings());
+    if(value&&typeof value==='object')current=value;
+  }
+ }catch(_){}
+ const allowed=['daily','weekly','monthly','off'];
+ const frequency=allowed.includes(current.frequency)?current.frequency:'daily';
+ const options=[
+  ['daily','هر روز (پیش‌فرض)'],['weekly','هفته‌ای یک‌بار'],
+  ['monthly','ماهی یک‌بار'],['off','خاموش']
+ ];
+ contents.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
+ '<h2>یادآور مهمانی مولا</h2>'+
+ '<p class="pmm-reminder-note">اعلان کاملاً بی‌صداست. در این نسخهٔ آزمایشی، درخواست اجازه ۵ دقیقه بعد از اولین ورود نمایش داده می‌شود؛ اگر برنامه بسته باشد، هنگام ورود بعدی.</p>'+
+ '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
+ '<select id="pmm-reminder-frequency">'+options.map(option=>
+  '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select>'+
+ '<p class="pmm-reminder-note" id="pmm-reminder-status">'+
+ (current.consent?(current.allowed?'یادآوری‌ها مجاز هستند.':'برای نمایش اعلان، اجازهٔ اندروید لازم است.'):'هنوز اجازهٔ یادآوری دریافت نشده است.')+'</p>'+
+ '<div class="pmm-reminder-actions"><button type="button" id="pmm-reminder-permission">اجازهٔ نمایش اعلان</button>'+
+ '<button type="button" id="pmm-reminder-back">بازگشت به درباره ما</button></div></section>';
+ document.getElementById('pmm-reminder-frequency').addEventListener('change',event=>{
+  const value=event.target.value;
+  if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
+   window.PMMNative.setReminderFrequency(value);
+  document.getElementById('pmm-reminder-status').textContent=
+   value==='off'?'یادآوری خاموش شد.':'تکرار انتخابی ذخیره شد. در صورت لزوم اجازهٔ اعلان را تأیید کنید.';
+ });
+ document.getElementById('pmm-reminder-permission').addEventListener('click',()=>{
+  if(window.PMMNative&&typeof window.PMMNative.askReminderPermission==='function')
+   window.PMMNative.askReminderPermission();
+  else document.getElementById('pmm-reminder-status').textContent='این تنظیم در نسخهٔ اندروید قابل فعال‌سازی است.';
+ });
+ document.getElementById('pmm-reminder-back').addEventListener('click',renderAbout);
 }
 function renderBiography(){
   contents.innerHTML='<article class="about-story">'+ABOUT_HTML+'</article>';
