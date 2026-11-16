@@ -201,7 +201,7 @@ assert.deepEqual(Array.from(speedVm.speeds),[0.75,1,1.25,1.5,2]);
 assert.equal(speedVm.time(65),'۱:۰۵','Persian duration labels');
 assert(speedVm.allowed(links['sermon-1'][0]),'Only owner-provided URL roots can play');
 assert(!speedVm.allowed('https://evil.example/fake.mp3'),'Reject unapproved hosts');
-assert(nahjInlinePage.includes('attachNahjInlineAudio()'),'Inline player mounted within the selected entry');
+assert(nahjInlinePage.includes('attachNahjInlineAudio(chosen.id,record.id)'),'Inline player mounted within the selected entry');
 assert(nahjInlinePage.includes('class="nahj-part-media" preload="none" playsinline'));
 assert(nahjInlinePage.includes("safe(encodeURI(url))"),'Exact provided MP3 URL, encoded safely');
 assert(!nahjInlinePage.includes("setState('player','nahj'"),'No fourth navigation step for Nahj audio');
