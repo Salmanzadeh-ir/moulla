@@ -31,11 +31,12 @@ for(const [group,max] of [['sermons',241],['letters',79],['wisdoms',480]]){
 for(const [group,a,b] of [['sermons',13,14],['sermons',52,53],['sermons',58,59],['sermons',59,60],['wisdoms',40,41],['wisdoms',111,112]]){
  assert.equal(find(group,a).id,find(group,farsi(b)).id,'shared audio item mapping');
 }
-for(const n of ['', '۱۲.۵','40abc','۴۰ ۴۱','۰','-1','۵۰۰۰','١٢/٣', '1e2']){
+for(const n of ['', '۱۲.۵','40abc','۴۰ ۴۱','۰','-1','١٢/٣', '1e2']){
  assert.equal(parse(n),null,'reject non-exact numeral: '+n);
 }
 assert.equal(find('wisdoms','۴۸۱'),null,'nine Gharib are not fabricated wisdom records');
 assert.equal(find('letters','۸۰'),null,'out-of-range letter not fabricated');
+assert.equal(find('wisdoms','۵۰۰۰'),null,'out-of-range numerical input yields no catalog record');
 assert.equal(find('sermons','۲۴۲'),null,'out-of-range sermon not fabricated');
 assert.equal(find('missing','۱'),null,'unknown group must be rejected');
 assert(html.includes('id="about-biography"><span class="about-entry-icon">❖</span><span>معرفی‌نامه</span>'),'inner about entry renamed');
