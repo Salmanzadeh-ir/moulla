@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          locked="af834befdb67c1ecd332119e9f9afdfbb974228a"
+          locked="6d45805f0cac385dce131d125bdff4f6e2b040d0"
           git cat-file -e "${locked}^{commit}"
           excluded=(':(exclude)OWNER_LOCK.md' ':(exclude).github/workflows/owner-locked-state.yml')
           echo "Checking repo against approved owner snapshot: ${locked}"
