@@ -52,6 +52,22 @@ jobs:
           node scripts/test_pmm_online_updates.js
           node scripts/test_pmm_content_server.mjs
 
+      - name: Disable release keystore assignment only in the CI working copy
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The owner's original Gradle release config requires an existing
+          # private storeFile. It is intentionally NEVER provided to public CI.
+          # Remove only this line in the ephemeral checked-out workspace.
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("app/build.gradle")
+          text=p.read_text()
+          old="            signingConfig signingConfigs.release\n"
+          assert text.count(old)==1, "Unexpected or modified frozen Gradle setup"
+          p.write_text(text.replace(old,"            // Unsigned only on public CI; sign offline with owner private key\n"))
+          PY
+
       - name: Build UNSIGNED RELEASE (do not put private keys in GitHub)
         shell: bash
         run: |
