@@ -70,6 +70,8 @@
 - فقط فایل‌های `index.html`، `MainActivity.java`، `WisdomReminderScheduler.java`، `app/build.gradle` و آزمون `scripts/test_pmm_online_updates.js` تغییر کرده‌اند. فایل لینک صوت‌های اصلی، بانک کامل حکمت‌ها، پنل Cloudflare، شاخه اصلی و نسخه‌های قبلی بدون تغییر مانده‌اند.
 - نسخه جدید **`1.0.7-debug`** (`versionCode 24`) با شناسهٔ مستقل **`ir.nahj.towhidkarbordi.remindtest107`** تنها برای بررسی مالک است. Release رسمی، Merge و تغییر `main` مجاز نشده است. مرجع کد مجاز: `0a1e9fc595e3cb2b184e5463c23b67e1c59b967b`.
 
+- آزمون Node بدون محیط مرورگر برای رویداد `pmm:app-foreground` فقط یک `window.addEventListener` ساختگی دریافت کرد؛ این اصلاح محدود به آزمون است و کد برنامه تغییر نکرده. مرجع: `ed8d6fe8c28881b6106c49e0005e5bde53b79488`.
+
 ## کنترل یکپارچگی
 
 Workflow `.github/workflows/owner-locked-state.yml` در Push/PR شاخه توسعه، **همه فایل‌های مخزن** را با snapshot دقیق مرجع بالا مقایسه می‌کند؛ تنها همین فایل مستندسازی و workflow قفل (که برای ایجاد قفل اضافه شده‌اند) از مبنای مقایسه استثنا هستند. هر اختلاف دیگری، آزمون را قرمز می‌کند.
