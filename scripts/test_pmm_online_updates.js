@@ -7,6 +7,26 @@ const native=fs.readFileSync('app/src/main/assets/photo_quotes_manifest.js','utf
 
 assert(html.includes('<script src="pmm_online_updates.js"></script>'));
 
+// Estedad must ship offline and style inner lesson/part labels only.
+const estedadBytes=fs.readFileSync('app/src/main/assets/fonts/Estedad-VF.woff2');
+const estedadLicense=fs.readFileSync('app/src/main/assets/fonts/Estedad-OFL.txt','utf8');
+assert.equal(estedadBytes.subarray(0,4).toString('ascii'),'wOF2','Bundle actual WOFF2 font');
+assert(estedadBytes.length>100000,'Bundle full variable Estedad');
+assert(estedadLicense.includes('SIL OPEN FONT LICENSE Version 1.1'),'Bundle original Estedad license');
+const cssFrom=html.indexOf('/* Owner-approved Estedad for the inner navigation');
+const estedadCss=html.slice(cssFrom,html.indexOf('</style>',cssFrom));
+assert(cssFrom>0&&estedadCss.includes("fonts/Estedad-VF.woff2"));
+assert(estedadCss.includes('font-weight:100 900'));
+for(const selector of ['#stage .content-view','#stage .content-view .session-label','#stage .content-view button','#stage #legacy-heading']){
+ assert(estedadCss.includes(selector),'Estedad scoped to: '+selector);
+}
+assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisdom reading typography');
+assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
+assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
+const versionGradle=fs.readFileSync('app/build.gradle','utf8');
+assert(/versionCode 18\s+versionName '1.0.1'/.test(versionGradle),'Version must progress monotonically');
+
+
 // Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
 const audioJs=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');
 assert(html.includes('<script src="nahj_audio_links.js"></script>'));

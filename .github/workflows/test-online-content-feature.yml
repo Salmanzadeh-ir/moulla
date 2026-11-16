@@ -23,6 +23,8 @@ jobs:
           allowed = {
             "app/build.gradle",
             "app/src/main/assets/index.html",
+            "app/src/main/assets/fonts/Estedad-VF.woff2",
+            "app/src/main/assets/fonts/Estedad-OFL.txt",
             "app/src/main/assets/nahj_audio_links.js",
             "app/src/main/assets/pmm_online_updates.js",
             "app/src/main/assets/pmm_online_updates.css",
@@ -32,7 +34,7 @@ jobs:
              "cbb58c0932ec94531e517652a08f29caffee5d8c", "HEAD", "--", "app/"],text=True)
           changed = set(output.splitlines())
           assert changed == allowed, f"Unexpected application changes: {changed ^ allowed}"
-          print("PASS: only four online feature files and explicitly authorized version metadata changed.")
+          print("PASS: only owner-approved development files and bundled Estedad/OFL changed.")
           PY
 
       - name: Verify historical V16 content still present
