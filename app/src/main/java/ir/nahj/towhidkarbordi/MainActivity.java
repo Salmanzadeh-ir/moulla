@@ -1,12 +1,9 @@
 package ir.nahj.towhidkarbordi;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -53,10 +50,7 @@ public final class MainActivity extends Activity {
     private boolean eitaaReturnPending = false;
     private android.window.OnBackInvokedCallback platformBackCallback;
     private static final int REMINDER_PERMISSION_REQUEST = 9031;
-    private final Handler reminderHandler = new Handler(Looper.getMainLooper());
-    private final Runnable permissionPromptRunnable = this::maybeAskReminderConsent;
     private boolean visibleToUser = false;
-    private boolean permissionDialogVisible = false;
     private boolean pendingWisdomOpen = false;
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
@@ -148,11 +142,10 @@ public final class MainActivity extends Activity {
                 if (isFinishing() || isDestroyed() || web == null ||
                     !"file:///android_asset/index.html".equals(web.getUrl())) return;
                 WisdomReminderScheduler.setFrequency(MainActivity.this, value);
-                if (!"off".equals(value)) {
-                    if (!WisdomReminderScheduler.hasConsent(MainActivity.this)) showReminderConsent(true);
-                    else if (!WisdomReminderScheduler.hasSystemPermission(MainActivity.this))
-                        requestReminderPermission();
-                }
+                if (!"off".equals(value) &&
+                    (!WisdomReminderScheduler.hasConsent(MainActivity.this) ||
+                     !WisdomReminderScheduler.hasSystemPermission(MainActivity.this)))
+                    requestReminderPermission();
             });
         }
 
@@ -161,8 +154,7 @@ public final class MainActivity extends Activity {
             runOnUiThread(() -> {
                 if (isFinishing() || isDestroyed() || !visibleToUser || web == null ||
                     !"file:///android_asset/index.html".equals(web.getUrl())) return;
-                if (!WisdomReminderScheduler.hasConsent(MainActivity.this)) showReminderConsent(true);
-                else requestReminderPermission();
+                requestReminderPermission();
             });
         }
 
@@ -441,40 +433,19 @@ public final class MainActivity extends Activity {
     }
 
 
-    /** A runtime-permission dialog cannot legally be shown from background on Android 13+. */
-    private void maybeAskReminderConsent() {
-        reminderHandler.removeCallbacks(permissionPromptRunnable);
+    /**
+     * Android 13+ cannot send ANY notification to the status shade without
+     * a system-granted POST_NOTIFICATIONS permission. The only lawful way
+     * to ensure a five-minute background reminder is to request this OS
+     * permission while the app is in the foreground, on first opening.
+     * The notification itself is a real AlarmManager notification after
+     * FIVE MINUTES, whether or not this Activity remains visible.
+     */
+    private void initializeReminderPermissionIfNeeded() {
         if (!visibleToUser || isFinishing() || isDestroyed() ||
                 WisdomReminderScheduler.wasAsked(this)) return;
-        long wait = WisdomReminderScheduler.firstOpen(this) +
-                WisdomReminderScheduler.FIRST_DELAY_MS - System.currentTimeMillis();
-        if (wait > 0) {
-            reminderHandler.postDelayed(permissionPromptRunnable, wait);
-            return;
-        }
-        showReminderConsent(false);
-    }
-
-    private void showReminderConsent(boolean manuallyRequested) {
-        if (!visibleToUser || permissionDialogVisible || isFinishing() || isDestroyed()) return;
-        if (!manuallyRequested && WisdomReminderScheduler.wasAsked(this)) return;
-        // The first invitation happens only AFTER the trial delay, never on first entry.
-        if (!manuallyRequested &&
-            System.currentTimeMillis() < WisdomReminderScheduler.firstOpen(this) +
-                    WisdomReminderScheduler.FIRST_DELAY_MS) return;
-        WisdomReminderScheduler.markAsked(this);
-        permissionDialogVisible = true;
-        new AlertDialog.Builder(this)
-                .setTitle("یادآور مهمانی مولا")
-                .setMessage("مایلید هر روز یک یادآوری بی‌صدا برای «یک جمله مهمان امیرالمومنین باش!» دریافت کنید؟ می‌توانید آن را به هفتگی یا ماهانه تغییر دهید.")
-                .setPositiveButton("بله، فعال شود", (dialog, which) -> {
-                    WisdomReminderScheduler.consent(this, true);
-                    requestReminderPermission();
-                })
-                .setNegativeButton("فعلاً نه", (dialog, which) ->
-                    WisdomReminderScheduler.consent(this, false))
-                .setOnDismissListener(dialog -> { permissionDialogVisible = false; })
-                .show();
+        WisdomReminderScheduler.markAsked(this); // do not pester on each return
+        requestReminderPermission();
     }
 
     private void requestReminderPermission() {
@@ -484,7 +455,9 @@ public final class MainActivity extends Activity {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
                     REMINDER_PERMISSION_REQUEST);
         } else {
-            WisdomReminderScheduler.scheduleFirst(this);
+            // On Android 12 or earlier the system has no runtime permission.
+            // A pre-granted Android 13+ install is also handled here.
+            WisdomReminderScheduler.consent(this, true);
         }
     }
 
@@ -492,9 +465,10 @@ public final class MainActivity extends Activity {
                                                        int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REMINDER_PERMISSION_REQUEST) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                WisdomReminderScheduler.scheduleFirst(this);
-            else WisdomReminderScheduler.sync(this);
+            boolean granted = grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            WisdomReminderScheduler.consent(this, granted);
+            // If declined, never send a hidden background notification.
         }
     }
 
@@ -517,7 +491,6 @@ public final class MainActivity extends Activity {
     @Override public void onBackPressed() { handleBackNavigation(); }
     @Override protected void onPause() {
         visibleToUser = false;
-        reminderHandler.removeCallbacks(permissionPromptRunnable);
         if (web != null) web.onPause();
         super.onPause();
     }
@@ -527,10 +500,12 @@ public final class MainActivity extends Activity {
         if (web != null) web.onResume();
         restoreAfterEitaaIfFocused();
         WisdomReminderScheduler.sync(this);
-        maybeAskReminderConsent();
+        // Reset only the visual × dismissals; keep stored audio progress.
+        if (web != null && "file:///android_asset/index.html".equals(web.getUrl()))
+            web.evaluateJavascript("window.dispatchEvent(new Event('pmm:app-foreground'))", null);
+        initializeReminderPermissionIfNeeded();
     }
     @Override protected void onDestroy() {
-        reminderHandler.removeCallbacks(permissionPromptRunnable);
         contentExecutor.shutdownNow();
         if (android.os.Build.VERSION.SDK_INT >= 33 && platformBackCallback != null) {
             getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(platformBackCallback);

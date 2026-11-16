@@ -15,9 +15,11 @@ import java.util.Calendar;
 
 /**
  * On-device, user-consented, silent spiritual reminders.
- * The first consent invitation is deliberately deferred until 5 minutes
- * after the first Activity visit (or next foreground visit if it was closed).
- * No exact-alarm privileges, remote pushes, servers or background launches.
+ * With Android system permission, the FIRST notification is scheduled for
+ * five minutes after the first opening and is delivered in the phone's
+ * notification shade even if the Activity is closed. Android 13+ must grant
+ * its runtime permission during a foreground Activity before posting.
+ * No exact-alarm privileges, remote pushes or background Activity launches.
  */
 public final class WisdomReminderScheduler {
     private WisdomReminderScheduler() {}
@@ -25,8 +27,8 @@ public final class WisdomReminderScheduler {
     public static final String ACTION_REMIND = "ir.nahj.towhidkarbordi.action.WISDOM_REMIND";
     public static final String EXTRA_OPEN_WISDOM = "pmm_open_wisdom_from_notification";
     public static final String CHANNEL_ID = "pmm_wisdom_silent_v1";
-    public static final String TITLE = "یک جمله مهمان امیرالمومنین باش!";
-    public static final String MESSAGE = "یک دقیقه از ۳۶۰۰ دقیقه‌ای امروزت را وقف مولا کن";
+    public static final String TITLE = "یک جمله مهمان امیرالمؤمنین باش!";
+    public static final String MESSAGE = "برای اینکه هر روز مهمان جمله‌ای از کلمات نورانی امیرالمؤمنین علیه‌السلام باشید، اجازه دهید یادآوری‌های بی‌صدا برایتان ارسال شود.";
     public static final long FIRST_DELAY_MS = 5L * 60L * 1000L;
     private static final String PREFS = "pmm_wisdom_reminder_v1";
     private static final String FIRST = "first_open_at";

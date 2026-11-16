@@ -926,6 +926,12 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  padding:6px 10px;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important;font-size:14px;min-height:40px;cursor:pointer}
 #wisdom-scroll .wisdom-audio-part[aria-pressed="true"]{background:#083f73;color:#fff4c6;border-color:#e2b665}
 
+/* Dismissible history button is hidden for the current visit only. */
+#stage .pmm-resume-card{position:relative;padding-left:44px}
+#stage .pmm-resume-dismiss{position:absolute;top:7px;left:7px;width:34px;height:34px;padding:0;
+ display:grid;place-items:center;border:1.5px solid #b78940;border-radius:50%;
+ background:#fff6da;color:#073d67;font-size:23px;font-weight:bold;cursor:pointer}
+#stage .pmm-resume-dismiss:focus-visible{outline:3px solid #1981b7;outline-offset:2px}
 /* Version footer is the final item in About's existing scroll area. */
 #stage .about-version{margin:clamp(12px,3cqw,20px) 4px 0;padding:9px 2px 5px;text-align:center;
  direction:rtl;color:#07365f;font:700 clamp(11px,2.5cqw,16px)/1.8 var(--pmm-text-font)}
@@ -1168,8 +1174,29 @@ function getLesson(which){if(!LESSONS.includes(which))return null;const x=load()
 function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;const old=getLesson(which);return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,heard:!!(old&&old.number===number&&old.heard),at:Date.now()}})}
 function markHeard(which,number,heard){const old=getLesson(which);if(!old||old.number!==number)return false;return save(s=>{s.lessons[which]={number,heard:heard===true,at:Date.now()}})}
 function getNahj(group){if(!GROUPS.includes(group))return null;const x=load().nahj?.[group];if(!x||typeof x.entryId!=='string'||x.entryId.length>80||!Number.isInteger(x.part)||x.part<0||x.part>100||!Number.isFinite(x.seconds)||x.seconds<0||x.seconds>86400)return null;return {entryId:x.entryId,part:x.part,seconds:x.seconds,finished:x.finished===true}}
-function setNahj(group,entryId,part,seconds,finished=false){if(!GROUPS.includes(group)||typeof entryId!=='string'||entryId.length>80||!Number.isInteger(part)||part<0||part>100||!Number.isFinite(seconds))return false;return save(s=>{if(!s.nahj||typeof s.nahj!=='object')s.nahj={};s.nahj[group]={entryId,part,seconds:Math.max(0,Math.min(86400,Math.floor(seconds))),finished:finished===true,at:Date.now()}})}
-return {getWisdom,setWisdom,getLesson,openLesson,markHeard,getNahj,setNahj};
+function setNahj(group,entryId,part,seconds,finished=false){
+ if(!GROUPS.includes(group)||typeof entryId!=='string'||entryId.length>80||
+   !Number.isInteger(part)||part<0||part>100||!Number.isFinite(seconds))return false;
+ return save(state=>{
+   if(!state.nahj||typeof state.nahj!=='object')state.nahj={};
+   const value={entryId,part,seconds:Math.max(0,Math.min(86400,Math.floor(seconds))),
+     finished:finished===true,at:Date.now()};
+   state.nahj[group]=value;
+   state.nahjLatest={group,...value};
+ });
+}
+function getLastNahj(){
+ const state=load();
+ let value=state.nahjLatest;
+ if(!value||!GROUPS.includes(value.group))
+   value=GROUPS.map(group=>({group,...(state.nahj?.[group]||{})}))
+     .filter(x=>Number.isFinite(x.at)).sort((a,b)=>b.at-a.at)[0];
+ if(!value||!GROUPS.includes(value.group))return null;
+ const record=getNahj(value.group);
+ if(!record||record.entryId!==value.entryId)return null;
+ return {group:value.group,...record};
+}
+return {getWisdom,setWisdom,getLesson,openLesson,markHeard,getNahj,setNahj,getLastNahj};
 })());
 </script>
 <script>
@@ -1786,39 +1813,50 @@ function attachNahjInlineAudio(groupId,entryId){
  updateRateButtons();
 }
 
-function nahjSavedEntry(groupId){
- const saved=PMM_LEARNING_PROGRESS.getNahj(groupId);
- const record=NAHJ_AUDIO_ITEMS[groupId]?.find(x=>x.id===saved?.entryId);
+// The single Nahj history icon follows the last audio across all three groups.
+const pmmDismissedResume={nahj:false,lessons:new Set()};
+window.addEventListener('pmm:app-foreground',()=>{
+ pmmDismissedResume.nahj=false;
+ pmmDismissedResume.lessons.clear();
+});
+function nahjSavedEntry(){
+ const saved=PMM_LEARNING_PROGRESS.getLastNahj();
+ const record=saved&&NAHJ_AUDIO_ITEMS[saved.group]?.find(x=>x.id===saved.entryId);
  if(!saved||!record||saved.part>=(NAHJ_AUDIO_PARTS[record.id]||[]).length)return null;
  return {saved,record};
 }
-function nahjResumeSummary(groupId){
- const found=nahjSavedEntry(groupId);
+function nahjResumeSummary(){
+ if(pmmDismissedResume.nahj)return '';
+ const found=nahjSavedEntry();
  if(!found)return '';
  const {saved,record}=found;
  const label=record.title+'، '+nahjPartName(saved.part+1);
- const point=saved.finished?'شنیدن این بخش کامل شده است':'ادامه از '+nahjAudioTime(saved.seconds);
- return '<div class="pmm-resume-card"><span class="pmm-resume-title">ادامه از آخرین بار</span>'+
+ const point=saved.finished?'این بخش کامل شنیده شده است':'ادامه از '+nahjAudioTime(saved.seconds);
+ return '<div class="pmm-resume-card" role="group" aria-label="آخرین صوت شنیده‌شده">'+
+ '<button type="button" class="pmm-resume-dismiss" data-resume-dismiss="nahj" aria-label="پنهان کردن یادآور تا ورود بعدی">×</button>'+
+ '<span class="pmm-resume-title">🎧 آخرین چیزی که شنیدید</span>'+
  '<span class="pmm-resume-details">'+safe(label)+' — '+safe(point)+'</span>'+
- '<div class="pmm-resume-actions"><button type="button" class="pmm-resume-action" data-nahj-resume="'+groupId+
- '">رفتن به همین بخش</button></div></div>';
+ '<div class="pmm-resume-actions"><button type="button" class="pmm-resume-action" data-nahj-resume="last">رفتن به همین بخش</button></div></div>';
 }
 function bindNahjResumes(){
  contents.querySelectorAll('[data-nahj-resume]').forEach(button=>button.addEventListener('click',()=>{
-  const group=button.dataset.nahjResume,found=nahjSavedEntry(group);
-  if(!found)return;
-  setState('list','nahj',{nahjGroup:group,nahjEntry:found.record.id});
+  const found=nahjSavedEntry();if(!found)return;
+  setState('list','nahj',{nahjGroup:found.saved.group,nahjEntry:found.record.id});
   requestAnimationFrame(()=>{
    const card=contents.querySelectorAll('.nahj-part-card')[found.saved.part];
    if(card)card.scrollIntoView({block:'center',behavior:'smooth'});
   });
+ }));
+ contents.querySelectorAll('[data-resume-dismiss="nahj"]').forEach(button=>button.addEventListener('click',()=>{
+  pmmDismissedResume.nahj=true;
+  button.closest('.pmm-resume-card')?.remove();
  }));
 }
 function renderNahjAudioCatalog(){
   const groupId=item&&typeof item==='object'?item.nahjGroup:null;
   const chosen=NAHJ_AUDIO_GROUPS.find(group=>group.id===groupId);
   if(!chosen){
-    contents.innerHTML=NAHJ_AUDIO_GROUPS.map(group=>nahjResumeSummary(group.id)).join('')+
+    contents.innerHTML=nahjResumeSummary()+
       '<div class="nahj-audio-groups">'+NAHJ_AUDIO_GROUPS.map(group=>
       `<button class="nahj-audio-group" type="button" data-nahj-group="${group.id}" aria-label="${group.title}">
         <span class="nahj-audio-symbol" aria-hidden="true">${group.icon}</span>
@@ -1833,8 +1871,7 @@ function renderNahjAudioCatalog(){
   const records=NAHJ_AUDIO_ITEMS[chosen.id];
   const entryId=item&&typeof item==='object'?item.nahjEntry:null;
   if(!entryId){
-    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title}</div>`+
-       nahjResumeSummary(chosen.id)+`
+    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title}</div>`+`
       <div class="row-list nahj-audio-list">${records.map(record=>
         `<button class="session nahj-audio-entry" type="button" data-nahj-entry="${record.id}" aria-label="${record.title}">
          <img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}">
@@ -1844,7 +1881,6 @@ function renderNahjAudioCatalog(){
       button.addEventListener('click',()=>setState('list','nahj',{
         nahjGroup:chosen.id,nahjEntry:button.dataset.nahjEntry
       })));
-    bindNahjResumes();
     return;
   }
   const record=records.find(value=>value.id===entryId);
@@ -1923,24 +1959,32 @@ function openSavedLesson(which,number){
  }else setState('player',which,x);
 }
 function lessonResumeSummary(which){
+ if(pmmDismissedResume.lessons.has(which))return '';
  const last=PMM_LEARNING_PROGRESS.getLesson(which);
  if(!last||!DATA[which]?.some(x=>x.number===last.number&&x.url))return '';
- return '<div class="pmm-resume-card"><span class="pmm-resume-title">ادامه از آخرین بار</span>'+
-   '<span class="pmm-resume-details">جلسه '+fa(last.number)+(last.heard?' — ✓ شنیده شد':' — آخرین جلسه بازشده')+'</span>'+
-   '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن جلسه '+fa(last.number)+'</button>'+
-   '<button class="pmm-resume-action pmm-outline" type="button" data-mark-last="'+which+'">'+
-    (last.heard?'↶ هنوز کامل نشنیدم':'✓ این جلسه را شنیدم')+'</button></div></div>';
+ return '<div class="pmm-resume-card" role="group" aria-label="آخرین جلسه بازشده">'+
+ '<button type="button" class="pmm-resume-dismiss" data-resume-dismiss-lesson="'+which+
+ '" aria-label="پنهان کردن یادآور تا ورود بعدی">×</button>'+
+ '<span class="pmm-resume-title">🎧 آخرین جلسه شما</span>'+
+ '<span class="pmm-resume-details">جلسه '+fa(last.number)+(last.heard?' — ✓ شنیده شد':' — آخرین جلسه بازشده')+'</span>'+
+ '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن جلسه '+fa(last.number)+'</button>'+
+ '<button class="pmm-resume-action pmm-outline" type="button" data-mark-last="'+which+'">'+
+ (last.heard?'↶ هنوز کامل نشنیدم':'✓ این جلسه را شنیدم')+'</button></div></div>';
 }
 function bindLessonResume(){
- contents.querySelectorAll('[data-open-last]').forEach(b=>b.addEventListener('click',()=>{
-   const last=PMM_LEARNING_PROGRESS.getLesson(b.dataset.openLast);
-   if(last)openSavedLesson(b.dataset.openLast,last.number);
+ contents.querySelectorAll('[data-open-last]').forEach(button=>button.addEventListener('click',()=>{
+  const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.openLast);
+  if(last)openSavedLesson(button.dataset.openLast,last.number);
  }));
- contents.querySelectorAll('[data-mark-last]').forEach(b=>b.addEventListener('click',()=>{
-   const last=PMM_LEARNING_PROGRESS.getLesson(b.dataset.markLast);
-   if(!last)return;
-   PMM_LEARNING_PROGRESS.markHeard(b.dataset.markLast,last.number,!last.heard);
-   const y=content.scrollTop;renderList();content.scrollTop=y;
+ contents.querySelectorAll('[data-mark-last]').forEach(button=>button.addEventListener('click',()=>{
+  const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.markLast);
+  if(!last)return;
+  PMM_LEARNING_PROGRESS.markHeard(button.dataset.markLast,last.number,!last.heard);
+  const y=content.scrollTop;renderList();content.scrollTop=y;
+ }));
+ contents.querySelectorAll('[data-resume-dismiss-lesson]').forEach(button=>button.addEventListener('click',()=>{
+  pmmDismissedResume.lessons.add(button.dataset.resumeDismissLesson);
+  button.closest('.pmm-resume-card')?.remove();
  }));
 }
 function renderList(){
@@ -2006,7 +2050,7 @@ function renderReminderSettings(){
  ];
  contents.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
  '<h2>یادآور مهمانی مولا</h2>'+
- '<p class="pmm-reminder-note">اعلان کاملاً بی‌صداست. در این نسخهٔ آزمایشی، درخواست اجازه ۵ دقیقه بعد از اولین ورود نمایش داده می‌شود؛ اگر برنامه بسته باشد، هنگام ورود بعدی.</p>'+
+ '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، اولین اعلان آزمایشی از ۵ دقیقه پس از اولین ورود زمان‌بندی می‌شود و حتی با بسته بودن برنامه نیز دریافت‌شدنی است. زمان نمایش ممکن است با محدودیت باتری گوشی کمی تأخیر داشته باشد.</p>'+
  '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
  '<select id="pmm-reminder-frequency">'+options.map(option=>
   '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select>'+

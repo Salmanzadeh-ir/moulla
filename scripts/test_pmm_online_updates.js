@@ -24,7 +24,7 @@ assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisd
 assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
 assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
 const versionGradle=fs.readFileSync('app/build.gradle','utf8');
-assert(/versionCode 23\s+versionName '1.0.6'/.test(versionGradle),'Version must progress monotonically');
+assert(/versionCode 24\s+versionName '1.0.7'/.test(versionGradle),'Version must progress monotonically');
 
 
 // Only owner-approved three-line-or-shorter wisdoms may enter the draw.
@@ -86,7 +86,7 @@ assert(drawAction.includes('let preview=candidates[randInt(candidates.length)]')
 assert(drawAction.includes("wisdoms.length!==489"),'Keep original complete bank integrity check');
 
 // Exactly the owner-authorized offline resume feature, with independent test package.
-assert(versionGradle.includes("applicationIdSuffix '.remindtest106'"),
+assert(versionGradle.includes("applicationIdSuffix '.remindtest107'"),
  'This APK must install alongside ALL previous apps, never as their update');
 assert(!versionGradle.includes("applicationIdSuffix '.newiwanv16'"));
 assert(!versionGradle.includes("applicationIdSuffix '.resumetrial104'"),'Previous 1.0.4 install ID remains independent');
@@ -103,6 +103,7 @@ const memory=progress();
 assert.equal(memory.getWisdom(),null,'No last wisdom before viewing');
 assert.equal(memory.getLesson('towhid'),null,'No fake heard session');
 assert.equal(memory.getNahj('sermons'),null,'No prior audio history');
+assert.equal(memory.getLastNahj(),null,'No global history before playback');
 assert(memory.setWisdom('h045'));
 assert(memory.setWisdom('g001'),'Gharib al-Hadith keeps three-digit ID');
 assert.equal(memory.getWisdom(),'g001');
@@ -121,20 +122,28 @@ assert.equal(memory.getLesson('life').number,5);
 assert.equal(memory.getLesson('kafi').number,33);
 assert(memory.setNahj('sermons','sermon-5',0,757.8,false));
 assert.equal(memory.getNahj('sermons').seconds,757);
+assert.equal(memory.getLastNahj().group,'sermons');
 assert(memory.setNahj('letters','letter-31',24,120,false));
+assert.equal(memory.getLastNahj().group,'letters','Latest song across ALL Nahj categories');
+assert.equal(memory.getLastNahj().part,24);
 assert.equal(memory.getNahj('sermons').entryId,'sermon-5','Letter does not overwrite sermon');
 assert.equal(memory.getNahj('letters').part,24);
 assert(memory.setNahj('sermons','sermon-5',0,0,true));
 assert.equal(memory.getNahj('sermons').finished,true,'Completed part noted');
 assert.equal(memory.getNahj('sermons').seconds,0,'Completed part replays from start');
+assert.equal(memory.getLastNahj().group,'sermons','Latest actual playback overwrites previous global icon');
+assert(memory.setNahj('wisdoms','wisdom-40-41',0,53,false));
+assert.equal(memory.getLastNahj().group,'wisdoms','Wisdom explanation shares the ONE Nahj icon');
+assert.equal(memory.getLastNahj().entryId,'wisdom-40-41');
 const reread=progress();
 assert.equal(reread.getWisdom(),'g001','History persists across app restarts');
 assert.equal(reread.getLesson('kafi').number,33);
 assert.equal(reread.getNahj('letters').part,24);
+assert.equal(reread.getLastNahj().group,'wisdoms','Single last cursor survives relaunch');
 assert.equal(lastStore.size,1,'Progress only writes one offline metadata key');
 assert(html.includes('id="wisdom-resume-action"'),'Previous Wisdom recall button');
 assert(html.includes('PMM_LEARNING_PROGRESS.setWisdom(current.id)'),'Only actual displayed Wisdom saved');
-assert(html.includes('function nahjSavedEntry(groupId)'),'Restore categories separately');
+assert(html.includes('function nahjSavedEntry()'),'One global last listening cursor');
 assert(html.includes('bindNahjResumes()'),'Inline listen history button wired');
 assert(html.includes("audio.dataset.resumeAt"),'Saved seconds restored on a fresh audio session');
 assert(html.includes("audio.addEventListener('loadedmetadata'"),'Restore only after metadata');
@@ -159,6 +168,30 @@ assert(!nahjCountView.includes('group.count'),'No category totals');
 assert(!nahjCountView.includes('records.length'),'No list totals');
 assert(!nahjCountView.includes('nahj-audio-group-subtitle'),'No subtitle');
 assert(nahjCountView.includes('attachNahjInlineAudio(chosen.id,record.id)'),'Inline playback intact');
+
+
+// One Nahj resume button in the top-level catalog, none per group or part.
+const catalogView=html.slice(html.indexOf('function renderNahjAudioCatalog(){'),html.indexOf('function toast(s)'));
+assert(catalogView.includes('contents.innerHTML=nahjResumeSummary()+'),
+ 'Single global resume icon on entering Nahj al-Balagha');
+assert(!catalogView.includes('nahjResumeSummary(chosen.id)') &&
+       !catalogView.includes('NAHJ_AUDIO_GROUPS.map(group=>nahjResumeSummary(group.id))'),
+ 'No redundant resume icon in sermons, letters or wisdoms');
+assert(html.includes('const pmmDismissedResume={nahj:false,lessons:new Set()}'),
+ 'Hide × is volatile per app entry, never erase stored listening progress');
+assert(html.includes("window.addEventListener('pmm:app-foreground'"),
+ 'Dismissed icon returns at the NEXT app entry');
+assert(html.includes('data-resume-dismiss="nahj"'),
+ 'Single global Nahj icon has a separate close button');
+assert(html.includes('data-resume-dismiss-lesson='),
+ 'Towhid, Life and Kafi each have a dismissible icon');
+assert(html.includes("button.closest('.pmm-resume-card')?.remove()"),
+ 'Dismiss closes only the visible icon, not the underlying saved record');
+assert(!progressSource.includes('sessionStorage') &&
+       progressSource.includes("state.nahjLatest={group,...value}"),
+ 'One persistent global Nahj latest independent of volatile dismissals');
+assert(html.includes('اولین اعلان آزمایشی از ۵ دقیقه'),
+ 'Reminder settings explain true five-minute OS notification and permission');
 
 // Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
 const audioJs=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');
@@ -208,9 +241,11 @@ assert(html.includes('id="about-reminder"'),'Reminder settings accessible from A
 assert(html.includes('function renderReminderSettings(){'),'Daily, weekly, monthly, off cadence UI');
 for(const freq of ['daily','weekly','monthly','off'])
  assert(html.includes("['"+freq+"'"),'Reminder option: '+freq);
-assert(versionGradle.includes("applicationIdSuffix '.remindtest106'"),'New install does not update 1.0.5');
+assert(versionGradle.includes("applicationIdSuffix '.remindtest107'"),'New install does not update 1.0.5');
 assert(!versionGradle.includes("applicationIdSuffix '.resumetrial105'"),
  'Previously reviewed 1.0.5 is not replaced');
+assert(!versionGradle.includes("applicationIdSuffix '.remindtest106'"),
+ 'Previously reviewed 1.0.6 is not replaced');
 
 const reminderJava=fs.readFileSync('app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java','utf8');
 const receiverJava=fs.readFileSync('app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java','utf8');
@@ -219,7 +254,7 @@ for(const p of ['POST_NOTIFICATIONS','RECEIVE_BOOT_COMPLETED'])
  assert(manifest.includes('android.permission.'+p),'Manifest permission '+p);
 assert(manifest.includes('android:exported="false"')&&manifest.includes('WisdomReminderReceiver'),
  'Unexported local scheduled receiver');
-assert(reminderJava.includes('FIRST_DELAY_MS = 5L * 60L * 1000L'),'Trial first permission at 5min, not first launch');
+assert(reminderJava.includes('FIRST_DELAY_MS = 5L * 60L * 1000L'),'First actual OS notification after 5 min, NOT 24h');
 assert(reminderJava.includes('getString(FREQUENCY, "daily")'),'Daily by default');
 assert(reminderJava.includes('new NotificationChannel(CHANNEL_ID'),'Dedicated silent reminder channel');
 assert(reminderJava.includes('channel.setSound(null, null)'),'No audio on Android 8+');
@@ -233,14 +268,20 @@ assert(!manifest.includes('SCHEDULE_EXACT_ALARM'),'No restricted exact-alarm req
 assert(!manifest.includes('USE_EXACT_ALARM'),'Do not abuse calendar alarm permission');
 assert(reminderJava.includes('Calendar.MONTH')&&reminderJava.includes('DAY_OF_YEAR, 7')&&
  reminderJava.includes('DAY_OF_YEAR, 1'),'Daily/weekly/monthly calendar recurrence');
-assert(reminderJava.includes('یک جمله مهمان امیرالمومنین باش!'),'Exact approved notification title');
-assert(reminderJava.includes('یک دقیقه از ۳۶۰۰ دقیقه‌ای امروزت را وقف مولا کن'),
- 'Exact owner-provided reminder body without silent editing');
+assert(reminderJava.includes('یک جمله مهمان امیرالمؤمنین باش!'),'Natural approved notification title');
+assert(reminderJava.includes('برای اینکه هر روز مهمان جمله‌ای از کلمات نورانی امیرالمؤمنین علیه‌السلام باشید'),
+ 'Respect the owner-written notification invitation');
 assert(receiverJava.includes('Intent.ACTION_BOOT_COMPLETED'),'Restore alarms after reboot');
 assert(receiverJava.includes('Intent.ACTION_TIMEZONE_CHANGED'),'Restore after time zone change');
 assert(java.includes('getBooleanExtra(WisdomReminderScheduler.EXTRA_OPEN_WISDOM'),
  'Notification taps enter Wisdom section');
-assert(java.includes('maybeAskReminderConsent()'),'Permission question deferred to 5min and foreground');
+assert(!java.includes('showReminderConsent('),'No custom in-app popup for the invitation');
+assert(!java.includes('maybeAskReminderConsent('),'No five-minute foreground-only dialog');
+assert(java.includes('initializeReminderPermissionIfNeeded()'),
+ 'Ask Android system permission only while foreground so notifications can arrive later');
+assert(java.includes('WisdomReminderScheduler.consent(this, granted)'),
+ 'Schedule the phone notification ONLY after system permission');
+assert(java.includes('pmm:app-foreground'),'Reset temporary dismissals on next visit');
 assert(java.includes('if (!visibleToUser'),'Never show runtime permission from background');
 
 for(const [group,id,title,filename] of [
