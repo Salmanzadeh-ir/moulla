@@ -28,7 +28,11 @@ jobs:
             "app/src/main/assets/nahj_audio_links.js",
             "app/src/main/assets/pmm_online_updates.js",
             "app/src/main/assets/pmm_online_updates.css",
-            "app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java"
+            "app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java",
+            "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java",
+            "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java",
+            "app/src/main/AndroidManifest.xml",
+            "app/src/main/res/drawable/pmm_reminder_icon.xml"
           }
           output = subprocess.check_output(["git", "diff", "--name-only",
              "cbb58c0932ec94531e517652a08f29caffee5d8c", "HEAD", "--", "app/"],text=True)
