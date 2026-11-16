@@ -24,7 +24,7 @@ assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisd
 assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
 assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
 const versionGradle=fs.readFileSync('app/build.gradle','utf8');
-assert(/versionCode 20\s+versionName '1.0.3'/.test(versionGradle),'Version must progress monotonically');
+assert(/versionCode 21\s+versionName '1.0.4'/.test(versionGradle),'Version must progress monotonically');
 
 
 // Only owner-approved three-line-or-shorter wisdoms may enter the draw.
@@ -84,6 +84,71 @@ assert(drawAction.includes("document.fonts.load('600 20px"),'Wait for the approv
 assert(drawAction.includes('const finalWisdom=pickWisdom(candidates)'));
 assert(drawAction.includes('let preview=candidates[randInt(candidates.length)]'));
 assert(drawAction.includes("wisdoms.length!==489"),'Keep original complete bank integrity check');
+
+// Exactly the owner-authorized offline resume feature, with independent test package.
+assert(versionGradle.includes("applicationIdSuffix '.resumetrial104'"),
+ 'This APK must install alongside ALL previous apps, never as their update');
+assert(!versionGradle.includes("applicationIdSuffix '.newiwanv16'"));
+const progressFrom=html.indexOf('/* Offline-only learning history.');
+assert(progressFrom>0,'Progress script must be loaded before the Wisdom IIFE');
+const progressSource=html.slice(progressFrom,html.indexOf('</script>',progressFrom));
+const lastStore=new Map(),fakeStore={
+ getItem:k=>lastStore.has(k)?lastStore.get(k):null,
+ setItem:(k,v)=>lastStore.set(k,String(v))
+};
+function progress(){return vm.runInNewContext(progressSource+';PMM_LEARNING_PROGRESS',
+  {localStorage:fakeStore,Date,Math,JSON})}
+const memory=progress();
+assert.equal(memory.getWisdom(),null,'No last wisdom before viewing');
+assert.equal(memory.getLesson('towhid'),null,'No fake heard session');
+assert.equal(memory.getNahj('sermons'),null,'No prior audio history');
+assert(memory.setWisdom('h045'));
+assert(memory.setWisdom('g001'),'Gharib al-Hadith keeps three-digit ID');
+assert.equal(memory.getWisdom(),'g001');
+assert.equal(memory.setWisdom('<script>'),false,'Reject corrupt stored wisdom IDs');
+assert(memory.openLesson('towhid',17));
+assert.equal(memory.getLesson('towhid').heard,false,'Opened is not heard');
+assert(memory.markHeard('towhid',17,true));
+assert.equal(memory.getLesson('towhid').heard,true,'Manual user confirmation');
+assert(memory.openLesson('towhid',17));
+assert.equal(memory.getLesson('towhid').heard,true,'Reopening same preserves manual heard');
+assert(memory.openLesson('towhid',18));
+assert.equal(memory.getLesson('towhid').heard,false,'Newly opened session is not heard');
+assert(memory.openLesson('life',5));
+assert(memory.openLesson('kafi',33));
+assert.equal(memory.getLesson('life').number,5);
+assert.equal(memory.getLesson('kafi').number,33);
+assert(memory.setNahj('sermons','sermon-5',0,757.8,false));
+assert.equal(memory.getNahj('sermons').seconds,757);
+assert(memory.setNahj('letters','letter-31',24,120,false));
+assert.equal(memory.getNahj('sermons').entryId,'sermon-5','Letter does not overwrite sermon');
+assert.equal(memory.getNahj('letters').part,24);
+assert(memory.setNahj('sermons','sermon-5',0,0,true));
+assert.equal(memory.getNahj('sermons').finished,true,'Completed part noted');
+assert.equal(memory.getNahj('sermons').seconds,0,'Completed part replays from start');
+const reread=progress();
+assert.equal(reread.getWisdom(),'g001','History persists across app restarts');
+assert.equal(reread.getLesson('kafi').number,33);
+assert.equal(reread.getNahj('letters').part,24);
+assert.equal(lastStore.size,1,'Progress only writes one offline metadata key');
+assert(html.includes('id="wisdom-resume-action"'),'Previous Wisdom recall button');
+assert(html.includes('PMM_LEARNING_PROGRESS.setWisdom(current.id)'),'Only actual displayed Wisdom saved');
+assert(html.includes('function nahjSavedEntry(groupId)'),'Restore categories separately');
+assert(html.includes('bindNahjResumes()'),'Inline listen history button wired');
+assert(html.includes("audio.dataset.resumeAt"),'Saved seconds restored on a fresh audio session');
+assert(html.includes("audio.addEventListener('loadedmetadata'"),'Restore only after metadata');
+assert(html.includes("PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index"),'Audio time saved');
+assert(html.includes('function lessonResumeSummary(which)'),'Last visited lesson is shown');
+assert(html.includes('function openSavedLesson(which,number)'),'Open last lesson inside exact original routes');
+assert(html.includes("markHeard(which,number,heard)"),'User may explicitly mark completed');
+assert(html.includes("last.heard?'"),'Do not mislabel opened sessions as heard');
+assert(!progressSource.includes('fetch(')&&!progressSource.includes('XMLHttpRequest'),
+ 'Offline-only learning history has no network transmission');
+const wisdomEligibility=html.slice(html.indexOf('function threeLineWisdomCandidates(){'),
+ html.indexOf('function saveBag(){'));
+assert(wisdomEligibility.includes('fits(arabic,w.arabic)&&fits(persian,w.persian)'),
+ 'Both full sentences must fit within exactly three normal-size lines');
+assert(wisdomEligibility.includes('3*lineHeight+1'),'No arbitrary character cutoff');
 
 // Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
 const audioJs=fs.readFileSync('app/src/main/assets/nahj_audio_links.js','utf8');

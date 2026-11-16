@@ -895,6 +895,20 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  outline:3px solid #1683bf;outline-offset:2px}
 
 
+
+/* Resumption controls live only inside existing text panes; all home art stays unchanged. */
+#stage .pmm-resume-card{margin:8px 3px 13px;padding:10px 9px;border:1.7px solid #ab7628;border-radius:13px;background:linear-gradient(155deg,#fff7dc,#eecb80);color:#093c67;box-shadow:inset 0 1px 0 #fffefa,0 2px 5px #61452138;direction:rtl;text-align:right;font-size:clamp(11px,2.6cqw,15px)}
+#stage .pmm-resume-title{display:block;font-weight:900;margin-bottom:5px}
+#stage .pmm-resume-details{display:block;line-height:1.65;font-weight:700}
+#stage .pmm-resume-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#stage .pmm-resume-action{border:1.5px solid #d3a14b;border-radius:9px;background:linear-gradient(#145a8b,#073765);color:#fff0be;padding:7px 10px;min-height:35px;font-size:clamp(11px,2.5cqw,14px);font-weight:800;cursor:pointer}
+#stage .pmm-resume-action.pmm-outline{background:#fff6d6;color:#083e69;border-color:#a87930}
+#stage .session.pmm-last-lesson{outline:2px solid #0c6a97;outline-offset:-3px}
+#stage .nahj-part-card.pmm-last-part{border-color:#0e6795}
+#stage .pmm-resume-action:focus-visible{outline:3px solid #1d7fc2;outline-offset:3px}
+#wisdom-scroll .pmm-resume-wisdom{display:block;width:min(100%,340px);margin:12px auto 5px;padding:9px 11px;min-height:45px;border:2px solid #b9852e;border-radius:14px;background:linear-gradient(#fff7de,#ebca84);color:#0b4268;line-height:1.65;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important;font-size:clamp(11px,2.7cqw,16px);font-weight:600;text-align:center;cursor:pointer}
+#wisdom-scroll .pmm-resume-wisdom:focus-visible{outline:3px solid #1c78b6;outline-offset:2px}
+
 /* Version footer is the final item in About's existing scroll area. */
 #stage .about-version{margin:clamp(12px,3cqw,20px) 4px 0;padding:9px 2px 5px;text-align:center;
  direction:rtl;color:#07365f;font:700 clamp(11px,2.5cqw,16px)/1.8 var(--pmm-text-font)}
@@ -1049,6 +1063,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
         <div class="intention-emblem" aria-hidden="true">✦</div>
         <p class="intention-message">نیت کنید و یک جمله مهمان کلام امیرالمؤمنین باشید</p>
         <button type="button" id="wisdom-draw-action" class="gold-button wisdom-start-button">اینجا کلیک کنید.</button>
+        <button type="button" id="wisdom-resume-action" class="pmm-resume-wisdom" hidden>ادامه از آخرین حکمت</button>
         
       </section>
       <section id="wisdom-drawing" class="wisdom-drawing" hidden aria-label="در حال انتخاب تصادفی">
@@ -1122,6 +1137,24 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 <!-- Fully offline data file, packed inside the APK. No web request is necessary. -->
 <script src="hikam_bank.js"></script>
 <script src="photo_quotes_manifest.js"></script>
+<script>
+/* Offline-only learning history. No media or listening data is sent to a server. */
+const PMM_LEARNING_PROGRESS=Object.freeze((function(){
+'use strict';
+const KEY='pmm_learning_progress_v1';
+const LESSONS=['towhid','life','kafi'],GROUPS=['sermons','letters','wisdoms'];
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(_){return {}}}
+function save(change){try{const s=load();change(s);localStorage.setItem(KEY,JSON.stringify(s));return true}catch(_){return false}}
+function getWisdom(){const x=load().wisdom;return x&&typeof x.id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(x.id)?x.id:null}
+function setWisdom(id){return typeof id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(id)&&save(s=>{s.wisdom={id,at:Date.now()}})}
+function getLesson(which){if(!LESSONS.includes(which))return null;const x=load().lessons?.[which];return x&&Number.isInteger(x.number)&&x.number>0&&x.number<=500?{number:x.number,heard:x.heard===true}:null}
+function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;const old=getLesson(which);return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,heard:!!(old&&old.number===number&&old.heard),at:Date.now()}})}
+function markHeard(which,number,heard){const old=getLesson(which);if(!old||old.number!==number)return false;return save(s=>{s.lessons[which]={number,heard:heard===true,at:Date.now()}})}
+function getNahj(group){if(!GROUPS.includes(group))return null;const x=load().nahj?.[group];if(!x||typeof x.entryId!=='string'||x.entryId.length>80||!Number.isInteger(x.part)||x.part<0||x.part>100||!Number.isFinite(x.seconds)||x.seconds<0||x.seconds>86400)return null;return {entryId:x.entryId,part:x.part,seconds:x.seconds,finished:x.finished===true}}
+function setNahj(group,entryId,part,seconds,finished=false){if(!GROUPS.includes(group)||typeof entryId!=='string'||entryId.length>80||!Number.isInteger(part)||part<0||part>100||!Number.isFinite(seconds))return false;return save(s=>{if(!s.nahj||typeof s.nahj!=='object')s.nahj={};s.nahj[group]={entryId,part,seconds:Math.max(0,Math.min(86400,Math.floor(seconds))),finished:finished===true,at:Date.now()}})}
+return {getWisdom,setWisdom,getLesson,openLesson,markHeard,getNahj,setNahj};
+})());
+</script>
 <script>
 (()=>{
 'use strict';
@@ -1254,6 +1287,10 @@ function renderDrawFrame(w){
 }
 function showInvitation(){
   stopDraw();stopSound();current=null;
+  const last=wisdomLookup.get(PMM_LEARNING_PROGRESS.getWisdom());
+  const resume=document.getElementById('wisdom-resume-action');
+  resume.hidden=!last;
+  if(last)resume.textContent='مشاهده دوباره آخرین مورد: '+wisdomLabel(last);
   wisdomIntro.hidden=false;wisdomDrawing.hidden=true;wisdomResult.hidden=true;
   wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
 }
@@ -1367,6 +1404,7 @@ function showSelectedWisdom(w){
   document.getElementById('wisdom-number').textContent=wisdomLabel(current);
   document.getElementById('wisdom-arabic').textContent=current.arabic;
   document.getElementById('wisdom-persian').textContent=current.persian;
+  PMM_LEARNING_PROGRESS.setWisdom(current.id);
   
   
   
@@ -1418,6 +1456,10 @@ document.querySelectorAll('[data-menu]').forEach(button=>button.addEventListener
 }));
 document.getElementById('other-action').addEventListener('click',startWisdomDraw);
 document.getElementById('wisdom-draw-action').addEventListener('click',startWisdomDraw);
+document.getElementById('wisdom-resume-action').addEventListener('click',()=>{
+  const previous=wisdomLookup.get(PMM_LEARNING_PROGRESS.getWisdom());
+  if(previous){stopDraw();showSelectedWisdom(previous)}
+});
 document.getElementById('audio-action').addEventListener('click',playExplanation);
 document.getElementById('wisdom-copy-action').addEventListener('click',copyWisdomText);
 document.getElementById('wisdom-textsize-action').addEventListener('click',adjustWisdomFontSize);
@@ -1574,7 +1616,7 @@ function stopNahjInlineAudio(){
    audio.removeAttribute('src');
  });
 }
-function attachNahjInlineAudio(){
+function attachNahjInlineAudio(groupId,entryId){
  const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
  const players=cards.map(card=>card.querySelector('audio.nahj-part-media'));
  function updateRateButtons(){
@@ -1602,6 +1644,22 @@ function attachNahjInlineAudio(){
  }
  cards.forEach((card,index)=>{
    const audio=players[index];
+   const previous=PMM_LEARNING_PROGRESS.getNahj(groupId);
+   if(previous&&previous.entryId===entryId&&previous.part===index){
+     card.classList.add('pmm-last-part');
+     if(!previous.finished)card.querySelector('[data-nahj-status]').textContent=
+       'آخرین توقف: '+nahjAudioTime(previous.seconds);
+   }
+   let lastSavedSecond=-1;
+   const persist=(finished=false,force=false)=>{
+     if(audio.readyState<1&&!finished)return;
+     const stored=PMM_LEARNING_PROGRESS.getNahj(groupId);
+     if(!stored||stored.entryId!==entryId||stored.part!==index)return;
+     const seconds=finished?0:Math.max(0,Math.floor(audio.currentTime||0));
+     if(!force&&!finished&&Math.abs(seconds-lastSavedSecond)<4)return;
+     lastSavedSecond=seconds;
+     PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index,seconds,finished);
+   };
    const toggle=card.querySelector('[data-nahj-toggle]');
    const seek=card.querySelector('[data-nahj-seek]');
    const status=card.querySelector('[data-nahj-status]');
@@ -1609,7 +1667,13 @@ function attachNahjInlineAudio(){
      if(!audio.paused){audio.pause();return;}
      players.forEach(other=>{if(other!==audio)other.pause()});
      // Only assign the requested, whitelisted MP3 when the owner explicitly presses Play.
-     if(!audio.getAttribute('src'))audio.src=audio.dataset.src;
+     if(!audio.getAttribute('src')){
+       const old=PMM_LEARNING_PROGRESS.getNahj(groupId);
+       const seconds=old&&old.entryId===entryId&&old.part===index&&!old.finished?old.seconds:0;
+       audio.dataset.resumeAt=String(seconds);
+       PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index,seconds,false);
+       audio.src=audio.dataset.src;
+     }else persist(false,true);
      audio.playbackRate=nahjAudioSpeed;
      status.textContent='';
      const requested=audio.play();
@@ -1619,17 +1683,25 @@ function attachNahjInlineAudio(){
      });
    });
    seek.addEventListener('input',()=>{
-     if(Number.isFinite(audio.duration)&&audio.duration>0)
+     if(Number.isFinite(audio.duration)&&audio.duration>0){
        audio.currentTime=audio.duration*Number(seek.value)/100;
+       persist(false,true);
+     }
    });
    audio.addEventListener('play',()=>{
      players.forEach(other=>{if(other!==audio)other.pause()});
      refresh(card,audio);
    });
-   audio.addEventListener('pause',()=>refresh(card,audio));
-   audio.addEventListener('ended',()=>refresh(card,audio));
-   audio.addEventListener('timeupdate',()=>refresh(card,audio));
-   audio.addEventListener('loadedmetadata',()=>refresh(card,audio));
+   audio.addEventListener('pause',()=>{persist(audio.ended,true);refresh(card,audio)});
+   audio.addEventListener('ended',()=>{persist(true,true);refresh(card,audio)});
+   audio.addEventListener('timeupdate',()=>{persist();refresh(card,audio)});
+   audio.addEventListener('loadedmetadata',()=>{
+     const seconds=Number(audio.dataset.resumeAt||0);
+     if(seconds>0&&Number.isFinite(audio.duration)&&audio.duration>0)
+       audio.currentTime=Math.min(seconds,Math.max(0,audio.duration-1));
+     delete audio.dataset.resumeAt;
+     refresh(card,audio);
+   });
    audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==nahjAudioSpeed)audio.playbackRate=nahjAudioSpeed});
    audio.addEventListener('error',()=>{
      status.textContent='این فایل صوتی در حال حاضر بارگذاری نمی‌شود.';
@@ -1646,11 +1718,41 @@ function attachNahjInlineAudio(){
  }));
  updateRateButtons();
 }
+
+function nahjSavedEntry(groupId){
+ const saved=PMM_LEARNING_PROGRESS.getNahj(groupId);
+ const record=NAHJ_AUDIO_ITEMS[groupId]?.find(x=>x.id===saved?.entryId);
+ if(!saved||!record||saved.part>=(NAHJ_AUDIO_PARTS[record.id]||[]).length)return null;
+ return {saved,record};
+}
+function nahjResumeSummary(groupId){
+ const found=nahjSavedEntry(groupId);
+ if(!found)return '';
+ const {saved,record}=found;
+ const label=record.title+'، '+nahjPartName(saved.part+1);
+ const point=saved.finished?'شنیدن این بخش کامل شده است':'ادامه از '+nahjAudioTime(saved.seconds);
+ return '<div class="pmm-resume-card"><span class="pmm-resume-title">ادامه از آخرین بار</span>'+
+ '<span class="pmm-resume-details">'+safe(label)+' — '+safe(point)+'</span>'+
+ '<div class="pmm-resume-actions"><button type="button" class="pmm-resume-action" data-nahj-resume="'+groupId+
+ '">رفتن به همین بخش</button></div></div>';
+}
+function bindNahjResumes(){
+ contents.querySelectorAll('[data-nahj-resume]').forEach(button=>button.addEventListener('click',()=>{
+  const group=button.dataset.nahjResume,found=nahjSavedEntry(group);
+  if(!found)return;
+  setState('list','nahj',{nahjGroup:group,nahjEntry:found.record.id});
+  requestAnimationFrame(()=>{
+   const card=contents.querySelectorAll('.nahj-part-card')[found.saved.part];
+   if(card)card.scrollIntoView({block:'center',behavior:'smooth'});
+  });
+ }));
+}
 function renderNahjAudioCatalog(){
   const groupId=item&&typeof item==='object'?item.nahjGroup:null;
   const chosen=NAHJ_AUDIO_GROUPS.find(group=>group.id===groupId);
   if(!chosen){
-    contents.innerHTML='<div class="nahj-audio-groups">'+NAHJ_AUDIO_GROUPS.map(group=>
+    contents.innerHTML=NAHJ_AUDIO_GROUPS.map(group=>nahjResumeSummary(group.id)).join('')+
+      '<div class="nahj-audio-groups">'+NAHJ_AUDIO_GROUPS.map(group=>
       `<button class="nahj-audio-group" type="button" data-nahj-group="${group.id}" aria-label="${group.title}">
         <span class="nahj-audio-symbol" aria-hidden="true">${group.icon}</span>
         <span class="nahj-audio-group-copy"><span class="nahj-audio-group-title">${group.title}</span>
@@ -1658,12 +1760,14 @@ function renderNahjAudioCatalog(){
     ).join('')+'</div>';
     contents.querySelectorAll('[data-nahj-group]').forEach(button=>
       button.addEventListener('click',()=>setState('list','nahj',{nahjGroup:button.dataset.nahjGroup})));
+    bindNahjResumes();
     return;
   }
   const records=NAHJ_AUDIO_ITEMS[chosen.id];
   const entryId=item&&typeof item==='object'?item.nahjEntry:null;
   if(!entryId){
-    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title} — ${fa(records.length)} مورد</div>
+    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title} — ${fa(records.length)} مورد</div>`+
+       nahjResumeSummary(chosen.id)+`
       <div class="row-list nahj-audio-list">${records.map(record=>
         `<button class="session nahj-audio-entry" type="button" data-nahj-entry="${record.id}" aria-label="${record.title}">
          <img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}">
@@ -1673,6 +1777,7 @@ function renderNahjAudioCatalog(){
       button.addEventListener('click',()=>setState('list','nahj',{
         nahjGroup:chosen.id,nahjEntry:button.dataset.nahjEntry
       })));
+    bindNahjResumes();
     return;
   }
   const record=records.find(value=>value.id===entryId);
@@ -1706,7 +1811,7 @@ function renderNahjAudioCatalog(){
   }).join('');
   contents.innerHTML='<div class="nahj-audio-caption">'+safe(record.title)+'</div>'+
      '<div class="nahj-part-cards">'+rows+'</div>';
-  attachNahjInlineAudio();
+  attachNahjInlineAudio(chosen.id,record.id);
 }
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.remove('gone');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.add('gone'),2800)}
 function setState(mode,s=null,v=null){
@@ -1740,22 +1845,49 @@ function renderClips(){
    else setState('player','clips',{number:Number(b.dataset.clip)+1,url:clip.url});
   }));
 }
+function openSavedLesson(which,number){
+ if(!['towhid','life','kafi'].includes(which))return;
+ const x=DATA[which]?.find(v=>v.number===number);
+ if(!x?.url){toast('لینک این جلسه هنوز ثبت نشده است.');return}
+ PMM_LEARNING_PROGRESS.openLesson(which,number);
+ if(/^https:\/\/eitaa\.com\//i.test(x.url)){
+   const y=content.scrollTop;renderList();content.scrollTop=y;
+   openEitaa(x.url);
+ }else setState('player',which,x);
+}
+function lessonResumeSummary(which){
+ const last=PMM_LEARNING_PROGRESS.getLesson(which);
+ if(!last||!DATA[which]?.some(x=>x.number===last.number&&x.url))return '';
+ return '<div class="pmm-resume-card"><span class="pmm-resume-title">ادامه از آخرین بار</span>'+
+   '<span class="pmm-resume-details">جلسه '+fa(last.number)+(last.heard?' — ✓ شنیده شد':' — آخرین جلسه بازشده')+'</span>'+
+   '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن جلسه '+fa(last.number)+'</button>'+
+   '<button class="pmm-resume-action pmm-outline" type="button" data-mark-last="'+which+'">'+
+    (last.heard?'↶ هنوز کامل نشنیدم':'✓ این جلسه را شنیدم')+'</button></div></div>';
+}
+function bindLessonResume(){
+ contents.querySelectorAll('[data-open-last]').forEach(b=>b.addEventListener('click',()=>{
+   const last=PMM_LEARNING_PROGRESS.getLesson(b.dataset.openLast);
+   if(last)openSavedLesson(b.dataset.openLast,last.number);
+ }));
+ contents.querySelectorAll('[data-mark-last]').forEach(b=>b.addEventListener('click',()=>{
+   const last=PMM_LEARNING_PROGRESS.getLesson(b.dataset.markLast);
+   if(!last)return;
+   PMM_LEARNING_PROGRESS.markHeard(b.dataset.markLast,last.number,!last.heard);
+   const y=content.scrollTop;renderList();content.scrollTop=y;
+ }));
+}
 function renderList(){
  if(section==='nahj'){renderNahjAudioCatalog();return;}
- contents.innerHTML='<div class="row-list" id="rows"></div>';
- drawRows();
+ contents.innerHTML=lessonResumeSummary(section)+'<div class="row-list" id="rows"></div>';
+ drawRows();bindLessonResume();
 }
 function drawRows(){
  const el=document.getElementById('rows');if(!el)return;
  const records=DATA[section];
- el.innerHTML=records.length?records.map(x=>`<button type="button" class="session ${x.url?'':'missing'}" data-n="${x.number}" aria-label="جلسه ${fa(x.number)}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">جلسه ${fa(x.number)}</span></button>`).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
+ const last=PMM_LEARNING_PROGRESS.getLesson(section);
+ el.innerHTML=records.length?records.map(x=>`<button type="button" class="session ${x.url?'':'missing'} ${last?.number===x.number?'pmm-last-lesson':''}" data-n="${x.number}" aria-label="جلسه ${fa(x.number)}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">جلسه ${fa(x.number)}</span></button>`).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
  el.querySelectorAll('.session').forEach(b=>b.addEventListener('click',()=>{
-  const x=DATA[section].find(v=>v.number===Number(b.dataset.n));
-  if(!x?.url){toast('لینک این جلسه هنوز ثبت نشده است.');return;}
-  // One touch to the exact media link; keep the same list in the local WebView.
-  if(/^https:\/\/eitaa\.com\//i.test(x.url)){openEitaa(x.url);return;}
-  // Restore approved in-app Aparat iframe player; no external app / intermediate page.
-  setState('player',section,x);
+   openSavedLesson(section,Number(b.dataset.n));
 }));
 }
 function openEitaaArchive(url){openEitaa(url)}
@@ -1830,9 +1962,21 @@ function renderPlayer(){
  }else{
   html+='<a class="action" href="'+safe(link)+'">باز کردن جلسه</a>';
  }
+ if(['towhid','life','kafi'].includes(section)){
+   const played=PMM_LEARNING_PROGRESS.getLesson(section);
+   html+='<button class="action" type="button" id="player-mark-heard">'+
+     (played?.number===x.number&&played.heard?'✓ شنیده شد — لغو':'✓ این جلسه را شنیدم')+'</button>';
+ }
  html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
  document.getElementById('player-back').addEventListener('click',()=>goBack());
+ const mark=document.getElementById('player-mark-heard');
+ if(mark)mark.addEventListener('click',()=>{
+   const old=PMM_LEARNING_PROGRESS.getLesson(section);
+   if(old?.number!==x.number)return;
+   PMM_LEARNING_PROGRESS.markHeard(section,x.number,!old.heard);
+   mark.textContent=old.heard?'✓ این جلسه را شنیدم':'✓ شنیده شد — لغو';
+ });
 }
 function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){
   if(section==='nahj'&&item?.nahjReturn){
