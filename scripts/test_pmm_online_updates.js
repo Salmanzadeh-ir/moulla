@@ -24,7 +24,7 @@ assert(!estedadCss.includes('#wisdom-scroll'),'Do not modify owner-approved Wisd
 assert(html.includes('class="session-label" lang="fa">جلسه '),'Legacy section session labels remain');
 assert(html.includes('nahjPartName(i+1)'),'Nahj part names remain');
 const versionGradle=fs.readFileSync('app/build.gradle','utf8');
-assert(/versionCode 18\s+versionName '1.0.1'/.test(versionGradle),'Version must progress monotonically');
+assert(/versionCode 19\s+versionName '1.0.2'/.test(versionGradle),'Version must progress monotonically');
 
 
 // Source-only Nahj MP3 catalog: exact URL count, exact joint filenames and nine blanks.
@@ -67,9 +67,27 @@ for(let i=1;i<=9;i++){
 const nahjRenderList=html.slice(html.indexOf('function renderList(){'),html.indexOf('function drawRows(){'));
 assert(nahjRenderList.includes('renderNahjAudioCatalog()'));
 assert(!nahjRenderList.includes('نمایش آرشیو سایت')&&!nahjRenderList.includes('باز کردن آرشیو ایتا'));
-const playerSource=html.slice(html.indexOf('function renderPlayer(){'),html.indexOf('function goBack(){'));
-assert(playerSource.includes('<audio class="nahj-audio-player" controls preload="none"'));
-assert(playerSource.includes('safe(encodeURI(link))'));
+const nahjInlineEngine=html.slice(html.indexOf('const NAHJ_AUDIO_SPEEDS='),html.indexOf('function renderNahjAudioCatalog(){'));
+const nahjInlinePage=html.slice(html.indexOf('function renderNahjAudioCatalog(){'),html.indexOf('function renderList(){'));
+const speedVm=vm.runInNewContext(nahjInlineEngine+
+  ';({speeds:NAHJ_AUDIO_SPEEDS,time:nahjAudioTime,allowed:nahjAudioIsOwnerURL})',{
+   localStorage:{getItem(){return '1.5'}},contents:null,
+   fa:n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)])
+  });
+assert.deepEqual(Array.from(speedVm.speeds),[0.75,1,1.25,1.5,2]);
+assert.equal(speedVm.time(65),'۱:۰۵','Persian duration labels');
+assert(speedVm.allowed(links['sermon-1'][0]),'Only owner-provided URL roots can play');
+assert(!speedVm.allowed('https://evil.example/fake.mp3'),'Reject unapproved hosts');
+assert(nahjInlinePage.includes('attachNahjInlineAudio()'),'Inline player mounted within the selected entry');
+assert(nahjInlinePage.includes('class="nahj-part-media" preload="none" playsinline'));
+assert(nahjInlinePage.includes("safe(encodeURI(url))"),'Exact provided MP3 URL, encoded safely');
+assert(!nahjInlinePage.includes("setState('player','nahj'"),'No fourth navigation step for Nahj audio');
+assert(nahjInlineEngine.includes('other.pause()'),'One playing audio at a time');
+assert(nahjInlineEngine.includes("localStorage.setItem(NAHJ_AUDIO_SPEED_KEY"),'Selected speed persists');
+assert(nahjInlineEngine.includes('audio.playbackRate=nahjAudioSpeed'));
+assert(nahjInlineEngine.includes('if(!audio.getAttribute('),'Audio URL loaded only after pressing Play');
+const nahjNav=html.slice(html.indexOf('function setState(mode,s=null,v=null){'),html.indexOf('function render(){'));
+assert(nahjNav.includes('stopNahjInlineAudio()'),'Leaving inner Nahj page pauses audio');
 const nahjBack=html.slice(html.indexOf('function goBack(){'),html.indexOf('// V10.0:',html.indexOf('function goBack(){')));
 assert(nahjBack.includes('item?.nahjReturn')&&nahjBack.includes('item.nahjEntry'));
 

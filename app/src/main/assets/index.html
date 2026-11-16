@@ -861,6 +861,40 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  background:#fff2c8;box-shadow:0 3px 8px #61441633}
 #stage .nahj-audio-player:focus-visible{outline:3px solid #0b5b8e;outline-offset:2px}
 
+/* Owner-authorized inline Nahj audio — compact navy/gold controls inside the existing iwan. */
+#stage .nahj-part-cards{display:grid;gap:clamp(10px,2.6cqw,16px);padding:4px 1% 18px;direction:rtl}
+#stage .nahj-part-card{padding:clamp(9px,2.4cqw,14px);border:2px solid #b57c28;border-radius:17px;
+ background:linear-gradient(150deg,#fff8dc 0%,#fff0bb 55%,#efd393 100%);
+ box-shadow:inset 0 2px 0 #fffefa,0 3px 6px #67451640;min-width:0}
+#stage .nahj-part-card.is-playing{border-color:#0c5883;box-shadow:0 0 0 1px #f1cb7b,inset 0 2px 0 #fffae8,0 3px 7px #12466e45}
+#stage .nahj-part-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;
+ color:#083a68;font-size:clamp(14px,3.3cqw,20px);font-weight:900}
+#stage .nahj-part-headphones{display:grid;place-items:center;width:30px;height:30px;flex:none;
+ background:#063766;border:1.5px solid #d8a446;border-radius:50%;color:#ffe6a5}
+#stage .nahj-part-headphones svg{width:19px;height:19px;display:block}
+#stage .nahj-part-controls{display:flex;align-items:center;gap:clamp(8px,2cqw,12px)}
+#stage .nahj-part-play{width:clamp(42px,10.5cqw,54px);height:clamp(42px,10.5cqw,54px);flex:none;
+ padding:0;border:2px solid #eec56b;border-radius:50%;background:linear-gradient(155deg,#126b9c,#063c72 65%,#021d45);
+ color:#fff0bd;box-shadow:0 2px 5px #50350b70,inset 0 2px 0 #ffffff30;display:grid;place-items:center;cursor:pointer}
+#stage .nahj-part-play svg{width:25px;height:25px;display:block}
+#stage .nahj-part-play:active{transform:scale(.96)}
+#stage .nahj-part-progress{display:grid;gap:2px;min-width:0;flex:1}
+#stage .nahj-part-seek{width:100%;height:22px;margin:0;accent-color:#075b8f;direction:ltr;cursor:pointer}
+#stage .nahj-part-times{display:flex;justify-content:space-between;gap:5px;direction:ltr;
+ color:#36536e;font-size:clamp(10px,2.15cqw,13px);font-weight:700;font-variant-numeric:tabular-nums}
+#stage .nahj-part-speed{display:flex;align-items:center;justify-content:space-between;gap:3px;margin-top:9px;direction:rtl}
+#stage .nahj-part-speed-label{color:#59421f;white-space:nowrap;font-weight:750;font-size:clamp(10px,2.2cqw,13px)}
+#stage .nahj-part-rates{display:flex;direction:ltr;flex:1;justify-content:flex-end;gap:3px;min-width:0}
+#stage .nahj-part-rate{flex:1;min-width:0;max-width:61px;padding:5px 1px;border:1px solid #b78b4f;
+ border-radius:8px;background:#fff9e7;color:#153e62;font-size:clamp(10px,2.2cqw,13px);
+ font-family:Tahoma,Arial,sans-serif!important;font-weight:700;cursor:pointer;white-space:nowrap}
+#stage .nahj-part-rate.is-active{color:#fff1b9;background:linear-gradient(#0d6091,#03386d);border-color:#d3a45d;
+ box-shadow:inset 0 1px 0 #a4d5f280}
+#stage .nahj-part-status{min-height:0;margin-top:3px;color:#8a481e;font-size:clamp(10px,2.1cqw,13px)}
+#stage .nahj-part-play:focus-visible,#stage .nahj-part-rate:focus-visible,#stage .nahj-part-seek:focus-visible{
+ outline:3px solid #1683bf;outline-offset:2px}
+
+
 /* Version footer is the final item in About's existing scroll area. */
 #stage .about-version{margin:clamp(12px,3cqw,20px) 4px 0;padding:9px 2px 5px;text-align:center;
  direction:rtl;color:#07365f;font:700 clamp(11px,2.5cqw,16px)/1.8 var(--pmm-text-font)}
@@ -1459,6 +1493,101 @@ const NAHJ_AUDIO_PARTS=window.PMM_NAHJ_AUDIO_DATA?
  window.PMM_NAHJ_AUDIO_DATA.parts:Object.freeze({});
 const NAHJ_AUDIO_ORDINALS=["","اول","دوم","سوم","چهارم","پنجم","ششم","هفتم","هشتم","نهم","دهم","یازدهم","دوازدهم","سیزدهم","چهاردهم","پانزدهم","شانزدهم","هفدهم","هجدهم","نوزدهم","بیستم","بیست‌ویکم","بیست‌ودوم","بیست‌وسوم","بیست‌وچهارم","بیست‌وپنجم","بیست‌وششم","بیست‌وهفتم","بیست‌وهشتم","بیست‌ونهم","سی‌ام","سی‌ویکم"];
 const nahjPartName=n=>'بخش '+(NAHJ_AUDIO_ORDINALS[n]||fa(n));
+const NAHJ_AUDIO_SPEEDS=Object.freeze([0.75,1,1.25,1.5,2]);
+const NAHJ_AUDIO_SPEED_KEY='pmm_nahj_audio_speed_v1';
+let nahjAudioSpeed=1;
+try{
+ const previous=Number(localStorage.getItem(NAHJ_AUDIO_SPEED_KEY));
+ if(NAHJ_AUDIO_SPEEDS.includes(previous))nahjAudioSpeed=previous;
+}catch(_){}
+const NAHJ_SVG_PLAY='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5a1 1 0 0 1 1.53-.85l10 6.5a1 1 0 0 1 0 1.7l-10 6.5A1 1 0 0 1 8 18.5z"/></svg>';
+const NAHJ_SVG_PAUSE='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/><rect x="13.5" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/></svg>';
+const NAHJ_SVG_HEADPHONES='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 13v-2a7.5 7.5 0 0 1 15 0v2M4.5 13H6a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 1.5-2zm15 0H18a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-1.5-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const nahjAudioIsOwnerURL=url=>/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/(?:khotbe\/khotbe|name\/name|hekmat\/hekmat) [A-Za-z0-9. &]+\.mp3$/i.test(url);
+function nahjAudioTime(seconds){
+ if(!Number.isFinite(seconds)||seconds<0)return '۰۰:۰۰';
+ const n=Math.floor(seconds);
+ return fa(Math.floor(n/60))+':'+fa(String(n%60).padStart(2,'0'));
+}
+function stopNahjInlineAudio(){
+ if(!contents)return;
+ contents.querySelectorAll('audio.nahj-part-media').forEach(audio=>{
+   audio.pause();
+   audio.removeAttribute('src');
+ });
+}
+function attachNahjInlineAudio(){
+ const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
+ const players=cards.map(card=>card.querySelector('audio.nahj-part-media'));
+ function updateRateButtons(){
+   contents.querySelectorAll('[data-nahj-speed]').forEach(button=>{
+     const selected=Number(button.dataset.nahjSpeed)===nahjAudioSpeed;
+     button.classList.toggle('is-active',selected);
+     button.setAttribute('aria-pressed',String(selected));
+   });
+   players.forEach(audio=>{audio.playbackRate=nahjAudioSpeed});
+ }
+ function refresh(card,audio){
+   const playing=!audio.paused;
+   const toggle=card.querySelector('[data-nahj-toggle]');
+   toggle.innerHTML=playing?NAHJ_SVG_PAUSE:NAHJ_SVG_PLAY;
+   toggle.setAttribute('aria-label',(playing?'توقف ':'پخش ')+card.dataset.partTitle);
+   card.classList.toggle('is-playing',playing);
+   const current=card.querySelector('[data-nahj-current]');
+   const duration=card.querySelector('[data-nahj-duration]');
+   const seek=card.querySelector('[data-nahj-seek]');
+   const length=audio.duration;
+   current.textContent=nahjAudioTime(audio.currentTime);
+   duration.textContent=Number.isFinite(length)?nahjAudioTime(length):'--:--';
+   seek.value=Number.isFinite(length)&&length>0?String(Math.min(100,100*audio.currentTime/length)):'0';
+   seek.disabled=!(Number.isFinite(length)&&length>0);
+ }
+ cards.forEach((card,index)=>{
+   const audio=players[index];
+   const toggle=card.querySelector('[data-nahj-toggle]');
+   const seek=card.querySelector('[data-nahj-seek]');
+   const status=card.querySelector('[data-nahj-status]');
+   toggle.addEventListener('click',()=>{
+     if(!audio.paused){audio.pause();return;}
+     players.forEach(other=>{if(other!==audio)other.pause()});
+     // Only assign the requested, whitelisted MP3 when the owner explicitly presses Play.
+     if(!audio.getAttribute('src'))audio.src=audio.dataset.src;
+     audio.playbackRate=nahjAudioSpeed;
+     status.textContent='';
+     const requested=audio.play();
+     if(requested&&typeof requested.catch==='function')requested.catch(()=>{
+       status.textContent='پخش صوت برقرار نشد؛ اتصال اینترنت را بررسی کنید.';
+       refresh(card,audio);
+     });
+   });
+   seek.addEventListener('input',()=>{
+     if(Number.isFinite(audio.duration)&&audio.duration>0)
+       audio.currentTime=audio.duration*Number(seek.value)/100;
+   });
+   audio.addEventListener('play',()=>{
+     players.forEach(other=>{if(other!==audio)other.pause()});
+     refresh(card,audio);
+   });
+   audio.addEventListener('pause',()=>refresh(card,audio));
+   audio.addEventListener('ended',()=>refresh(card,audio));
+   audio.addEventListener('timeupdate',()=>refresh(card,audio));
+   audio.addEventListener('loadedmetadata',()=>refresh(card,audio));
+   audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==nahjAudioSpeed)audio.playbackRate=nahjAudioSpeed});
+   audio.addEventListener('error',()=>{
+     status.textContent='این فایل صوتی در حال حاضر بارگذاری نمی‌شود.';
+     refresh(card,audio);
+   });
+   refresh(card,audio);
+ });
+ contents.querySelectorAll('[data-nahj-speed]').forEach(button=>button.addEventListener('click',()=>{
+   const selected=Number(button.dataset.nahjSpeed);
+   if(!NAHJ_AUDIO_SPEEDS.includes(selected))return;
+   nahjAudioSpeed=selected;
+   try{localStorage.setItem(NAHJ_AUDIO_SPEED_KEY,String(selected))}catch(_){}
+   updateRateButtons();
+ }));
+ updateRateButtons();
+}
 function renderNahjAudioCatalog(){
   const groupId=item&&typeof item==='object'?item.nahjGroup:null;
   const chosen=NAHJ_AUDIO_GROUPS.find(group=>group.id===groupId);
@@ -1499,24 +1628,31 @@ function renderNahjAudioCatalog(){
   }
   const rows=parts.map((url,i)=>{
     const title=nahjPartName(i+1);
-    return '<button class="session nahj-audio-entry" type="button" data-nahj-part="'+i+
-      '" aria-label="'+safe(title)+'"><img loading="lazy" alt="" aria-hidden="true" src="'+
-      IMG['row_blank.webp']+'"><span class="session-label" lang="fa">'+safe(title)+'</span></button>';
+    if(!nahjAudioIsOwnerURL(url))
+      return '<div class="nahj-audio-empty">نشانی صوت '+safe(title)+' معتبر نیست.</div>';
+    const rates=NAHJ_AUDIO_SPEEDS.map(rate=>
+      '<button type="button" class="nahj-part-rate" data-nahj-speed="'+rate+
+      '" aria-label="سرعت '+rate+' برابر" aria-pressed="false">'+rate+'x</button>'
+    ).join('');
+    return '<section class="nahj-part-card" data-part-title="'+safe(title)+'">'+
+      '<div class="nahj-part-heading"><span>'+safe(title)+'</span>'+
+      '<span class="nahj-part-headphones" aria-hidden="true">'+NAHJ_SVG_HEADPHONES+'</span></div>'+
+      '<div class="nahj-part-controls">'+
+      '<button class="nahj-part-play" type="button" data-nahj-toggle aria-label="پخش '+safe(title)+'">'+NAHJ_SVG_PLAY+'</button>'+
+      '<div class="nahj-part-progress"><input class="nahj-part-seek" type="range" min="0" max="100" step="0.5" value="0" data-nahj-seek aria-label="موقعیت صوت '+safe(title)+'" disabled>'+
+      '<div class="nahj-part-times"><span data-nahj-current>۰۰:۰۰</span><span data-nahj-duration>--:--</span></div></div></div>'+
+      '<div class="nahj-part-speed"><span class="nahj-part-speed-label">سرعت پخش</span>'+
+      '<div class="nahj-part-rates" role="group" aria-label="سرعت '+safe(title)+'">'+rates+'</div></div>'+
+      '<div class="nahj-part-status" data-nahj-status aria-live="polite"></div>'+
+      '<audio class="nahj-part-media" preload="none" playsinline data-src="'+safe(encodeURI(url))+'" aria-label="'+safe(record.title+'، '+title)+'"></audio></section>';
   }).join('');
   contents.innerHTML='<div class="nahj-audio-caption">'+safe(record.title)+'</div>'+
-     '<div class="row-list nahj-audio-list">'+rows+'</div>';
-  contents.querySelectorAll('[data-nahj-part]').forEach(button=>button.addEventListener('click',()=>{
-    const index=Number(button.dataset.nahjPart);
-    if(!Number.isInteger(index)||index<0||index>=parts.length)return;
-    setState('player','nahj',{
-      number:index+1,title:record.title+' — '+nahjPartName(index+1),
-      url:parts[index],nahjAudio:true,
-      nahjReturn:{nahjGroup:chosen.id,nahjEntry:record.id}
-    });
-  }));
+     '<div class="nahj-part-cards">'+rows+'</div>';
+  attachNahjInlineAudio();
 }
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.remove('gone');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.add('gone'),2800)}
 function setState(mode,s=null,v=null){
+ if(screen==='list'&&section==='nahj')stopNahjInlineAudio();
  if(screen==='list'&&mode==='player')beforePlayerScroll=content.scrollTop;
  screen=mode; if(s!==null)section=s;item=v;render();
  if(mode==='list'&&v==='restore')content.scrollTop=beforePlayerScroll;else content.scrollTop=0;
