@@ -29,6 +29,7 @@ jobs:
             "app/src/main/assets/pmm_online_updates.js",
             "app/src/main/assets/pmm_online_updates.css",
             "app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java",
+            "app/src/main/java/ir/nahj/towhidkarbordi/PmmMediaSaver.java",
             "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java",
             "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java",
             "app/src/main/AndroidManifest.xml",
