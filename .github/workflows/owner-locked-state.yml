@@ -4,10 +4,12 @@ on:
     branches:
       - feature/owner-online-content-updates-20261115
       - snapshot/owner-trial-v1.0.7-20261116
+      - snapshot/owner-approved-nahj-search-intro-v107-20261116
   pull_request:
     branches:
       - feature/owner-online-content-updates-20261115
       - snapshot/owner-trial-v1.0.7-20261116
+      - snapshot/owner-approved-nahj-search-intro-v107-20261116
   workflow_dispatch:
 
 permissions:
@@ -21,11 +23,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Verify every original repository file is unchanged
+      - name: Verify every file is frozen at owner-approved 1.0.7 search/introduction state
         shell: bash
         run: |
           set -euo pipefail
-          locked="02b52bd80235508aeb4527cd980e2af03ab4021d"
+          locked="42d530b8d6e9d3152419ceb74f4ad5c0505e3b03"
           git cat-file -e "${locked}^{commit}"
           excluded=(':(exclude)OWNER_LOCK.md' ':(exclude).github/workflows/owner-locked-state.yml')
           echo "Checking repo against approved owner snapshot: ${locked}"
@@ -34,4 +36,6 @@ jobs:
             git diff --name-status --no-ext-diff "${locked}" HEAD -- . "${excluded[@]}"
             exit 1
           fi
-          echo "PASS: all frozen application sections, online content, tests and repository files are unchanged."
+          echo "PASS: full owner-approved source tree matches frozen reference (except documented lock-maintenance files)."
+      - name: Regression guard — Nahj search, About label, visibility and protected audio links
+        run: node scripts/test_owner_nahj_numeric_search.cjs
