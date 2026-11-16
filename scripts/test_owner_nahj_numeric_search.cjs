@@ -45,4 +45,43 @@ assert(html.includes('id="nahj-find-button"') && html.includes('id="nahj-find-pa
 for(const [index,match] of [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].entries()){
  if(match[1].trim())new vm.Script(match[1],{filename:'index_inline_'+index+'.js'});
 }
+// Display regression: the legacy pane's .top-action is intentionally invisible.
+// Search MUST be placed alongside the real, visible legacy Back, not in the hidden pane.
+const realBack='<button type="button" id="legacy-back-top" class="legacy-back"';
+const visibleSearch='<button type="button" id="nahj-find-button" class="legacy-back"';
+const backAt=html.indexOf(realBack),buttonAt=html.indexOf(visibleSearch);
+assert(backAt>=0 && buttonAt>backAt && buttonAt-backAt<400,'finder mirrors real visible back button');
+assert(!html.includes('class="top-action" id="nahj-find-button"'),'finder must not inherit hidden .top-action');
+assert(html.includes('#stage #list-pane .top-action{display:none!important}'),'regression reproduces legacy hidden top-actions');
+assert(html.includes('left:9.6%;top:33.54%;width:11.75%;height:5.1%;z-index:56'),'search mirrors Back button geometry');
+assert(html.includes('#stage #nahj-find-button[hidden]'),'finder hidden only outside chosen Nahj categories');
+
+// Behavioral regression: visibility changes when entering/exiting each Nahj subcategory.
+const syncStart=html.indexOf('function pmmSyncNahjFinder(){');
+const syncEnd=html.indexOf('function renderNahjAudioCatalog(){',syncStart);
+assert(syncStart>=0 && syncEnd>syncStart,'search display helper present');
+const elements={
+ 'nahj-find-button':{hidden:true,attrs:{},setAttribute(name,value){this.attrs[name]=value;}},
+ 'nahj-find-panel':{hidden:true},
+ 'nahj-find-input':{value:'old'},
+ 'nahj-find-status':{textContent:'old'},
+ 'nahj-find-label':{textContent:''}
+};
+const state={
+ screen:'list',section:'nahj',item:{nahjGroup:'sermons'},
+ NAHJ_AUDIO_GROUPS:[{id:'sermons',singular:'خطبه'},{id:'letters',singular:'نامه'},{id:'wisdoms',singular:'حکمت'}],
+ document:{getElementById:id=>elements[id]}
+};
+vm.runInNewContext(html.slice(syncStart,syncEnd),state,{filename:'nahj_search_visibility.js'});
+for(const group of ['sermons','letters','wisdoms']){
+ state.screen='list';state.section='nahj';state.item={nahjGroup:group};
+ state.pmmSyncNahjFinder();
+ assert.equal(elements['nahj-find-button'].hidden,false,'search visible on '+group);
+ assert.equal(elements['nahj-find-panel'].hidden,true,'search panel initially closed');
+}
+state.screen='about';state.pmmSyncNahjFinder();
+assert.equal(elements['nahj-find-button'].hidden,true,'search hidden outside Nahj');
+state.screen='list';state.section='nahj';state.item=null;state.pmmSyncNahjFinder();
+assert.equal(elements['nahj-find-button'].hidden,true,'search hidden on Nahj category selection');
+
 console.log('PASS: 241 sermons, 79 letters, 480 wisdoms (Farsi/Arabic/English digits), shared entries, missing cases, navigation hooks, inline JS syntax, 1019 audio URLs.');
