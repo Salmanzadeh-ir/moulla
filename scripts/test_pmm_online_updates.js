@@ -315,6 +315,7 @@ const nahjInlinePage=html.slice(html.indexOf('function renderNahjAudioCatalog(){
 const speedVm=vm.runInNewContext(nahjInlineEngine+
   ';({speeds:NAHJ_AUDIO_SPEEDS,time:nahjAudioTime,allowed:nahjAudioIsOwnerURL})',{
    localStorage:{getItem(){return '1.5'}},contents:null,
+   window:{addEventListener(){}}, // New foreground UI callback absent in Node unit tests
    fa:n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)])
   });
 assert.deepEqual(Array.from(speedVm.speeds),[0.75,1,1.25,1.5,2]);
