@@ -1,0 +1,35 @@
+name: Owner locked state – reject all unapproved repository changes
+on:
+  push:
+    branches:
+      - feature/owner-online-content-updates-20261115
+  pull_request:
+    branches:
+      - feature/owner-online-content-updates-20261115
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-owner-frozen-tree:
+    name: Verify owner-frozen repository snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify every original repository file is unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          locked="474919062aa1b06fb7511a6925d7fc7f945dc4f6"
+          git cat-file -e "${locked}^{commit}"
+          excluded=(':(exclude)OWNER_LOCK.md' ':(exclude).github/workflows/owner-locked-state.yml')
+          echo "Checking repo against approved owner snapshot: ${locked}"
+          if ! git diff --quiet --no-ext-diff "${locked}" HEAD -- . "${excluded[@]}"; then
+            echo "::error::Changes from the owner-approved frozen repository snapshot are prohibited without explicit owner permission."
+            git diff --name-status --no-ext-diff "${locked}" HEAD -- . "${excluded[@]}"
+            exit 1
+          fi
+          echo "PASS: all frozen application sections, online content, tests and repository files are unchanged."
