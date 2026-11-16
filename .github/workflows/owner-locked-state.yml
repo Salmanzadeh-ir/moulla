@@ -3,9 +3,11 @@ on:
   push:
     branches:
       - feature/owner-online-content-updates-20261115
+      - snapshot/owner-trial-v1.0.7-20261116
   pull_request:
     branches:
       - feature/owner-online-content-updates-20261115
+      - snapshot/owner-trial-v1.0.7-20261116
   workflow_dispatch:
 
 permissions:
@@ -23,7 +25,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          locked="ed8d6fe8c28881b6106c49e0005e5bde53b79488"
+          locked="02b52bd80235508aeb4527cd980e2af03ab4021d"
           git cat-file -e "${locked}^{commit}"
           excluded=(':(exclude)OWNER_LOCK.md' ':(exclude).github/workflows/owner-locked-state.yml')
           echo "Checking repo against approved owner snapshot: ${locked}"
