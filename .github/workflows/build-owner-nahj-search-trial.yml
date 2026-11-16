@@ -1,0 +1,100 @@
+name: Owner trial - Nahj numeric search and About introduction (DEBUG only)
+on:
+  push:
+    branches:
+      - feature/owner-about-intro-nahj-number-search-trial-20261116
+  workflow_dispatch:
+
+# Owner-requested one-off public DEBUG APK, no release keys or store publication.
+permissions:
+  contents: write
+
+jobs:
+  owner-trial:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout isolated owner trial
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify exact owner frozen source and change scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=0919bb323a1d44b71db142d8fe42e3278f10f0ec
+          changed="$(git diff --name-only "$BASE" HEAD -- app/)"
+          test "$changed" = 'app/src/main/assets/index.html'
+          git diff --exit-code "$BASE" HEAD -- app/src/main/assets/nahj_audio_links.js app/src/main/assets/hikam_bank.js app/src/main/assets/photo_quotes_manifest.js
+          echo 'PASS: only index.html changed in app/; protected audio/wisdom/gallery files untouched.'
+      - name: JavaScript syntax and exact number mapping regression tests
+        run: node scripts/test_owner_nahj_numeric_search.cjs
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Android 35 build tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Change only temporary checkout's debug application ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          text=p.read_text()
+          old="applicationIdSuffix '.remindtest107'"
+          assert text.count(old)==1
+          text=text.replace(old,"applicationIdSuffix '.nahjsearchtrial'")
+          old_version="versionNameSuffix '-debug'"
+          assert text.count(old_version)==1
+          text=text.replace(old_version,"versionNameSuffix '-trial-debug'")
+          p.write_text(text)
+          PY
+      - name: Build independent debug APK with no private keystore
+        run: |
+          unset PMM_KEYSTORE_PATH PMM_KEYSTORE_PASSWORD
+          gradle --no-daemon :app:assembleDebug
+      - name: Validate APK identity, debug signature and checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          APK='app/build/outputs/apk/debug/app-debug.apk'
+          "$TOOLS/apksigner" verify --verbose "$APK"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.nahjsearchtrial'"
+          mkdir -p dist
+          cp "$APK" dist/PMM-1.0.7-NahjSearch-TRIAL-DEBUG.apk
+          (cd dist && sha256sum PMM-1.0.7-NahjSearch-TRIAL-DEBUG.apk > SHA256SUMS.txt)
+      - name: Upload recoverable zipped trial artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v107-NahjNumberSearch-INTRO-DEBUG-TEST
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Provide direct APK URL on independent trial download branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          target='download/owner-nahj-search-intro-trial-v107-20261116'
+          mkdir -p /tmp/pmm-trial-apk
+          cp dist/PMM-1.0.7-NahjSearch-TRIAL-DEBUG.apk /tmp/pmm-trial-apk/
+          cp dist/SHA256SUMS.txt /tmp/pmm-trial-apk/
+          cd /tmp/pmm-trial-apk
+          git init --initial-branch="$target"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Owner-requested one-off DEBUG trial APK; source SHA $GITHUB_SHA"
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          # Never force-push: a prior delivered trial APK must not be overwritten.
+          git push origin "HEAD:refs/heads/$target"
