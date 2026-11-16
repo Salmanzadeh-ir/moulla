@@ -113,10 +113,15 @@ button:not(:disabled){cursor:pointer}
 .top-action{position:absolute;top:35.6%;height:3.8%;width:20%;background:transparent;border:0;z-index:5;border-radius:40%;touch-action:manipulation}.top-action:active{background:#60401933;box-shadow:inset 0 4px 9px #613f1a55;transform:translateY(1px)}.top-action:focus-visible{outline:3px solid white}
 #back-button{right:10.7%}
 /* Owner trial: numeric Nahj finder mirrors the legacy Back control without changing its art. */
-#stage #nahj-find-button{left:10.7%;right:auto;display:flex;justify-content:center;align-items:center;gap:3px;
- border:2px solid #d9ac59;border-radius:999px;background:linear-gradient(155deg,#0a619c,#06366e,#062350);
- color:#fff2c7;box-shadow:0 2px 6px #452b1766;font-weight:900;font-size:clamp(10px,2.35cqw,17px);
- font-family:'PMM Estedad',Tahoma,Arial,sans-serif;padding:0 5px;cursor:pointer}
+/* Mirror the ACTUAL visible top back button, not the intentionally hidden top-action. */
+#stage #nahj-find-button{
+ position:absolute;left:9.6%;top:33.54%;width:11.75%;height:5.1%;z-index:56;
+ display:flex;align-items:center;justify-content:center;gap:2px;
+ border:3px solid #edbe58;border-radius:999px;
+ background:linear-gradient(155deg,#0863a5,#06356f,#061d4a);color:#fff4cb;
+ box-shadow:0 0 0 3px #a86e14,0 5px 9px #6c431440;
+ padding:0 3px;cursor:pointer;touch-action:manipulation;
+}
 #stage #nahj-find-button svg{width:clamp(15px,3.6cqw,22px);height:clamp(15px,3.6cqw,22px);flex:none}
 #stage #nahj-find-button[hidden],#stage #nahj-find-panel[hidden]{display:none!important}
 #stage #nahj-find-panel{position:absolute;z-index:20;top:47%;left:13%;width:74%;box-sizing:border-box;
@@ -1663,7 +1668,6 @@ window.PMM_NEW_UI=Object.freeze({
 <div class="pane gone" id="list-pane">
 <div class="inner-gold-panel" aria-hidden="true"></div>
 <button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
-<button type="button" class="top-action" id="nahj-find-button" title="جستجوی شماره" aria-label="جستجوی شماره خطبه، نامه یا حکمت" aria-controls="nahj-find-panel" aria-expanded="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span>جستجو</span></button>
 <form id="nahj-find-panel" role="search" aria-label="جستجوی عددی در شرح نهج‌البلاغه" hidden>
   <label id="nahj-find-label" for="nahj-find-input">شماره مورد</label>
   <div id="nahj-find-row"><input id="nahj-find-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="شماره فارسی یا انگلیسی" aria-describedby="nahj-find-status"><button type="submit" class="nahj-find-action">برو</button><button type="button" id="nahj-find-close" class="nahj-find-action" aria-label="بستن جستجو">×</button></div>
@@ -1673,7 +1677,8 @@ window.PMM_NEW_UI=Object.freeze({
 <div class="content-view" id="content-view"><h2 id="legacy-heading" aria-live="polite"></h2><div class="row-list" id="contents"></div></div>
 </div>
 <div class="toast gone" id="toast"></div>
-<div class="wisdom-floor-cover" aria-hidden="true"></div><button type="button" id="legacy-back-top" class="legacy-back" aria-label="بازگشت به صفحه جدید">بازگشت</button></main>
+<div class="wisdom-floor-cover" aria-hidden="true"></div><button type="button" id="legacy-back-top" class="legacy-back" aria-label="بازگشت به صفحه جدید">بازگشت</button>
+<button type="button" id="nahj-find-button" class="legacy-back" title="جستجوی شماره" aria-label="جستجوی شماره خطبه، نامه یا حکمت" aria-controls="nahj-find-panel" aria-expanded="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button></main>
 
 <script src="nahj_audio_links.js"></script>
 <script>
