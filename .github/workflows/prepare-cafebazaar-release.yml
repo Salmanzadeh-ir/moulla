@@ -1,0 +1,86 @@
+name: Prepare unsigned Bazaar release and offline signing tools
+
+on:
+  push:
+    branches:
+      - release/first-cafebazaar-v1.0.7-unsigned-20261116
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Build untouched v1.0.7 Release WITHOUT private signing keys
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Confirm no frozen Android source changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=0919bb323a1d44b71db142d8fe42e3278f10f0ec
+          git diff --exit-code --no-ext-diff "$BASE" HEAD -- app/
+          grep -Eq "versionCode 24" app/build.gradle
+          grep -Eq "versionName '1.0.7'" app/build.gradle
+          echo "PASS: this release contains unmodified owner-frozen Android v1.0.7"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configure Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android 35 build tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Configure Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Run source checks before release compilation
+        run: |
+          python3 scripts/verify_v16_preview.py
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_pmm_online_updates.js
+          node scripts/test_pmm_content_server.mjs
+
+      - name: Build UNSIGNED RELEASE (do not put private keys in GitHub)
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset PMM_KEYSTORE_PATH PMM_KEYSTORE_PASSWORD
+          gradle --no-daemon :app:assembleRelease
+          ls -alh app/build/outputs/apk/release/
+          test -f app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Zipalign unsigned Release and export official Android signer jar
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          test -f "$TOOLS/lib/apksigner.jar"
+          test -x "$TOOLS/zipalign"
+          "$TOOLS/zipalign" -p -f -v 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            dist/PayeMenbareMola-v1.0.7-BAZAAR-UNSIGNED-ALIGNED.apk
+          "$TOOLS/zipalign" -c -v 4 dist/PayeMenbareMola-v1.0.7-BAZAAR-UNSIGNED-ALIGNED.apk
+          cp "$TOOLS/lib/apksigner.jar" dist/apksigner.jar
+          sha256sum dist/*.apk dist/apksigner.jar > dist/SHA256SUMS.txt
+
+      - name: Upload aligned unsigned APK and local signing tool (NO PRIVATE KEY)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v107-BAZAAR-ALIGNED-UNSIGNED-AND-SIGNER-TOOLS
+          path: dist/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
