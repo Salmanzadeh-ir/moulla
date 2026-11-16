@@ -1026,7 +1026,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 #wisdom-scroll .drawing-caption{font-size:clamp(21px,4.2cqw,31px)!important}
 
 /* Owner-requested opt-in gallery export. No media is saved until an icon is pressed. */
-#scene #pmm-photo-save,#stage #pmm-clip-save{
+#scene #pmm-photo-save,#scene #pmm-photo-wheel-save,#stage #pmm-clip-save{
  display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;
  min-width:70px;min-height:42px;padding:7px 11px;border:2px solid #f4ca77;
  border-radius:999px;background:linear-gradient(150deg,#0b639f,#06366d,#05244e);
@@ -1035,10 +1035,11 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  font-weight:900;line-height:1.2;touch-action:manipulation;cursor:pointer;
 }
 #scene #pmm-photo-save{position:absolute;left:6%;top:6%;z-index:1002}
+#scene #pmm-photo-wheel-save{position:absolute;left:3%;bottom:2%;z-index:25}
 #stage #pmm-clip-save{position:absolute;left:3%;bottom:12%;z-index:25}
-#scene #pmm-photo-save svg,#stage #pmm-clip-save svg{width:21px;height:21px;display:block}
-#scene #pmm-photo-save:focus-visible,#stage #pmm-clip-save:focus-visible{outline:3px solid #fff;outline-offset:3px}
-#scene #pmm-photo-save:active,#stage #pmm-clip-save:active{filter:brightness(1.2)}
+#scene #pmm-photo-save svg,#scene #pmm-photo-wheel-save svg,#stage #pmm-clip-save svg{width:21px;height:21px;display:block}
+#scene #pmm-photo-save:focus-visible,#scene #pmm-photo-wheel-save:focus-visible,#stage #pmm-clip-save:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#scene #pmm-photo-save:active,#scene #pmm-photo-wheel-save:active,#stage #pmm-clip-save:active{filter:brightness(1.2)}
 
 /* NEW PHOTO-QUOTES: overlay fills only the fixed golden-iwan stage.
    9:16 photos retain their aspect ratio; no destructive crop or quality loss. */
@@ -1175,6 +1176,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  <div id="pmm-wheel-gallery" class="pmm-wheel-page" role="region" aria-label="آلبوم چرخشی عکس نوشته با امکان کشیدن به چپ و راست">
    <div class="pmm-wheel-canvas" id="photo-wheel-canvas"><div class="pmm-wheel-rotor" id="photo-wheel-rotor"></div></div>
     <div class="pmm-wheel-position" id="photo-wheel-position" aria-live="polite"></div>
+    <button type="button" id="pmm-photo-wheel-save" title="دریافت عکس انتخاب‌شده" aria-label="دریافت عکس انتخاب‌شده در گالری" hidden><span class="pmm-save-illustration" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg></span><span>دریافت</span></button>
     <div id="photo-empty" class="photo-empty" role="status" hidden>تصاویر جدید هنوز دریافت نشده‌اند.</div>
  </div>
  <div class="gallery-grid" id="gallery-grid" hidden></div>
@@ -2636,6 +2638,17 @@ function mountWheel(key,items,rotorId,canvasId,posId,onSelect){
 }
 // Restore EXACT original images, card structure, curved 3D positions and 22s rotation.
 // V7 legacy router calls galleryRenderGrid on entering the photo section.
+let pmmPhotoWheelOrder=[];
+document.getElementById('pmm-photo-wheel-save').addEventListener('click',event=>{
+ event.preventDefault();event.stopPropagation();
+ const slot=activeWheels.get('photos')?.getIndex();
+ const originalIndex=Number.isInteger(slot)?pmmPhotoWheelOrder[slot]:null;
+ const source=Number.isInteger(originalIndex)?photoFilesBase[originalIndex]:null;
+ if(!source)return;
+ if(window.PMMNative&&typeof window.PMMNative.savePhotoToGallery==='function')
+   window.PMMNative.savePhotoToGallery(source);
+ else window.PMM_NEW_UI.showToast('ذخیره عکس فقط در نسخه اندروید فعال است.');
+});
 galleryRenderGrid=function(){
  galleryIndex=null;
  document.getElementById('gallery-detail').hidden=true;
@@ -2649,6 +2662,8 @@ galleryRenderGrid=function(){
  }
  if(!Array.isArray(order)||order.length!==photoFilesBase.length||new Set(order).size!==order.length)
   order=photoFilesBase.map((_,i)=>i);
+ pmmPhotoWheelOrder=order.slice();
+ document.getElementById('pmm-photo-wheel-save').hidden=order.length===0;
  const items=order.map(i=>({src:photoFilesBase[i]}));
  activeWheels.delete('photos');
  if(items.length)mountWheel('photos',items,'photo-wheel-rotor','photo-wheel-canvas','photo-wheel-position',slot=>galleryOpen(order[slot]));
