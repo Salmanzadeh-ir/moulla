@@ -27,6 +27,7 @@ public final class PmmAudioService extends Service {
     public static final String START="ir.nahj.towhidkarbordi.PMM_AUDIO_START";
     public static final String TOGGLE="ir.nahj.towhidkarbordi.PMM_AUDIO_TOGGLE";
     public static final String STOP="ir.nahj.towhidkarbordi.PMM_AUDIO_STOP";
+    public static final String SLEEP="ir.nahj.towhidkarbordi.PMM_AUDIO_SLEEP";
     private static final int ID=8108;
     private static final String CHANNEL="pmm_owner_audio_v108";
     private static volatile PmmAudioService instance;
@@ -39,6 +40,8 @@ public final class PmmAudioService extends Service {
     private boolean preparing=false;
     private boolean playing=false;
     private boolean foreground=false;
+    private final android.os.Handler sleepHandler=new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable scheduledSleep=null;
 
     public static String status() {
         PmmAudioService service=instance;
@@ -172,10 +175,19 @@ public final class PmmAudioService extends Service {
         if(START.equals(action))startAudio(intent);
         else if(TOGGLE.equals(action)){if(playing)pauseAudio();else resumeAudio();}
         else if(STOP.equals(action))stopSelf();
+        else if(SLEEP.equals(action)){
+            if(scheduledSleep!=null){sleepHandler.removeCallbacks(scheduledSleep);scheduledSleep=null;}
+            int minutes=Math.max(0,Math.min(180,intent.getIntExtra("minutes",0)));
+            if(minutes>0&&player!=null){
+                scheduledSleep=()->{scheduledSleep=null;stopSelf();};
+                sleepHandler.postDelayed(scheduledSleep,minutes*60000L);
+            }
+        }
         else if(player==null)stopSelf();
         return START_NOT_STICKY;
     }
     @Override public void onDestroy(){
+        if(scheduledSleep!=null){sleepHandler.removeCallbacks(scheduledSleep);scheduledSleep=null;}
         releasePlayer();
         if(mediaSession!=null){mediaSession.setActive(false);mediaSession.release();mediaSession=null;}
         if(foreground){stopForeground(true);foreground=false;}
