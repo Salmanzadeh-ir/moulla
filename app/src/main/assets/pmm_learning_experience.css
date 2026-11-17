@@ -25,3 +25,6 @@ body.pmm-calm-reading #stage .pmm-tool-shell,
 body.pmm-calm-reading #stage .pmm-tool-wisdom{background:#f0e6c9!important;color:#273b41!important}
 body.pmm-calm-reading #stage .content-box p{line-height:2.1}
 @media(max-width:360px){#pmm-tools-button{bottom:62px;right:9px;padding:7px 9px;font-size:11px}#stage .pmm-tool-grid{gap:5px}#stage .pmm-tool-tile{padding:6px 7px;min-height:74px}}
+
+#stage .pmm-tool-arabic{font-family:'PMM Amiri',Amiri,serif!important;font-size:clamp(20px,4.7vw,27px);line-height:2.2;text-align:right;direction:rtl;color:#123b5c}
+#stage #pmm-quote-note{display:block;width:100%;min-height:82px}
