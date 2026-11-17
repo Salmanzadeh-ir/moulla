@@ -209,6 +209,39 @@ public final class MainActivity extends Activity {
                 try{startService(i);}catch(Exception ignored){}
             });
         }
+        /** Android-side sleep timer survives WebView background throttling. */
+        @JavascriptInterface
+        public void setAudioSleepTimer(final int minutes){
+            if(minutes<0||minutes>180)return;
+            runOnUiThread(()->{
+                try{
+                    if(!visibleToUser||isFinishing()||isDestroyed())return;
+                    JSONObject state=new JSONObject(PmmAudioService.status());
+                    if(!state.optBoolean("active",false))return;
+                    Intent i=new Intent(MainActivity.this,PmmAudioService.class);
+                    i.setAction(PmmAudioService.SLEEP);
+                    i.putExtra("minutes",minutes);
+                    startService(i);
+                }catch(Exception ignored){}
+            });
+        }
+
+        /** Copies only an owner-domain audio diagnostic; no hidden network reporting. */
+        @JavascriptInterface
+        public void copyAudioReport(final String report){
+            if(report==null||report.length()>1100||
+                !report.startsWith("گزارش لینک صوت پای منبر مولا\n")||
+                !report.contains("https://dl.kazeminia110.ir/Audio/"))return;
+            runOnUiThread(()->{
+                if(!visibleToUser||isFinishing()||isDestroyed()||web==null||
+                    !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                android.content.ClipboardManager clipboard=(android.content.ClipboardManager)
+                    getSystemService(CLIPBOARD_SERVICE);
+                if(clipboard!=null)clipboard.setPrimaryClip(
+                    android.content.ClipData.newPlainText("گزارش لینک صوت",report));
+            });
+        }
+
         @JavascriptInterface
         public void startAudioDownload(final String url){
             if(!PmmAudioDownloads.allowed(url))return;
