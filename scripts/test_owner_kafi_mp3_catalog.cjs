@@ -52,7 +52,7 @@ for(const [name,re] of [
  ['rate update',/audio\.playbackRate=pmmKafiSpeed/],
  ['speed selected visually',/aria-pressed/],
  ['change Kafi only',/if\(screen==='player'&&section==='kafi'\)pmmStopKafiAudio\(\)/],
- ['mark listened manually preserved',/if\(\['towhid','life','kafi'\]\.includes\(section\)\)/],
+ ['resume section stays functional',/function lessonResumeSummary\(which\)/],
  ['lesson Back preserved',/document\.getElementById\('player-back'\)\.addEventListener\('click',\(\)=>goBack\(\)\)/],
  ['audio source errors',/این فایل صوتی در حال حاضر بارگذاری نمی‌شود/]
 ])assert(re.test(html),'Missing Kafi control: '+name);
