@@ -101,7 +101,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          name='download/owner-learning-enhancements-no-search-r2-20261117'
+          name='download/owner-learning-enhancements-no-search-r3-20261117'
           mkdir -p /tmp/pmm-owner-learning-trial
           cp dist/* /tmp/pmm-owner-learning-trial/
           cd /tmp/pmm-owner-learning-trial
