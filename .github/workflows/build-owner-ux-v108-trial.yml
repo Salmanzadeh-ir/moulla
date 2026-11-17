@@ -80,8 +80,12 @@ jobs:
           s=p.read_text()
           assert s.count("applicationIdSuffix '.remindtest107'")==1
           assert s.count("versionNameSuffix '-debug'")==1
+          assert s.count("versionCode 24")==1
+          assert s.count("versionName '1.0.7'")==1
           s=s.replace("applicationIdSuffix '.remindtest107'","applicationIdSuffix '.uxv108trial'")
           s=s.replace("versionNameSuffix '-debug'","versionNameSuffix '-ux-v108-trial-debug'")
+          s=s.replace("versionCode 24","versionCode 26")
+          s=s.replace("versionName '1.0.7'","versionName '1.0.8'")
           p.write_text(s)
           PY
       - name: Build and sign debug APK for independent feature testing
@@ -97,7 +101,7 @@ jobs:
           "$TOOLS/apksigner" verify --verbose "$APK"
           "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.uxv108trial'"
           mkdir -p dist
-          cp "$APK" dist/PayeMenbareMola-1.0.7-UX-v108-TRIAL-DEBUG.apk
+          cp "$APK" dist/PayeMenbareMola-1.0.8-UX-v108-TRIAL-DEBUG.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
       - name: Upload independent UX trial ZIP artifact
         uses: actions/upload-artifact@v4
@@ -112,7 +116,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          name='download/owner-ux-v108-trial-20261117'
+          name='download/owner-ux-v108-FULL-trial-20261117'
           mkdir -p /tmp/pmm-owner-ux
           cp dist/* /tmp/pmm-owner-ux/
           cd /tmp/pmm-owner-ux
