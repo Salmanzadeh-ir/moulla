@@ -1,0 +1,102 @@
+name: Owner LOCK v109 - Kafi resume and screen-off only (full tracked tree)
+on:
+  push:
+    branches:
+      - feature/owner-kafi-resume-screenoff-only-v109-trial-20261117
+      - snapshot/owner-kafi-resume-screenoff-v109-20261117
+  pull_request:
+    branches:
+      - feature/owner-kafi-resume-screenoff-only-v109-trial-20261117
+      - snapshot/owner-kafi-resume-screenoff-v109-20261117
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  owner-kafi-v109-frozen:
+    name: Verify complete owner-frozen v109 repository tree
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout complete Git history for immutable baseline
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify exact contents and identities of EVERY tracked file
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Hashes below are the exact Git blob hashes from the owner-approved
+          # reference; the manifest and historical OWNER_LOCK.md are independently
+          # pinned. Any other file is included in the full-tree manifest.
+          test "$(git hash-object OWNER_LOCK.md)" = "ff8d8abf14c994be2563e1850427e491c07efc4c"
+          test "$(git hash-object design/owner-v109-kafi-frozen-tree.json)" = "261f481cdb556a088c803a26834bd14d117790ac"
+          git cat-file -e "98b7525b3f9371a92442b97fc1f90c7e877ccf12^{commit}"
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import subprocess
+          manifest=json.loads(pathlib.Path('design/owner-v109-kafi-frozen-tree.json').read_text())
+          expected=manifest['files']
+          assert manifest['frozenCodeCommit']=='98b7525b3f9371a92442b97fc1f90c7e877ccf12'
+          assert manifest['trackedLockedFileCount']==len(expected)==276
+          exempt={
+              'OWNER_LOCK.md',
+              '.github/workflows/owner-kafi-v109-frozen-state.yml',
+              'design/owner-v109-kafi-frozen-tree.json'
+          }
+          assert set(manifest['intentionallyExcludedLockMaintenanceFiles'])==exempt
+          raw=subprocess.check_output(['git','ls-tree','-rz','HEAD'])
+          actual={}
+          for item in raw.split(b'\x00'):
+              if not item:continue
+              info,raw_path=item.split(b'\t',1)
+              mode,kind,sha=info.decode('ascii').split(' ')
+              path=raw_path.decode('utf-8')
+              if kind!='blob' or path in exempt:continue
+              actual[path]={'sha':sha,'mode':mode}
+          added=sorted(set(actual)-set(expected))
+          removed=sorted(set(expected)-set(actual))
+          modified=sorted(p for p in set(actual)&set(expected) if actual[p]!=expected[p])
+          if added or removed or modified:
+              print('::error::Owner-locked files changed; explicit new owner approval required.')
+              print('ADDED:',added)
+              print('REMOVED:',removed)
+              print('MODIFIED:',modified)
+              raise SystemExit(1)
+          assert len(actual)==276
+          print('PASS: 276 exact tracked files match original Git blobs and modes.')
+          print('PASS: 2 owner-lock metadata files are separately pinned to Git blob hashes.')
+          PY
+
+      - name: Kafi exact-second resume and screen-off service plus original HTML byte check
+        run: node scripts/test_owner_kafi_resume_screenoff_v109.cjs
+
+      - name: Original Kafi Shenasi intro, 54 sessions and exact media URLs
+        run: node scripts/test_owner_kafi_mp3_catalog.cjs
+
+      - name: Forbidden listened buttons remain absent; Nahj audio and gallery preserved
+        run: node scripts/test_owner_no_heard_and_kafi_tail.cjs
+
+      - name: Original Nahj numeric lookup, About copy and UX
+        run: node scripts/test_owner_nahj_numeric_search.cjs
+
+      - name: Original owner photo and video saving restrictions
+        run: node scripts/test_owner_media_save.cjs
+
+      - name: Verify previously built isolated trial APK fingerprint recorded in owner policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'fddf6083c76da09a482a8a6524dc4f47f501c4dc66f8ef45c78902e9e761ddd9' OWNER_LOCK.md
+          grep -q '98b7525b3f9371a92442b97fc1f90c7e877ccf12' OWNER_LOCK.md
+          test ! -f app/src/main/assets/pmm_owner_improvements.js
+          test ! -f app/src/main/assets/pmm_owner_improvements.css
+          test ! -f app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioService.java
+          test ! -f app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioDownloads.java
+          echo 'PASS: historical v108 rejected extras are absent; only two v109 Kafi features remain.'
+
+# GitHub Rulesets/Branch protection (administrative) must separately block
+# direct pushes, branch deletion and force pushes. CI alone cannot enforce them.
