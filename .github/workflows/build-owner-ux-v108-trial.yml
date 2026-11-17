@@ -5,6 +5,14 @@ on:
       - feature/owner-approved-ux-audio-library-v108-trial-20261117
     paths:
       - .github/workflows/build-owner-ux-v108-trial.yml
+      - app/src/main/assets/index.html
+      - app/src/main/assets/pmm_owner_improvements.js
+      - app/src/main/assets/pmm_owner_improvements.css
+      - app/src/main/AndroidManifest.xml
+      - app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java
+      - app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioService.java
+      - app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioDownloads.java
+      - scripts/test_owner_v108_improvements.cjs
   workflow_dispatch:
 
 permissions:
