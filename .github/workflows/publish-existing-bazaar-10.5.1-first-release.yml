@@ -1,0 +1,84 @@
+name: First Bazaar 10.5.1 - publish existing verified signed APK, source and encrypted owner backup
+on:
+  push:
+    branches:
+      - release/bazaar-10.5.1-kafi-two-features-new-key-20261117
+    paths:
+      - .github/workflows/publish-existing-bazaar-10.5.1-first-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  only-publish-existing-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout for final integrity checks
+        uses: actions/checkout@v4
+      - name: Download EXACT already-generated official signed APK; DO NOT GENERATE A SECOND KEY
+        uses: actions/download-artifact@v4
+        with:
+          name: PMM-10.5.1-FIRST-BAZAAR-REAL-RELEASE-SIGNED-APK
+          run-id: 44094997848
+          repository: Salmanzadeh-ir/moulla
+          github-token: ${{ github.token }}
+          path: dist
+      - name: Download EXACT complete source archive for this signed release
+        uses: actions/download-artifact@v4
+        with:
+          name: PMM-10.5.1-COMPLETE-BUILDABLE-SOURCE
+          run-id: 44094997848
+          repository: Salmanzadeh-ir/moulla
+          github-token: ${{ github.token }}
+          path: dist-source
+      - name: Download only AES-256-encrypted new owner keystore and password backup
+        uses: actions/download-artifact@v4
+        with:
+          name: PMM-10.5.1-OWNER-KEY-AND-PASSWORD-AES256-ENCRYPTED
+          run-id: 44094997848
+          repository: Salmanzadeh-ir/moulla
+          github-token: ${{ github.token }}
+          path: encrypted-owner-key
+      - name: Independently verify all three existing artifact groups
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd dist && sha256sum -c SHA256SUMS.txt)
+          (cd dist-source && sha256sum -c SHA256SUMS.txt)
+          (cd encrypted-owner-key && sha256sum -c SHA256SUMS.txt)
+          test -s dist/PayeMenbareMola-10.5.1-BAZAAR-FIRST-PUBLISH-RELEASE-SIGNED.apk
+          test -s dist-source/PayeMenbareMola-10.5.1-COMPLETE-BUILDABLE-SOURCE.zip
+          test -s encrypted-owner-key/PRIVATE-KEY-ENCRYPTED.p7m
+          test -s encrypted-owner-key/PRIVATE-PASSWORD-ENCRYPTED.p7m
+          unzip -t dist-source/*.zip | tail -n 1
+          grep -qF "package: name='ir.nahj.towhidkarbordi' versionCode='26' versionName='10.5.1'" dist/BAZAAR-FIRST-PUBLISH-README.txt || true
+          if find dist dist-source -name '*.p12' -o -name 'KEY-PASSWORD.txt' | grep -q .; then
+            echo 'ERROR: plaintext signing secrets in public output';exit 1
+          fi
+          echo 'PASS: same immutable signed APK, archive and AES-256 encrypted owner secrets; no signing key was regenerated.'
+      - name: Publish APK, full buildable source and only encrypted key transport on download branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          name='download/bazaar-10.5.1-KAFI2-FIRST-RELEASE-20261117'
+          mkdir -p /tmp/pmm-bazaar-owner-final
+          cp dist/PayeMenbareMola-10.5.1-BAZAAR-FIRST-PUBLISH-RELEASE-SIGNED.apk /tmp/pmm-bazaar-owner-final/
+          cp dist/BAZAAR-FIRST-PUBLISH-README.txt dist/APK-SIGNING-CERTIFICATE.txt dist/SOURCE-COMMIT.txt /tmp/pmm-bazaar-owner-final/
+          cp dist-source/PayeMenbareMola-10.5.1-COMPLETE-BUILDABLE-SOURCE.zip /tmp/pmm-bazaar-owner-final/
+          cp encrypted-owner-key/PRIVATE-KEY-ENCRYPTED.p7m encrypted-owner-key/PRIVATE-PASSWORD-ENCRYPTED.p7m /tmp/pmm-bazaar-owner-final/
+          cp dist/SHA256SUMS.txt /tmp/pmm-bazaar-owner-final/APK-SHA256SUMS.txt
+          cp dist-source/SHA256SUMS.txt /tmp/pmm-bazaar-owner-final/SOURCE-SHA256SUMS.txt
+          cp encrypted-owner-key/SHA256SUMS.txt /tmp/pmm-bazaar-owner-final/ENCRYPTED-TRANSFER-SHA256SUMS.txt
+          cd /tmp/pmm-bazaar-owner-final
+          git init --initial-branch="$name"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "First Bazaar 10.5.1 signed APK and source; owner keys AES-256 encrypted for private local handoff"
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git push origin "HEAD:refs/heads/$name"
