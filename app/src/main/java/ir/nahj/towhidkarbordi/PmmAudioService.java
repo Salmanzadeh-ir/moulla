@@ -97,8 +97,8 @@ public final class PmmAudioService extends Service {
             .setMediaSession(mediaSession.getSessionToken()).setShowActionsInCompactView(0,1));
         return b.build();
     }
-    private int position(){try{return player==null?0:player.getCurrentPosition()/1000}catch(Exception e){return requestedSecond;}}
-    private int duration(){try{return player==null?0:player.getDuration()/1000}catch(Exception e){return 0;}}
+    private int position(){try{return player==null?0:player.getCurrentPosition()/1000;}catch(Exception e){return requestedSecond;}}
+    private int duration(){try{return player==null?0:player.getDuration()/1000;}catch(Exception e){return 0;}}
     private void updateSession(){
         if(mediaSession==null)return;
         long actions=PlaybackState.ACTION_PLAY|PlaybackState.ACTION_PAUSE|
