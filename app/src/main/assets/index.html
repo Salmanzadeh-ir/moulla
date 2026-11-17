@@ -1214,9 +1214,9 @@ function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');return x
 function save(change){try{const s=load();change(s);localStorage.setItem(KEY,JSON.stringify(s));return true}catch(_){return false}}
 function getWisdom(){const x=load().wisdom;return x&&typeof x.id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(x.id)?x.id:null}
 function setWisdom(id){return typeof id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(id)&&save(s=>{s.wisdom={id,at:Date.now()}})}
-function getLesson(which){if(!LESSONS.includes(which))return null;const x=load().lessons?.[which];return x&&Number.isInteger(x.number)&&x.number>0&&x.number<=500?{number:x.number,heard:x.heard===true}:null}
-function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;const old=getLesson(which);return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,heard:!!(old&&old.number===number&&old.heard),at:Date.now()}})}
-function markHeard(which,number,heard){const old=getLesson(which);if(!old||old.number!==number)return false;return save(s=>{s.lessons[which]={number,heard:heard===true,at:Date.now()}})}
+// Preserve the last-opened session; the manual listened/finished flag is retired for every lesson section.
+function getLesson(which){if(!LESSONS.includes(which))return null;const x=load().lessons?.[which];return x&&Number.isInteger(x.number)&&x.number>0&&x.number<=500?{number:x.number}:null}
+function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,at:Date.now()}})}
 function getNahj(group){if(!GROUPS.includes(group))return null;const x=load().nahj?.[group];if(!x||typeof x.entryId!=='string'||x.entryId.length>80||!Number.isInteger(x.part)||x.part<0||x.part>100||!Number.isFinite(x.seconds)||x.seconds<0||x.seconds>86400)return null;return {entryId:x.entryId,part:x.part,seconds:x.seconds,finished:x.finished===true}}
 function setNahj(group,entryId,part,seconds,finished=false){
  if(!GROUPS.includes(group)||typeof entryId!=='string'||entryId.length>80||
@@ -1240,7 +1240,7 @@ function getLastNahj(){
  if(!record||record.entryId!==value.entryId)return null;
  return {group:value.group,...record};
 }
-return {getWisdom,setWisdom,getLesson,openLesson,markHeard,getNahj,setNahj,getLastNahj};
+return {getWisdom,setWisdom,getLesson,openLesson,getNahj,setNahj,getLastNahj};
 })());
 </script>
 <script>
@@ -2048,21 +2048,13 @@ function lessonResumeSummary(which){
  '<button type="button" class="pmm-resume-dismiss" data-resume-dismiss-lesson="'+which+
  '" aria-label="پنهان کردن یادآور تا ورود بعدی">×</button>'+
  '<span class="pmm-resume-title">🎧 آخرین جلسه شما</span>'+
- '<span class="pmm-resume-details">جلسه '+fa(last.number)+(last.heard?' — ✓ شنیده شد':' — آخرین جلسه بازشده')+'</span>'+
- '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن جلسه '+fa(last.number)+'</button>'+
- '<button class="pmm-resume-action pmm-outline" type="button" data-mark-last="'+which+'">'+
- (last.heard?'↶ هنوز کامل نشنیدم':'✓ این جلسه را شنیدم')+'</button></div></div>';
+ '<span class="pmm-resume-details">جلسه '+fa(last.number)+' — آخرین جلسه بازشده</span>'+
+ '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن جلسه '+fa(last.number)+'</button></div></div>';
 }
 function bindLessonResume(){
  contents.querySelectorAll('[data-open-last]').forEach(button=>button.addEventListener('click',()=>{
   const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.openLast);
   if(last)openSavedLesson(button.dataset.openLast,last.number);
- }));
- contents.querySelectorAll('[data-mark-last]').forEach(button=>button.addEventListener('click',()=>{
-  const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.markLast);
-  if(!last)return;
-  PMM_LEARNING_PROGRESS.markHeard(button.dataset.markLast,last.number,!last.heard);
-  const y=content.scrollTop;renderList();content.scrollTop=y;
  }));
  contents.querySelectorAll('[data-resume-dismiss-lesson]').forEach(button=>button.addEventListener('click',()=>{
   pmmDismissedResume.lessons.add(button.dataset.resumeDismissLesson);
@@ -2298,22 +2290,10 @@ function renderPlayer(){
  }else{
   html+='<a class="action" href="'+safe(link)+'">باز کردن جلسه</a>';
  }
- if(['towhid','life','kafi'].includes(section)){
-   const played=PMM_LEARNING_PROGRESS.getLesson(section);
-   html+='<button class="action" type="button" id="player-mark-heard">'+
-     (played?.number===x.number&&played.heard?'✓ شنیده شد — لغو':'✓ این جلسه را شنیدم')+'</button>';
- }
  html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
  if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
  document.getElementById('player-back').addEventListener('click',()=>goBack());
- const mark=document.getElementById('player-mark-heard');
- if(mark)mark.addEventListener('click',()=>{
-   const old=PMM_LEARNING_PROGRESS.getLesson(section);
-   if(old?.number!==x.number)return;
-   PMM_LEARNING_PROGRESS.markHeard(section,x.number,!old.heard);
-   mark.textContent=old.heard?'✓ این جلسه را شنیدم':'✓ شنیده شد — لغو';
- });
 }
 function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){
   if(section==='nahj'&&item?.nahjReturn){
