@@ -1,0 +1,54 @@
+name: Owner diagnostic - Kafi MP3 55-60 remote file response
+on:
+  push:
+    branches:
+      - feature/owner-kafi-tail-diagnostic-no-heard-trial-20261117
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe-original-owner-mp3-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify actual HTTP availability and MP3 header of owner-provided URLs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, time, urllib.request, urllib.error, urllib.parse
+          from pathlib import Path
+          base='https://dl.kazeminia110.ir/Audio/kafi/'
+          files=['kafi 1.mp3','kafi 53.mp3','kafi 54.mp3','kafi 55.mp3','kafi 56.mp3','kafi 57.mp3','kafi 58.mp3','kafi 59.mp3','kafi kotobe arbae.mp3']
+          out=[]
+          for filename in files:
+              url=base+urllib.parse.quote(filename)
+              report={'filename':filename,'session':int(filename[5:-4])+1 if filename.startswith('kafi ') and filename[5:-4].isdigit() else 1,'url':url}
+              for method in ('HEAD','GET'):
+                  headers={'User-Agent':'Mozilla/5.0 (PMM owner file test)','Accept':'audio/mpeg, */*'}
+                  if method=='GET': headers['Range']='bytes=0-65535'
+                  req=urllib.request.Request(url,headers=headers,method=method)
+                  result={}
+                  try:
+                      with urllib.request.urlopen(req,timeout=15) as response:
+                          result={'status':response.status,'content_type':response.headers.get('Content-Type'),'content_length':response.headers.get('Content-Length'),'content_range':response.headers.get('Content-Range'),'final_url':response.url}
+                          if method=='GET':
+                              data=response.read(65536)
+                              result.update(bytes_received=len(data),header_hex=data[:24].hex(),starts_id3=data.startswith(b'ID3'),starts_mp3_sync=len(data)>1 and data[0]==255 and (data[1]&224)==224,html_prefix=data[:100].decode('utf-8','replace') if data[:1]==b'<' else None)
+                  except urllib.error.HTTPError as e:
+                      result={'status':e.code,'error':str(e),'content_type':e.headers.get('Content-Type')}
+                  except Exception as e:
+                      result={'error':str(e),'error_type':type(e).__name__}
+                  report[method]=result
+              out.append(report)
+              print('TEST',json.dumps(report,ensure_ascii=False),flush=True)
+          Path('owner_kafi_server_report.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('SUMMARY',json.dumps([{'session':row['session'],'filename':row['filename'],'head':row['HEAD'].get('status'),'get':row['GET'].get('status'),'type':row['GET'].get('content_type'),'length':row['HEAD'].get('content_length'),'bytes':row['GET'].get('bytes_received'),'id3':row['GET'].get('starts_id3'),'mp3sync':row['GET'].get('starts_mp3_sync'),'error':row['GET'].get('error')} for row in out],ensure_ascii=False),flush=True)
+          PY
+      - name: Upload inspectable diagnostics report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Owner-Kafi-Remote-HTTP-Check
+          path: owner_kafi_server_report.json
+          retention-days: 14
