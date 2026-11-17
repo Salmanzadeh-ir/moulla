@@ -1,0 +1,117 @@
+name: Owner trial v108 - Learning UX and background MP3 (DEBUG only)
+on:
+  push:
+    branches:
+      - feature/owner-approved-ux-audio-library-v108-trial-20261117
+    paths:
+      - .github/workflows/build-owner-ux-v108-trial.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  owner-ux-v108:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout owner-isolated UX trial
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Enforce scope against immutable approved source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          locked='7467a3ac4445ba2a7bc16fcebe02c5f9068b2fa5'
+          observed=set(subprocess.check_output(['git','diff','--name-only',locked,'HEAD','--','app/'],text=True).splitlines())
+          expected={
+            'app/src/main/assets/index.html',
+            'app/src/main/assets/pmm_owner_improvements.js',
+            'app/src/main/assets/pmm_owner_improvements.css',
+            'app/src/main/AndroidManifest.xml',
+            'app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java',
+            'app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioService.java',
+            'app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioDownloads.java'
+          }
+          assert observed==expected,'Unexpected protected-file changes: '+repr(observed^expected)
+          print('PASS: exactly seven authorized UX trial application files changed')
+          PY
+          git diff --exit-code 7467a3ac4445ba2a7bc16fcebe02c5f9068b2fa5 HEAD -- \
+            app/build.gradle app/src/main/assets/nahj_audio_links.js \
+            app/src/main/assets/hikam_bank.js app/src/main/assets/photo_quotes_manifest.js \
+            app/src/main/assets/images OWNER_LOCK.md
+      - name: Test protected originals, Kafi data, Nahj search, gallery, UX and JS syntax
+        run: |
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+          node scripts/test_owner_v108_improvements.cjs
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Android 35 tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Keep trial install isolated from any official Bazaar APK
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          s=p.read_text()
+          assert s.count("applicationIdSuffix '.remindtest107'")==1
+          assert s.count("versionNameSuffix '-debug'")==1
+          s=s.replace("applicationIdSuffix '.remindtest107'","applicationIdSuffix '.uxv108trial'")
+          s=s.replace("versionNameSuffix '-debug'","versionNameSuffix '-ux-v108-trial-debug'")
+          p.write_text(s)
+          PY
+      - name: Build and sign debug APK for independent feature testing
+        run: |
+          unset PMM_KEYSTORE_PATH PMM_KEYSTORE_PASSWORD
+          gradle --no-daemon :app:assembleDebug
+      - name: Verify app ID, real Android debug signature and output checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          "$TOOLS/apksigner" verify --verbose "$APK"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.uxv108trial'"
+          mkdir -p dist
+          cp "$APK" dist/PayeMenbareMola-1.0.7-UX-v108-TRIAL-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Upload independent UX trial ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-Owner-UX-v108-DEBUG-TRIAL
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish recoverable APK on isolated download-only branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          name='download/owner-ux-v108-trial-20261117'
+          mkdir -p /tmp/pmm-owner-ux
+          cp dist/* /tmp/pmm-owner-ux/
+          cd /tmp/pmm-owner-ux
+          git init --initial-branch="$name"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Isolated owner UX v108 DEBUG trial from source $GITHUB_SHA"
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git push origin "HEAD:refs/heads/$name"
