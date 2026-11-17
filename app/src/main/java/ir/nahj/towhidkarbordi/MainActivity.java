@@ -166,6 +166,71 @@ public final class MainActivity extends Activity {
             runOnUiThread(() -> requestMediaSave(true, source));
         }
 
+        /** Opt-in native media background playback from owner's validated direct MP3s. */
+        @JavascriptInterface
+        public void playAudioInBackground(final String url,final String title,
+                                          final int second,final float rate) {
+            if (!PmmAudioDownloads.allowed(url))return;
+            runOnUiThread(()->{
+                if(!visibleToUser||isFinishing()||isDestroyed()||web==null||
+                   !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                Intent service=new Intent(MainActivity.this,PmmAudioService.class);
+                service.setAction(PmmAudioService.START);
+                service.putExtra("url",url);
+                service.putExtra("title",title==null?"شرح صوتی":title);
+                service.putExtra("second",Math.max(0,Math.min(86400,second)));
+                service.putExtra("rate",Math.max(0.75f,Math.min(2f,rate)));
+                try{
+                    if(Build.VERSION.SDK_INT>=26)startForegroundService(service);
+                    else startService(service);
+                }catch(Exception e){
+                    Toast.makeText(MainActivity.this,"پخش پس‌زمینه ممکن نشد",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public String getAudioState() {
+            return PmmAudioService.status();
+        }
+        @JavascriptInterface
+        public void toggleAudioInBackground(){
+            runOnUiThread(()->{
+                Intent i=new Intent(MainActivity.this,PmmAudioService.class);
+                i.setAction(PmmAudioService.TOGGLE);
+                try{startService(i);}catch(Exception ignored){}
+            });
+        }
+        @JavascriptInterface
+        public void stopAudioInBackground(){
+            runOnUiThread(()->{
+                Intent i=new Intent(MainActivity.this,PmmAudioService.class);
+                i.setAction(PmmAudioService.STOP);
+                try{startService(i);}catch(Exception ignored){}
+            });
+        }
+        @JavascriptInterface
+        public void startAudioDownload(final String url){
+            if(!PmmAudioDownloads.allowed(url))return;
+            runOnUiThread(()->{
+                if(!visibleToUser||isFinishing()||isDestroyed()||web==null||
+                    !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                PmmAudioDownloads.start(MainActivity.this,contentExecutor,url);
+            });
+        }
+        @JavascriptInterface
+        public String getAudioDownloadInfo(final String url){
+            return PmmAudioDownloads.info(MainActivity.this,url);
+        }
+        @JavascriptInterface
+        public String getAudioDownloads(){
+            return PmmAudioDownloads.all(MainActivity.this);
+        }
+        @JavascriptInterface
+        public void deleteAudioDownload(final String url){
+            runOnUiThread(()->PmmAudioDownloads.remove(MainActivity.this,url));
+        }
+
         @JavascriptInterface
         public void askReminderPermission() {
             runOnUiThread(() -> {
