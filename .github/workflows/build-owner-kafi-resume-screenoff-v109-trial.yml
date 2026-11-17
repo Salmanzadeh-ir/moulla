@@ -1,0 +1,151 @@
+name: Owner Kafi ONLY - Resume Second + Screen Off v109 DEBUG Trial
+on:
+  push:
+    branches:
+      - feature/owner-kafi-resume-screenoff-only-v109-trial-20261117
+    paths:
+      - .github/workflows/build-owner-kafi-resume-screenoff-v109-trial.yml
+      - app/src/main/assets/index.html
+      - app/src/main/assets/pmm_kafi_resume_screenoff.js
+      - app/src/main/java/ir/nahj/towhidkarbordi/PmmKafiAudioService.java
+      - app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java
+      - app/src/main/AndroidManifest.xml
+      - scripts/test_owner_kafi_resume_screenoff_v109.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  trial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout isolated 2-feature owner branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Enforce immutable original and exactly five approved application files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          base='7467a3ac4445ba2a7bc16fcebe02c5f9068b2fa5'
+          changed=set(subprocess.check_output(
+            ['git','diff','--name-only',base,'HEAD','--','app/'],text=True).splitlines())
+          expected={
+            'app/src/main/assets/index.html',
+            'app/src/main/assets/pmm_kafi_resume_screenoff.js',
+            'app/src/main/java/ir/nahj/towhidkarbordi/PmmKafiAudioService.java',
+            'app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java',
+            'app/src/main/AndroidManifest.xml'
+          }
+          assert changed==expected, f'Unapproved changes in app: {changed ^ expected}'
+          print('PASS: original media, screens, style, offline data remain frozen.')
+          PY
+          git diff --exit-code 7467a3ac4445ba2a7bc16fcebe02c5f9068b2fa5 HEAD -- \
+             app/build.gradle app/src/main/assets/images/ \
+             app/src/main/assets/nahj_audio_links.js \
+             app/src/main/assets/hikam_bank.js \
+             app/src/main/assets/photo_quotes_manifest.js
+          test ! -e app/src/main/assets/pmm_owner_improvements.js
+          test ! -e app/src/main/assets/pmm_owner_improvements.css
+          test ! -e app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioDownloads.java
+          test ! -e app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioService.java
+
+      - name: Test Kafi second resume, protected images, Nahj media, and no rejected extras
+        run: |
+          set -euo pipefail
+          node scripts/test_owner_kafi_resume_screenoff_v109.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Install Android 35 build tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Set independent trial package ID and version ONLY on CI runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path=Path('app/build.gradle')
+          source=path.read_text()
+          changes={
+            "applicationIdSuffix '.remindtest107'":"applicationIdSuffix '.kafiresumeoffv109'",
+            "versionNameSuffix '-debug'":"versionNameSuffix '-kafi-resume-screenoff-trial-debug'",
+            "versionCode 24":"versionCode 27",
+            "versionName '1.0.7'":"versionName '1.0.9'"
+          }
+          for previous,following in changes.items():
+            assert source.count(previous)==1,previous
+            source=source.replace(previous,following)
+          path.write_text(source)
+          PY
+
+      - name: Compile and sign isolated DEBUG APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset PMM_KEYSTORE_PATH PMM_KEYSTORE_PASSWORD
+          gradle --no-daemon :app:assembleDebug
+
+      - name: Validate APK signature and independent install ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$TOOLS/apksigner" verify --verbose "$APK"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "name='ir.nahj.towhidkarbordi.kafiresumeoffv109'"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "versionCode='27'"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "versionName='1.0.9-kafi-resume-screenoff-trial-debug'"
+          mkdir -p dist
+          cp "$APK" dist/PayeMenbareMola-1.0.9-KAFI-RESUME-SCREENOFF-ONLY-TRIAL.apk
+          (
+            cd dist
+            sha256sum *.apk > SHA256SUMS.txt
+            sha256sum -c SHA256SUMS.txt
+          )
+
+      - name: Upload trial build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-1.0.9-KAFI-2-FEATURES-ONLY-DEBUG
+          path: dist/
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish trial APK to unique download-only branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          short=$(printf '%s' "$GITHUB_SHA" | cut -c1-12)
+          name="download/owner-kafi-resume-screenoff-v109-$short"
+          mkdir -p /tmp/pmm-kafi-v109-dist
+          cp dist/* /tmp/pmm-kafi-v109-dist/
+          cd /tmp/pmm-kafi-v109-dist
+          git init --initial-branch="$name"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Owner-approved Kafi resume + screen-off ONLY, trial source $GITHUB_SHA"
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git push origin "HEAD:refs/heads/$name"
