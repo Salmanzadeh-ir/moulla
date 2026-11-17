@@ -1,0 +1,43 @@
+/* Optional owner UX tools: inner panels only; original golden iwan, gallery and wisdom layout unchanged. */
+#stage .pmm-v108-ribbon{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;
+ padding:10px 3px 12px;margin-bottom:9px;border-bottom:1px solid #c89d4c;
+ direction:rtl}
+#stage .pmm-v108-button,#stage .pmm-v108-listitem,#wisdom-result #pmm-v108-wisdom-mark{
+ font-family:'PMM Estedad',Tahoma,Arial,sans-serif;
+ min-height:44px;cursor:pointer;touch-action:manipulation;
+ border:1.5px solid #a47022;border-radius:11px;
+ background:linear-gradient(#fff6df,#eacc89);color:#073c6b;
+ box-shadow:0 2px 4px #3e2a1240;font-size:clamp(12px,2.6cqw,15px);font-weight:700}
+#stage .pmm-v108-button{padding:7px 11px}
+#stage .pmm-v108-view{direction:rtl;line-height:1.85;color:#173957;text-align:right;
+ background:linear-gradient(#fff8e6,#f3e3bf);border:2px solid #ac792b;
+ border-radius:14px;margin:3px 4px 12px;padding:14px 12px;overflow-wrap:anywhere}
+#stage .pmm-v108-view h2{font-size:clamp(19px,4.4cqw,26px);margin:0 0 10px}
+#stage .pmm-v108-view p{font-size:clamp(13px,3cqw,17px);margin:6px 0}
+#stage .pmm-v108-listitem{display:block;width:100%;text-align:right;padding:12px;
+ margin:8px 0;font-size:clamp(13px,3.1cqw,17px)}
+#stage .pmm-v108-wisdom{border-top:1px solid #c6a76d;padding:12px 2px;margin-top:10px}
+#stage .pmm-v108-wisdom p[lang=ar]{font-family:Amiri,'Noto Naskh Arabic',serif!important;
+ direction:rtl;font-size:clamp(17px,4cqw,24px);line-height:2}
+#stage .pmm-v108-wisdom button{border-radius:10px;border:1px solid #af822f;
+ min-height:44px;padding:5px 13px;background:#f6d99d;color:#0a3767}
+#stage .pmm-v108-audio-tools,#stage .pmm-v108-overview{
+ border:1px solid #c49950;background:linear-gradient(#fff6df,#f5e9cf);
+ padding:9px 8px;margin:8px 2px;border-radius:13px;color:#183c60;line-height:1.75}
+#stage .pmm-v108-mini-heading{font-weight:850;font-size:clamp(13px,2.8cqw,17px);margin-bottom:6px}
+#stage .pmm-v108-toolrow{display:flex;flex-wrap:wrap;align-items:stretch;
+ justify-content:center;gap:5px;margin:7px 0}
+#stage .pmm-v108-toolrow .pmm-v108-button{flex:1 1 28%;min-width:90px}
+#stage .pmm-v108-status{display:block;min-height:20px;font-size:12px;line-height:1.7}
+#stage .pmm-v108-overview p{font-size:clamp(12px,2.65cqw,16px);margin:4px 0}
+.pmm-v108-mini{position:fixed;bottom:max(10px,env(safe-area-inset-bottom));
+ right:8px;left:8px;z-index:999;max-width:520px;margin:auto;direction:rtl;
+ background:#082d56;color:#fff0bd;border:2px solid #dba851;border-radius:13px;
+ display:flex;gap:12px;align-items:center;justify-content:space-between;
+ font-family:Tahoma,Arial,sans-serif;padding:7px 9px;box-shadow:0 4px 20px #0008;
+ font-size:12px}
+.pmm-v108-mini[hidden]{display:none}
+.pmm-v108-mini button{background:#f0d39a;color:#092f57;border:0;border-radius:8px;
+ min-width:44px;min-height:44px;font-size:19px}
+#pmm-v108-mini-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+@media (max-width:350px){#stage .pmm-v108-toolrow .pmm-v108-button{min-width:75px;flex-basis:40%}}
