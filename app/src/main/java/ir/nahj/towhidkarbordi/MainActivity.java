@@ -166,6 +166,87 @@ public final class MainActivity extends Activity {
             runOnUiThread(() -> requestMediaSave(true, source));
         }
 
+        /**
+         * Only the original Kafi player may start the native mediaPlayback
+         * service. No bookmark, download, playlist, or learning UI is added.
+         * The service retains playback after WebView.onPause()/screen lock.
+         */
+        @JavascriptInterface
+        public void kafiPlay(final String url, final String title, final float rate) {
+            if(!PmmKafiAudioService.approved(url))return;
+            runOnUiThread(()->{
+                if(isFinishing()||isDestroyed()||!visibleToUser||web==null||
+                   !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                Intent start=new Intent(MainActivity.this,PmmKafiAudioService.class)
+                    .setAction(PmmKafiAudioService.ACTION_PLAY);
+                start.putExtra("url",url);
+                start.putExtra("title",title);
+                start.putExtra("rate",rate);
+                try{
+                    if(Build.VERSION.SDK_INT>=26)startForegroundService(start);
+                    else startService(start);
+                }catch(Exception e){
+                    Toast.makeText(MainActivity.this,
+                        "پخش صوت کافی ممکن نشد",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void kafiToggle(final String url) {
+            if(!PmmKafiAudioService.approved(url))return;
+            runOnUiThread(()->{
+                if(isFinishing()||isDestroyed()||!visibleToUser||web==null||
+                    !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                try{
+                    JSONObject state=new JSONObject(PmmKafiAudioService.status(MainActivity.this,url));
+                    if(!state.optBoolean("active",false))return;
+                    Intent command=new Intent(MainActivity.this,PmmKafiAudioService.class)
+                        .setAction(PmmKafiAudioService.ACTION_TOGGLE);
+                    startService(command);
+                }catch(Exception ignored){}
+            });
+        }
+
+        @JavascriptInterface
+        public String kafiStatus(final String url) {
+            return PmmKafiAudioService.status(MainActivity.this,url);
+        }
+
+        @JavascriptInterface
+        public void kafiSeek(final String url,final int seconds) {
+            if(!PmmKafiAudioService.approved(url)||seconds<0||seconds>86400)return;
+            runOnUiThread(()->{
+                if(isFinishing()||isDestroyed()||!visibleToUser)return;
+                try{
+                    JSONObject state=new JSONObject(PmmKafiAudioService.status(MainActivity.this,url));
+                    if(!state.optBoolean("active",false))return;
+                    Intent command=new Intent(MainActivity.this,PmmKafiAudioService.class)
+                        .setAction(PmmKafiAudioService.ACTION_SEEK);
+                    command.putExtra("url",url);
+                    command.putExtra("seconds",seconds);
+                    startService(command);
+                }catch(Exception ignored){}
+            });
+        }
+
+        @JavascriptInterface
+        public void kafiSpeed(final String url,final float value) {
+            if(!PmmKafiAudioService.approved(url)||!Float.isFinite(value)||
+               value<0.75f||value>2f)return;
+            runOnUiThread(()->{
+                if(isFinishing()||isDestroyed()||!visibleToUser)return;
+                try{
+                    JSONObject state=new JSONObject(PmmKafiAudioService.status(MainActivity.this,url));
+                    if(!state.optBoolean("active",false))return;
+                    Intent command=new Intent(MainActivity.this,PmmKafiAudioService.class)
+                        .setAction(PmmKafiAudioService.ACTION_SPEED);
+                    command.putExtra("rate",value);
+                    startService(command);
+                }catch(Exception ignored){}
+            });
+        }
+
         @JavascriptInterface
         public void askReminderPermission() {
             runOnUiThread(() -> {
