@@ -86,9 +86,22 @@ function renderToolPage(){
   (list.length?list.map((x,i)=>'<div class="pmm-tool-row"><b>'+clean(x.title||x.id)+'</b><small>'+clean(x.type==='wisdom'?'حکمت':x.type==='kafi'?'شرح اصول کافی':x.type==='nahj'?'شرح نهج‌البلاغه':x.type==='life'?'دیدن خدا در زندگی':'توحید کاربردی')+'</small>'+
     action('باز کردن','openmark',String(i))+action('حذف نشان','deletemark',String(i))+'</div>').join(''):'<p>هنوز موردی نشان‌گذاری نشده است.</p>')+
    action('بازگشت','home')+closePanel();
+ }else if(page==='quote'){
+  const quote=bank().find(x=>x.id===value);
+  if(!quote){openHub('saved');return}
+  const key=uid('wisdom',value);
+  contents.innerHTML=panelHeader((quote.kind==='gharaib'?'غرائب حدیث':'حکمت')+' '+faNum(quote.number),'متن عربی و ترجمه فارسی دقیقاً از بانک آفلاین تأییدشده برنامه خوانده می‌شود.')+
+    '<article class="pmm-tool-wisdom"><p class="pmm-tool-arabic" lang="ar" dir="rtl">'+clean(quote.arabic)+'</p>'+
+    '<p>'+clean(quote.persian)+'</p></article>'+
+    '<label class="pmm-tool-muted" for="pmm-quote-note">یادداشت شخصی (فقط در این گوشی)</label>'+
+    '<textarea id="pmm-quote-note" class="pmm-report-text" maxlength="1800">'+clean(notes()[key]||'')+'</textarea>'+
+    action('ذخیره یادداشت','savenote',value)+
+    action(hasMark('wisdom',value)?'★ حذف نشان':'☆ نشان‌کردن','wisdommarkquote',value)+
+    action('بازگشت به نشان‌شده‌ها','saved')+closePanel();
  }else if(page==='offline'){
   const list=read().offline||{};
-  const rows=Object.values(list).filter(x=>x&&typeof x.url==='string');
+  const rows=Object.values(list).filter(x=>x&&typeof x.url==='string'&&
+   (!native()?.hasOfflineLessonAudio||native().hasOfflineLessonAudio(x.url)));
   contents.innerHTML=panelHeader('صوت‌های دریافتی','این فایل‌ها با انتخاب شما دریافت می‌شوند و در فضای خود برنامه ذخیره می‌شوند؛ با حذف برنامه از گوشی احتمال حذفشان وجود دارد.')+
   (rows.length?rows.map((x,i)=>'<div class="pmm-tool-row"><b>'+clean(x.title)+'</b><small>'+clean(x.url.split('/').pop())+'</small>'+
   action('پخش آفلاین','offlineplay',String(i))+action('حذف از گوشی','offlinedelete',String(i))+'</div>').join(''):'<p>هنوز صوتی برای استفاده آفلاین دریافت نشده است.</p>')+action('بازگشت','home')+closePanel();
@@ -111,7 +124,7 @@ function renderToolPage(){
  contents.querySelectorAll('[data-pmm-command]').forEach(b=>b.addEventListener('click',()=>handle(b.dataset.pmmCommand,b.dataset.pmmValue||'')));
 }
 function navigateMark(x){
- if(x.type==='wisdom'){openHub('saved');showToast('این حکمت در فهرست نشان‌شده‌ها ثبت شده است؛ متن اصلی در این فهرست آمده است.');return}
+ if(x.type==='wisdom'){openHub('quote',x.id);return}
  if(x.type==='kafi'){const n=Number(x.id);if(DATA.kafi.some(r=>r.number===n))openSavedLesson('kafi',n);return}
  if(x.type==='towhid'||x.type==='life'){openSavedLesson(x.type,Number(x.id));return}
  if(x.type==='nahj'&&x.extra){const a=x.extra;setState('list','nahj',{nahjGroup:a.group,nahjEntry:a.entry});requestAnimationFrame(()=>contents.querySelectorAll('.nahj-part-card')[a.part]?.scrollIntoView({block:'center'}))}
@@ -132,7 +145,8 @@ function handle(command,value){
  if(['home','start','topics','short','saved','offline','sleep','reading','help'].includes(command)){openHub(command);return}
  if(command==='course'){setState('list',value);return}
  if(command==='topic'){openHub('topic',value);return}
- if(command==='wisdommark'){const b=bank().find(x=>x.id===value);if(b){toggleMark('wisdom',value,(b.kind==='gharaib'?'غرائب حدیث':'حکمت')+' '+faNum(b.number));openHub(item.pmmToolPage,item.value)}return}
+ if(command==='wisdommark'||command==='wisdommarkquote'){const b=bank().find(x=>x.id===value);if(b){toggleMark('wisdom',value,(b.kind==='gharaib'?'غرائب حدیث':'حکمت')+' '+faNum(b.number));openHub(command==='wisdommarkquote'?'quote':item.pmmToolPage,item.value)}return}
+ if(command==='savenote'){const area=contents.querySelector('#pmm-quote-note');if(area){setNote('wisdom',value,area.value);showToast('یادداشت شما در همین گوشی ثبت شد.')}return}
  if(command==='openmark'||command==='deletemark'){
   const v=savedItems().slice().reverse()[Number(value)];if(!v)return;
   if(command==='deletemark'){toggleMark(v.type,v.id,v.title,v.extra);openHub('saved')}else navigateMark(v);return;
@@ -142,6 +156,9 @@ function handle(command,value){
  if(command==='offlineplay'||command==='offlinedelete'){
   const v=Object.values(read().offline||{}).filter(x=>x&&x.url)[Number(value)];if(!v)return;
   if(command==='offlinedelete'){if(native()?.deleteLessonAudio&&native().deleteLessonAudio(v.url)){save(s=>{delete s.offline[v.url]});openHub('offline')}else showToast('حذف فایل ممکن نشد.');return}
+  if(native()?.hasOfflineLessonAudio&&!native().hasOfflineLessonAudio(v.url)){
+   showToast('فایل آفلاین در حافظه یافت نشد. دوباره دریافت کنید.');return;
+  }
   if(native()?.playBackgroundAudio)native().playBackgroundAudio(v.url,v.title,0,1);
   else showToast('پخش آفلاین در نسخه اندروید فعال است.');
  }
@@ -198,7 +215,8 @@ function decorateAudio(card,audio,type,info){
   if(hint.querySelector('textarea'))hint.innerHTML='';
   hint.textContent='این مشخصات را کپی کنید و از راه ارتباطی برنامه بفرستید: ';
   hint.appendChild(el);el.focus();el.select();
-  try{document.execCommand('copy');showToast('مشخصات لینک برای گزارش کپی شد')}catch(_){}
+  try{if(document.execCommand('copy'))showToast('مشخصات لینک برای گزارش کپی شد');
+    else showToast('متن گزارش را انتخاب و کپی کنید.')}catch(_){showToast('متن گزارش را انتخاب و کپی کنید.')}
  });
  note.addEventListener('click',()=>{
   const old=notes()[uid(type,info.id)]||'';
