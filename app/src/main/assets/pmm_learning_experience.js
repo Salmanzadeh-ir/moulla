@@ -239,6 +239,9 @@ function decorateAudio(card,audio,type,info){
   audio.addEventListener('loadedmetadata',()=>{
    const seconds=Number((read().positions||{})[key]||0);
    if(seconds>0&&audio.duration>seconds+1){audio.currentTime=seconds;hint.textContent='ادامه از '+nahjAudioTime(seconds)}
+   if(Number.isFinite(audio.duration)&&audio.duration>0)
+     preview.textContent='عنوان: '+info.title+' | منبع: شرح اصول کافی | مدت صوت: '+nahjAudioTime(audio.duration)+
+        ' | متن و چکیده علمی این جلسه هنوز تأیید نشده است.';
   });
   audio.addEventListener('timeupdate',()=>{if(audio.currentTime-lastStore>4)persist()});
   audio.addEventListener('pause',()=>persist());
@@ -246,7 +249,12 @@ function decorateAudio(card,audio,type,info){
    if(read().autoplayNext){
     const index=DATA.kafi.findIndex(r=>String(r.number)===info.id);
     const nextRecord=DATA.kafi[index+1];
-    if(nextRecord){openSavedLesson('kafi',nextRecord.number);setTimeout(()=>contents.querySelector('[data-kafi-toggle]')?.click(),300)}
+    if(nextRecord){
+     openSavedLesson('kafi',nextRecord.number);
+     if(native()?.playBackgroundAudio)
+       native().playBackgroundAudio(nextRecord.url,nextRecord.title,0,pmmKafiSpeed);
+     else setTimeout(()=>contents.querySelector('[data-kafi-toggle]')?.click(),300);
+    }
    }
   });
   const nr=document.createElement('button');nr.type='button';nr.className='pmm-tool-control';
@@ -263,6 +271,21 @@ function decorateAudio(card,audio,type,info){
  }
 }
 function enhancePage(){
+ if(screen==='list'&&section==='kafi'){
+  const lengths=read().lengths||{};
+  contents.querySelectorAll('button.session[data-n]').forEach(button=>{
+   const duration=Number(lengths['kafi:'+button.dataset.n]||0);
+   if(duration>0){
+    const label=button.querySelector('.session-label');
+    if(label&&!label.querySelector('small')){
+     const small=document.createElement('small');
+     small.className='pmm-tool-duration';
+     small.textContent=' · '+nahjAudioTime(duration);
+     label.appendChild(small);
+    }
+   }
+  });
+ }
  if(screen==='player'&&section==='kafi'&&item){
   const card=contents.querySelector('.kafi-audio-card'),audio=card?.querySelector('audio');
   if(card&&audio)decorateAudio(card,audio,'kafi',{id:String(item.number),title:item.title});
@@ -288,6 +311,14 @@ function enhancePage(){
  }
  if(last&&result?.querySelector('#pmm-wisdom-bookmark'))result.querySelector('#pmm-wisdom-bookmark').textContent=hasMark('wisdom',last)?'★ نشان‌شده':'☆ نشان‌کردن این حکمت';
 }
+const oldLessonResumeSummary=lessonResumeSummary;
+lessonResumeSummary=function(which){
+ const result=oldLessonResumeSummary(which);
+ if(which!=='kafi')return result;
+ const previous=PMM_LEARNING_PROGRESS.getLesson('kafi');
+ const seconds=Number((read().positions||{})['kafi:'+previous?.number]||0);
+ return seconds>0?result.replace('— آخرین جلسه بازشده','— ادامه از '+nahjAudioTime(seconds)):result;
+};
 const oldRenderList=renderList;
 renderList=function(){if(section==='tools'){renderToolPage();return}oldRenderList();enhancePage()};
 const oldRenderPlayer=renderPlayer;
@@ -305,11 +336,17 @@ function updateToolbar(){
  const showing=screen==='list'||screen==='player'||screen==='about'||screen==='biography'||screen==='photo';
  tool.hidden=!showing;
  const min=document.getElementById('pmm-native-mini');if(min)min.hidden=!showing;
+ const tip=document.getElementById('pmm-first-tools-tip');
+ if(tip)tip.hidden=!showing||read().guideDismissed===true;
 }
 const oldRender=render;
 render=function(){oldRender();if(screen==='list'&&section==='tools')titleImg.classList.add('gone');updateToolbar()};
 const btn=document.createElement('button');btn.id='pmm-tools-button';btn.type='button';btn.textContent='✦ امکانات آموزشی';btn.setAttribute('aria-label','امکانات آموزشی، نشانک‌ها و تنظیمات');btn.hidden=true;document.body.appendChild(btn);
-btn.addEventListener('click',()=>{if(screen==='list'&&section==='tools')setState('home');else openHub()});
+btn.addEventListener('click',()=>{save(s=>s.guideDismissed=true);const tip=document.getElementById('pmm-first-tools-tip');if(tip)tip.hidden=true;if(screen==='list'&&section==='tools')setState('home');else openHub()});
+const guidance=document.createElement('div');guidance.id='pmm-first-tools-tip';guidance.hidden=true;
+guidance.innerHTML='<span>برای ادامه درس، نشانک‌ها و پخش آفلاین، «امکانات آموزشی» را باز کنید.</span><button type="button" id="pmm-tip-dismiss" aria-label="بستن راهنما">×</button>';
+document.body.appendChild(guidance);
+document.getElementById('pmm-tip-dismiss').addEventListener('click',()=>{save(s=>s.guideDismissed=true);guidance.hidden=true});
 const mini=document.createElement('div');mini.id='pmm-native-mini';mini.hidden=true;mini.innerHTML='<span id="pmm-mini-title">♫ پخش پس‌زمینه</span><button type="button" id="pmm-mini-toggle">پخش/توقف</button><button type="button" id="pmm-mini-off">توقف کامل</button>';document.body.appendChild(mini);
 document.getElementById('pmm-mini-toggle').addEventListener('click',()=>{const api=native();if(!api?.getBackgroundAudioState)return;try{const s=JSON.parse(api.getBackgroundAudioState());if(s.playing)api.pauseBackgroundAudio();else api.resumeBackgroundAudio()}catch(_){}});
 document.getElementById('pmm-mini-off').addEventListener('click',()=>native()?.stopBackgroundAudio?.());
