@@ -1,0 +1,68 @@
+name: Owner release preflight - unsigned package inspection (NOT uploadable)
+on:
+  push:
+    branches:
+      - release/bazaar-10.5.0-kafi54-20261117
+    paths:
+      - .github/workflows/check-owner-bazaar-10.5.0-unsigned.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unsigned-preflight:
+    name: Verify Android Release compilation without owner private key
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify immutable source and release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -qF "applicationId 'ir.nahj.towhidkarbordi'" app/build.gradle
+          grep -qF "versionCode 25" app/build.gradle
+          grep -qF "versionName '10.5.0'" app/build.gradle
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Compile release variant without secrets
+        run: |
+          unset PMM_KEYSTORE_PATH PMM_KEYSTORE_PASSWORD
+          gradle --no-daemon :app:assembleRelease
+      - name: Verify Release APK metadata and ensure NOT signed (not for Bazaar)
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=$(find app/build/outputs/apk/release -name '*.apk' -type f -print -quit)
+          test -n "$APK"
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "package: name='ir.nahj.towhidkarbordi' versionCode='25' versionName='10.5.0'"
+          if "$TOOLS/apksigner" verify "$APK" >/dev/null 2>&1; then
+            echo 'Unexpectedly signed: do not redistribute or treat as store release.'
+            exit 1
+          fi
+          echo 'PASS: original-package Release variant built, but unsigned as expected and NOT market-installable.'
+          mkdir -p dist
+          cp "$APK" dist/PayeMenbareMola-10.5.0-UNSIGNED-NOT-FOR-BAZAAR.apk
+          echo 'UNSIGNED RELEASE INSPECTION ONLY — cannot install or upload to Bazaar; requires original production signing key.' > dist/READ-ME-FIRST.txt
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Upload unsigned inspection artifact, clearly labeled NOT uploadable
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-10.5.0-UNSIGNED-INSPECTION-NOT-FOR-BAZAAR
+          path: dist/
+          retention-days: 14
+          if-no-files-found: error
