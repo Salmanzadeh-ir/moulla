@@ -1,0 +1,235 @@
+name: First Cafe Bazaar 10.5.1 - production signed APK, encrypted owner key and full source
+on:
+  push:
+    branches:
+      - release/bazaar-10.5.1-kafi-two-features-new-key-20261117
+    paths:
+      - .github/workflows/build-first-bazaar-10.5.1-kafi2-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  signed-bazaar-first-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exactly the owner-frozen two-feature release source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prevent all non-approved app changes and rejected UX components
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          frozen='866a1679d4b392c20040196f06a52cf30bdc4d57'
+          changed=set(subprocess.check_output(['git','diff','--name-only',frozen,'HEAD','--','app/'],text=True).splitlines())
+          assert changed=={'app/build.gradle'},f'Unapproved app changes: {changed}'
+          print('PASS: all 175 app files (including approved Kafi native playback and original assets) are unchanged except release version metadata.')
+          PY
+          grep -qF "applicationId 'ir.nahj.towhidkarbordi'" app/build.gradle
+          grep -qF "versionCode 26" app/build.gradle
+          grep -qF "versionName '10.5.1'" app/build.gradle
+          test ! -e app/src/main/assets/pmm_owner_improvements.js
+          test ! -e app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioDownloads.java
+          test ! -e app/src/main/java/ir/nahj/towhidkarbordi/PmmAudioService.java
+          test -s docs/releases/PMM_10_5_1_TEMP_PUBLIC_CERT_ONLY.pem
+          openssl x509 -in docs/releases/PMM_10_5_1_TEMP_PUBLIC_CERT_ONLY.pem -noout -subject
+
+      - name: Owner-locked catalog tests, exact Kafi second, screen-off and no rejected features
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/test_owner_kafi_resume_screenoff_v109.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+
+      - name: Use JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Android 35 build-tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Create NEW long-lived production keystore on the ephemeral runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          KEYDIR="$RUNNER_TEMP/pmm-new-bazaar-key"
+          mkdir -p "$KEYDIR"
+          password="$(openssl rand -hex 32)"
+          echo "::add-mask::$password"
+          printf '%s\n' "$password" > "$KEYDIR/KEY-PASSWORD.txt"
+          keytool -genkeypair -noprompt -storetype PKCS12 \
+            -keystore "$KEYDIR/PMM-Bazaar-10.5.1-NEW-RELEASE-KEY.p12" \
+            -storepass "$password" -keypass "$password" \
+            -alias payemenbaremola \
+            -keyalg RSA -keysize 3072 -sigalg SHA256withRSA \
+            -validity 10000 \
+            -dname "CN=Paye Menbare Mola, OU=First Bazaar Publication, O=Paye Menbare Mola, C=IR"
+          test -s "$KEYDIR/PMM-Bazaar-10.5.1-NEW-RELEASE-KEY.p12"
+          echo "PASS: new owner PKCS12 signing key created privately; no source-controlled secrets."
+
+      - name: Build production non-debug APK signed by new first-publish keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          KEYDIR="$RUNNER_TEMP/pmm-new-bazaar-key"
+          export PMM_KEYSTORE_PATH="$KEYDIR/PMM-Bazaar-10.5.1-NEW-RELEASE-KEY.p12"
+          export PMM_KEYSTORE_PASSWORD="$(cat "$KEYDIR/KEY-PASSWORD.txt")"
+          echo "::add-mask::$PMM_KEYSTORE_PASSWORD"
+          gradle --no-daemon :app:assembleRelease
+          unset PMM_KEYSTORE_PASSWORD
+          test -s app/build/outputs/apk/release/app-release.apk
+
+      - name: Check original package, version, SDK, real release signature, zipalign and no debuggable
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/release/app-release.apk
+          BT="$ANDROID_HOME/build-tools/35.0.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/pmm-release-apksigner-certs.txt"
+          cat "$RUNNER_TEMP/pmm-release-apksigner-certs.txt"
+          grep -q 'Verified using v1 scheme (JAR signing): true' "$RUNNER_TEMP/pmm-release-apksigner-certs.txt"
+          grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' "$RUNNER_TEMP/pmm-release-apksigner-certs.txt"
+          "$BT/zipalign" -c -v 4 "$APK"
+          "$BT/aapt" dump badging "$APK" | grep -F "package: name='ir.nahj.towhidkarbordi' versionCode='26' versionName='10.5.1'"
+          "$BT/aapt" dump badging "$APK" | grep -F "sdkVersion:'23'"
+          "$BT/aapt" dump badging "$APK" | grep -F "targetSdkVersion:'34'"
+          if "$BT/aapt" dump badging "$APK" | grep -q 'application-debuggable'; then
+            echo 'ERROR: production build is debuggable'; exit 1
+          fi
+          echo 'PASS: real Android release APK, original package, version 10.5.1/26, v1+v2 signature, aligned, non-debuggable.'
+
+      - name: Encrypt owner-only new private signing key AND password individually
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p encrypted-owner-key
+          KEYDIR="$RUNNER_TEMP/pmm-new-bazaar-key"
+          CERT=docs/releases/PMM_10_5_1_TEMP_PUBLIC_CERT_ONLY.pem
+          openssl cms -encrypt -binary -aes256 \
+            -in "$KEYDIR/PMM-Bazaar-10.5.1-NEW-RELEASE-KEY.p12" \
+            -out encrypted-owner-key/PRIVATE-KEY-ENCRYPTED.p7m -outform DER "$CERT"
+          openssl cms -encrypt -binary -aes256 \
+            -in "$KEYDIR/KEY-PASSWORD.txt" \
+            -out encrypted-owner-key/PRIVATE-PASSWORD-ENCRYPTED.p7m -outform DER "$CERT"
+          test -s encrypted-owner-key/PRIVATE-KEY-ENCRYPTED.p7m
+          test -s encrypted-owner-key/PRIVATE-PASSWORD-ENCRYPTED.p7m
+          sha256sum encrypted-owner-key/*.p7m > encrypted-owner-key/SHA256SUMS.txt
+          echo 'PASS: only AES-256 encrypted copies leave the temporary runner; owner receives decrypted key separately off-repo.'
+
+      - name: Package signed APK and manifest for owner to submit to Cafe Bazaar
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk \
+             dist/PayeMenbareMola-10.5.1-BAZAAR-FIRST-PUBLISH-RELEASE-SIGNED.apk
+          cp "$RUNNER_TEMP/pmm-release-apksigner-certs.txt" dist/APK-SIGNING-CERTIFICATE.txt
+          cat > dist/BAZAAR-FIRST-PUBLISH-README.txt <<'TXT'
+          پای منبر مولا — اولین انتشار در کافه بازار
+          File: PayeMenbareMola-10.5.1-BAZAAR-FIRST-PUBLISH-RELEASE-SIGNED.apk
+          Package: ir.nahj.towhidkarbordi
+          versionName: 10.5.1
+          versionCode: 26
+          minSdk: 23; targetSdk: 34
+          Features newly added: Kafi playback continues from saved seconds; Kafi foreground audio while screen is off.
+          This is a real production RELEASE build signed with the NEW first-Bazaar key, not a DEBUG APK.
+          Preserve owner-only private keystore and password separately for all future updates.
+          No actual Cafe Bazaar account publication or physical-device testing was performed by CI.
+          TXT
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          echo "SOURCE_GIT_COMMIT=$GITHUB_SHA" > dist/SOURCE-COMMIT.txt
+
+      - name: Create independently downloadable COMPLETE BUILDABLE SOURCE archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist-source
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess,zipfile
+          root=Path('.')
+          files=[x.decode('utf-8') for x in subprocess.check_output(['git','ls-files','-z']).split(b'\0') if x]
+          # Old signed APKs and 2 MB historical APK fragments are not source and
+          # would needlessly add ~80 MB; keep all buildable source/assets/docs.
+          files=[x for x in files if not x.startswith('releases/')]
+          output=Path('dist-source/PayeMenbareMola-10.5.1-COMPLETE-BUILDABLE-SOURCE.zip')
+          with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED,compresslevel=6,allowZip64=True) as archive:
+              for path in files:
+                  archive.write(root/path,path)
+              archive.writestr('RELEASE-SOURCE-README-FA.txt',
+                  'سورس قابل ساخت پای منبر مولا برای اولین انتشار بازار، نسخه 10.5.1، کد 26.\n'
+                  'شامل کل سورس برنامه، تصاویر، صوت‌لینک‌ها، آزمون‌ها، فایل‌های ساخت و اسناد.\n'
+                  'فقط APKهای ساخته‌شده و قطعات باینری نسخه‌های تاریخی releases/ کنار گذاشته شده‌اند.\n'
+                  'کلید خصوصی و رمز امضا هرگز در این آرشیو نیستند.\n'
+                  f'Git commit: {subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()}\n')
+          assert output.stat().st_size>1_000_000
+          print(f'PASS: source archive contains {len(files)} tracked source/asset files; {output.stat().st_size} bytes')
+          PY
+          (cd dist-source && sha256sum *.zip > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+
+      - name: Upload independently recoverable owner APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-10.5.1-FIRST-BAZAAR-REAL-RELEASE-SIGNED-APK
+          path: dist/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload independently recoverable owner SOURCE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-10.5.1-COMPLETE-BUILDABLE-SOURCE
+          path: dist-source/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload ONLY encrypted secret backup; never plaintext owner keystore
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-10.5.1-OWNER-KEY-AND-PASSWORD-AES256-ENCRYPTED
+          path: encrypted-owner-key/
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish signed production APK, source ZIP and AES-encrypted transfer files only
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          name='download/bazaar-10.5.1-KAFI2-FIRST-RELEASE-20261117'
+          mkdir -p /tmp/pmm-first-bazaar-deliverables
+          cp dist/* dist-source/* encrypted-owner-key/*p7m /tmp/pmm-first-bazaar-deliverables/
+          mv /tmp/pmm-first-bazaar-deliverables/SHA256SUMS.txt /tmp/pmm-first-bazaar-deliverables/SHA256-ENCRYPTED-KEY.txt
+          # Keep source/APK checksum names distinct in the published branch.
+          cp dist/SHA256SUMS.txt /tmp/pmm-first-bazaar-deliverables/APK-SHA256SUMS.txt
+          cp dist-source/SHA256SUMS.txt /tmp/pmm-first-bazaar-deliverables/SOURCE-SHA256SUMS.txt
+          cd /tmp/pmm-first-bazaar-deliverables
+          git init --initial-branch="$name"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "First Bazaar real signed APK and buildable source; secret owner key AES-256 encrypted only"
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git push origin "HEAD:refs/heads/$name"
+
+      - name: Erase plaintext signing material on ephemeral runner
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$RUNNER_TEMP/pmm-new-bazaar-key"
