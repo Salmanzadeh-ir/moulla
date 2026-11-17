@@ -62,13 +62,14 @@ function audioWidget(card,audio,id,title,url,route,number){
  toolButton('۱۵ ثانیه عقب','back')+toolButton('۳۰ ثانیه جلو','forward')+
  toolButton('☆ نشانک','bookmark')+
  toolButton('ذخیره صوت','download')+
- toolButton('پخش پس‌زمینه','background')+'</div>'+
+ toolButton('پخش پس‌زمینه','background')+toolButton('کپی گزارش لینک','report')+'</div>'+
  '<div class="pmm-v108-toolrow">'+
  toolButton('۱۵ دقیقه','sleep15')+toolButton('۳۰ دقیقه','sleep30')+
  toolButton('۶۰ دقیقه','sleep60')+toolButton('لغو تایمر','sleep0')+'</div>'+
  '<output class="pmm-v108-status" aria-live="polite"></output>';
  if(number!==undefined){
-  box.querySelector('.pmm-v108-toolrow').insertAdjacentHTML('beforeend',toolButton('جلسه قبل','previous')+toolButton('جلسه بعد','next'));
+  box.querySelector('.pmm-v108-toolrow').insertAdjacentHTML('beforeend',toolButton('جلسه قبل','previous')+toolButton('جلسه بعد','next')+
+   toolButton(data.autoplay?'پخش متوالی: روشن':'پخش متوالی: خاموش','autoplay'));
  }
  const status=box.querySelector('.pmm-v108-status');
  card.appendChild(box);
@@ -81,12 +82,23 @@ function audioWidget(card,audio,id,title,url,route,number){
   if(saved>0)status.textContent='ادامه از '+time(saved);
   audio.addEventListener('loadedmetadata',()=>{
    if(saved>0&&audio.currentTime<2&&Number.isFinite(audio.duration)&&saved<audio.duration-2)audio.currentTime=saved;
+   if(Number.isFinite(audio.duration)&&audio.duration>0){
+    if(!data.kafiDurations)data.kafiDurations={};
+    data.kafiDurations[number]=Math.round(audio.duration);store();
+   }
   });
   audio.addEventListener('timeupdate',()=>{
    const second=Math.floor(audio.currentTime||0);if(Math.abs(second-lastSave)>=4){lastSave=second;progressSave(number,second)}
   });
   audio.addEventListener('pause',()=>progressSave(number,audio.ended?0:audio.currentTime));
-  audio.addEventListener('ended',()=>progressSave(number,0));
+  audio.addEventListener('ended',()=>{
+   progressSave(number,0);
+   if(data.autoplay&&number<DATA.kafi.length){
+    const next=number+1;openSavedLesson('kafi',next);
+    // Playback requires the user's prior opt-in. Browser autoplay policies may block this.
+    setTimeout(()=>contents.querySelector('[data-kafi-toggle]')?.click(),70);
+   }
+  });
  }
  box.addEventListener('click',event=>{
   const button=event.target.closest('[data-pmm-tool]');if(!button)return;
@@ -113,10 +125,20 @@ function audioWidget(card,audio,id,title,url,route,number){
    audio.pause();
    try{window.PMMNative.playAudioInBackground(url,title,position,rate);status.textContent='پخش در پس‌زمینه فعال شد؛ کنترل در اعلان گوشی است.'}
    catch(_){status.textContent='پخش پس‌زمینه برقرار نشد.'}
+  }else if(action==='autoplay'){
+   data.autoplay=!data.autoplay;store();
+   button.textContent=data.autoplay?'پخش متوالی: روشن':'پخش متوالی: خاموش';
+   status.textContent=data.autoplay?'جلسه بعد پس از پایان صوت به‌صورت خودکار پیشنهاد می‌شود.':'پخش متوالی خاموش شد.';
+  }else if(action==='report'){
+   const report='گزارش لینک صوت پای منبر مولا\n'+title+'\n'+url+'\nزمان گزارش: '+new Date().toISOString();
+   try{window.PMMNative?.copyAudioReport?.(report)}catch(_){}
+   status.textContent=typeof window.PMMNative?.copyAudioReport==='function'?
+    'گزارش در کلیپ‌بورد کپی شد؛ آن را برای پشتیبانی ارسال کنید.':'نشانی فایل: '+url;
   }else if(action.startsWith('sleep')){
    const minutes=Number(action.slice(5))||0;
    if(timer)clearTimeout(timer);
    timer=null;timerEnd=0;
+   try{window.PMMNative?.setAudioSleepTimer?.(minutes)}catch(_){}
    if(minutes){
     timerEnd=Date.now()+minutes*60000;
     timer=setTimeout(()=>{
@@ -174,6 +196,29 @@ function ribbon(){
   priorSection=section;setState('owner-extras',section,{feature:target.dataset.pmmTool.slice(5)});
  });
  contents.prepend(r);
+ // Last-opened bookmark for externally hosted lessons, without changing existing row controls.
+ if(section==='towhid'||section==='life'){
+  const last=PMM_LEARNING_PROGRESS.getLesson(section);
+  const record=DATA[section]?.find(x=>x.number===last?.number);
+  if(record){
+   const id=bookmarkKey('lesson',section,record.number),btn=document.createElement('button');
+   btn.type='button';btn.className='pmm-v108-button pmm-v108-lastmark';
+   btn.textContent=isMarked(id)?'★ آخرین جلسه نشان‌شده':'☆ نشان کردن آخرین جلسه';
+   btn.addEventListener('click',()=>{
+    mark(id,sectionNames[section]+' — جلسه '+farsi(record.number),
+      {kind:'lesson',section,number:record.number},record.url);
+    btn.textContent=isMarked(id)?'★ آخرین جلسه نشان‌شده':'☆ نشان کردن آخرین جلسه';
+   });
+   r.after(btn);
+  }
+ }
+ if(!data.guideSeen){
+  const first=document.createElement('div');first.className='pmm-v108-first';
+  first.innerHTML='<span>تازه وارد شده‌اید؟ از دکمه «از کجا شروع کنم؟» راهنمای مسیر درس‌ها را ببینید.</span>'+
+    '<button type="button" aria-label="بستن راهنمای اولیه">×</button>';
+  first.querySelector('button').addEventListener('click',()=>{data.guideSeen=true;store();first.remove()});
+  r.after(first);
+ }
 }
 function line(label,action){return '<button class="pmm-v108-listitem" type="button" data-pmm-open="'+escapeHTML(action)+'">'+escapeHTML(label)+'</button>'}
 function wisdomBank(){return Array.isArray(window.PMM_HIKMAT_ALL)?window.PMM_HIKMAT_ALL.filter(x=>x.kind==='hikmat'):[]}
@@ -233,10 +278,16 @@ function renderExtras(){
   if(action.startsWith('bookmark-')){
    const b=data.marks?.[action.slice(9)];
    if(!b)return;
-   if(b.route.kind==='kafi'){openSavedLesson('kafi',b.route.number);return}
+   if(b.route.kind==='kafi'){
+    if(!data.kafiSeconds)data.kafiSeconds={};
+    data.kafiSeconds[b.route.number]=Math.max(0,Math.floor(b.route.seconds||0));store();
+    openSavedLesson('kafi',b.route.number);return;
+   }
    if(b.route.kind==='nahj'){
+    PMM_LEARNING_PROGRESS.setNahj(b.route.group,b.route.entry,b.route.part,b.route.seconds||0,false);
     setState('list','nahj',{nahjGroup:b.route.group,nahjEntry:b.route.entry});return;
    }
+   if(b.route.kind==='lesson'){openSavedLesson(b.route.section,b.route.number);return;}
    if(b.route.kind==='wisdom'){
     const x=wisdomEntry(b.route.id);if(x){
      contents.innerHTML='<div class="pmm-v108-view"><h2>حکمت '+farsi(x.number)+'</h2><p lang="ar">'+escapeHTML(x.arabic)+'</p><p>'+escapeHTML(x.persian)+'</p>'+toolButton('بازگشت به نشانک‌ها','return-marks')+'</div>';
@@ -262,6 +313,19 @@ function wisdomBookmark(){
   b.textContent=isMarked('wisdom:'+id)?'★':'☆';
  });
  host.appendChild(b);
+ const quiet=document.createElement('button');
+ quiet.type='button';quiet.id='pmm-v108-quiet';quiet.className='wisdom-utility-button';
+ quiet.setAttribute('aria-label','حالت مطالعه آرام');
+ quiet.textContent='☾';
+ quiet.setAttribute('aria-pressed',String(Boolean(data.quiet)));
+ const scroll=document.getElementById('wisdom-scroll');
+ scroll?.classList.toggle('pmm-v108-quiet',Boolean(data.quiet));
+ quiet.addEventListener('click',()=>{
+  data.quiet=!data.quiet;store();
+  scroll?.classList.toggle('pmm-v108-quiet',Boolean(data.quiet));
+  quiet.setAttribute('aria-pressed',String(Boolean(data.quiet)));
+ });
+ host.appendChild(quiet);
  window.addEventListener('pmm:app-foreground',()=>{const id=PMM_LEARNING_PROGRESS.getWisdom();b.textContent=isMarked('wisdom:'+id)?'★':'☆'});
 }
 function miniPlayer(){
