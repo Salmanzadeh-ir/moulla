@@ -58,6 +58,83 @@ public final class MainActivity extends Activity {
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
+        /** Start foreground playback of an existing, owner-hosted, direct MP3 only. */
+        @JavascriptInterface
+        public void playBackgroundAudio(final String source, final String title,
+                                        final int seconds, final double speed) {
+            if (!PmmBackgroundAudioService.allowed(source)) return;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || web == null ||
+                        !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                Intent intent=PmmBackgroundAudioService.command(MainActivity.this,
+                        PmmBackgroundAudioService.PLAY);
+                intent.putExtra(PmmBackgroundAudioService.EXTRA_URL,source);
+                intent.putExtra(PmmBackgroundAudioService.EXTRA_TITLE,title==null?"درس صوتی":title);
+                intent.putExtra(PmmBackgroundAudioService.EXTRA_SECONDS,Math.max(0,Math.min(seconds,86400)));
+                intent.putExtra(PmmBackgroundAudioService.EXTRA_SPEED,
+                        (float)Math.max(0.75d,Math.min(2d,speed)));
+                if (Build.VERSION.SDK_INT >= 26) startForegroundService(intent);
+                else startService(intent);
+            });
+        }
+
+        private void audioAction(final String action, final int value, final boolean isMinutes) {
+            runOnUiThread(() -> {
+                if(isFinishing() || isDestroyed())return;
+                Intent i=PmmBackgroundAudioService.command(MainActivity.this,action);
+                if(isMinutes)i.putExtra("minutes",value);
+                else i.putExtra(PmmBackgroundAudioService.EXTRA_SECONDS,value);
+                try{startService(i);}catch(Exception ignored){}
+            });
+        }
+        @JavascriptInterface public String getBackgroundAudioState() {
+            return PmmBackgroundAudioService.state();
+        }
+        @JavascriptInterface public void pauseBackgroundAudio() {
+            audioAction(PmmBackgroundAudioService.PAUSE,0,false);
+        }
+        @JavascriptInterface public void resumeBackgroundAudio() {
+            audioAction(PmmBackgroundAudioService.RESUME,0,false);
+        }
+        @JavascriptInterface public void stopBackgroundAudio() {
+            audioAction(PmmBackgroundAudioService.STOP,0,false);
+        }
+        @JavascriptInterface public void seekBackgroundAudio(final int seconds) {
+            audioAction(PmmBackgroundAudioService.SEEK,Math.max(0,seconds),false);
+        }
+        @JavascriptInterface public void sleepBackgroundAudio(final int minutes) {
+            audioAction(PmmBackgroundAudioService.SLEEP,Math.max(0,Math.min(180,minutes)),true);
+        }
+        /** Download only on a positive user action, to app-specific nonpublic media storage. */
+        @JavascriptInterface
+        public boolean downloadLessonAudio(final String source, final String title) {
+            if (!PmmBackgroundAudioService.allowed(source))return false;
+            runOnUiThread(() -> {
+                if(isFinishing() || isDestroyed() || web==null ||
+                        !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                boolean queued=PmmAudioDownloads.download(MainActivity.this,source,
+                    title==null?"درس صوتی":title,(url,name,ok,error)->{
+                        if(web==null||isFinishing()||isDestroyed()||
+                           !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                        String detail="{status:"+JSONObject.quote(ok?"done":"error")+
+                           ",url:"+JSONObject.quote(url)+",title:"+JSONObject.quote(name)+
+                           ",message:"+JSONObject.quote(error)+"}";
+                        web.evaluateJavascript("window.dispatchEvent(new CustomEvent("+
+                           "'pmm:audio-download',{detail:"+detail+"}))",null);
+                    });
+                if(!queued)
+                    android.widget.Toast.makeText(MainActivity.this,
+                         "یک دریافت دیگر در جریان است یا لینک معتبر نیست.",android.widget.Toast.LENGTH_SHORT).show();
+            });
+            return true;
+        }
+        @JavascriptInterface public boolean hasOfflineLessonAudio(final String source) {
+            return PmmAudioDownloads.available(MainActivity.this,source);
+        }
+        @JavascriptInterface public boolean deleteLessonAudio(final String source) {
+            return PmmAudioDownloads.delete(MainActivity.this,source);
+        }
+
         /** Read-only installed application version from APK package metadata. */
         @JavascriptInterface
         public String getAppVersion() {
