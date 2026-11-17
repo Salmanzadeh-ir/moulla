@@ -51,7 +51,7 @@ assert.equal(wisdom.window.PMM_HIKMAT_ALL.length,489);
 const cache=new Map(),events={};
 const localStorage={getItem:k=>cache.get(k)||null,setItem:(k,v)=>cache.set(k,v)};
 const url='https://dl.kazeminia110.ir/Audio/kafi/kafi 2.mp3';
-const c={window:{},localStorage,console,Math,Number,JSON,String,
+const c={window:{addEventListener:()=>{}},localStorage,console,Math,Number,JSON,String,
  pmmKafiAudioIsOwnerURL:u=>u===url,nahjAudioTime:n=>String(n)};
 vm.runInNewContext(addon,c);
 const audio={duration:4000,currentTime:0,ended:false,addEventListener:(name,fn)=>{events[name]=fn}};
