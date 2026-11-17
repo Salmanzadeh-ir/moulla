@@ -48,7 +48,7 @@ jobs:
           set -euo pipefail
           (cd dist && sha256sum -c SHA256SUMS.txt)
           (cd dist-source && sha256sum -c SHA256SUMS.txt)
-          (cd encrypted-owner-key && sha256sum -c SHA256SUMS.txt)
+          sha256sum -c encrypted-owner-key/SHA256SUMS.txt
           test -s dist/PayeMenbareMola-10.5.1-BAZAAR-FIRST-PUBLISH-RELEASE-SIGNED.apk
           test -s dist-source/PayeMenbareMola-10.5.1-COMPLETE-BUILDABLE-SOURCE.zip
           test -s encrypted-owner-key/PRIVATE-KEY-ENCRYPTED.p7m
