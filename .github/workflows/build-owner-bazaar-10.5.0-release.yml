@@ -1,0 +1,168 @@
+name: Owner-authorized official Cafe Bazaar 10.5.0 signed Release
+on:
+  push:
+    branches:
+      - release/bazaar-10.5.0-kafi54-20261117
+    paths:
+      - .github/workflows/build-owner-bazaar-10.5.0-release.yml
+  workflow_dispatch:
+
+# Only the historical owner signing material may sign the unchanged original package.
+permissions:
+  contents: write
+
+jobs:
+  official-bazaar-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout explicit owner-approved release source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify approved snapshot, app scope, original package and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='7467a3ac4445ba2a7bc16fcebe02c5f9068b2fa5'
+          git cat-file -e "$BASE^{commit}"
+          python3 - <<'PY'
+          import subprocess
+          base='7467a3ac4445ba2a7bc16fcebe02c5f9068b2fa5'
+          changed=set(subprocess.check_output(['git','diff','--name-only',base,'HEAD','--','app/'],text=True).splitlines())
+          assert changed=={'app/build.gradle'},f'Unapproved application modification: {changed}'
+          print('PASS: all app source and original bundled assets are identical to owner-approved Kafi snapshot, except release version metadata.')
+          PY
+          git diff --exit-code "$BASE" HEAD -- app/src/main/assets/nahj_audio_links.js app/src/main/assets/hikam_bank.js app/src/main/assets/photo_quotes_manifest.js
+          grep -qF "applicationId 'ir.nahj.towhidkarbordi'" app/build.gradle
+          grep -qF "versionCode 25" app/build.gradle
+          grep -qF "versionName '10.5.0'" app/build.gradle
+          grep -qF "targetSdk 34" app/build.gradle
+          grep -qF "minSdk 23" app/build.gradle
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+
+      - name: Set up Java 17 and Android SDK 35
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+      - name: Install pinned Android build tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Use Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Restore original release signing key only from protected GitHub Secrets
+        shell: bash
+        env:
+          KEY_DATA: ${{ secrets.PMM_KEYSTORE_BASE64 }}
+          KEY_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$KEY_DATA" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo 'ERROR: Official release signing secrets PMM_KEYSTORE_BASE64 and/or PMM_KEYSTORE_PASSWORD are missing. Refusing to create an unsigned or debug-signed APK advertised for Bazaar.'
+            exit 1
+          fi
+          umask 077
+          printf '%s' "$KEY_DATA" | base64 --decode > "$RUNNER_TEMP/bazaar-original-release.p12"
+          test -s "$RUNNER_TEMP/bazaar-original-release.p12"
+
+      - name: Build original-package signed non-debug release APK
+        shell: bash
+        env:
+          PMM_KEYSTORE_PATH: ${{ runner.temp }}/bazaar-original-release.p12
+          PMM_KEYSTORE_PASSWORD: ${{ secrets.PMM_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          unset PMM_KEYSTORE_BASE64
+          gradle --no-daemon :app:assembleRelease
+          test -s app/build/outputs/apk/release/app-release.apk
+
+      - name: Verify signature, zip alignment, package ID, version and APK permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$TOOLS/zipalign" -c -v 4 "$APK"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "package: name='ir.nahj.towhidkarbordi' versionCode='25' versionName='10.5.0'"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "sdkVersion:'23'"
+          "$TOOLS/aapt" dump badging "$APK" | grep -F "targetSdkVersion:'34'"
+          if "$TOOLS/aapt" dump badging "$APK" | grep -q 'application-debuggable'; then
+            echo 'ERROR: APK is debuggable!'; exit 1
+          fi
+
+      - name: Verify same signing certificate as historical official installed APK
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/official-reference"
+          gh release download v10.4.9-official --repo "$GITHUB_REPOSITORY" --pattern 'PayeMenbareMola_V10_4_9_Official_Install.apk' --dir "$RUNNER_TEMP/official-reference"
+          OLD="$RUNNER_TEMP/official-reference/PayeMenbareMola_V10_4_9_Official_Install.apk"
+          echo "80cd77cdb6fbd967bfb7a3ccfde8d8ee598b4d675f2c4410fc7fda8d781d212b  $OLD" | sha256sum -c -
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          "$TOOLS/apksigner" verify --verbose "$OLD"
+          OLD_CERT=$("$TOOLS/apksigner" verify --print-certs "$OLD" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
+          NEW_CERT=$("$TOOLS/apksigner" verify --print-certs app/build/outputs/apk/release/app-release.apk | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
+          test -n "$OLD_CERT" && test -n "$NEW_CERT"
+          if [ "$OLD_CERT" != "$NEW_CERT" ]; then
+            echo 'ERROR: Wrong release-signing certificate. Rejecting non-upgradeable APK.'
+            exit 1
+          fi
+          printf 'PASS: matched original official v10.4.9 certificate %s\n' "$NEW_CERT"
+
+      - name: Package owner-ready Release APK and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk dist/PayeMenbareMola-10.5.0-Bazaar-SIGNED-RELEASE.apk
+          (
+            cd dist
+            sha256sum PayeMenbareMola-10.5.0-Bazaar-SIGNED-RELEASE.apk > SHA256SUMS.txt
+            echo "Original application ID: ir.nahj.towhidkarbordi" > RELEASE-INFO.txt
+            echo "versionCode: 25; versionName: 10.5.0" >> RELEASE-INFO.txt
+            echo "Source commit: $GITHUB_SHA" >> RELEASE-INFO.txt
+            echo "Official historic signing certificate checked against v10.4.9-official." >> RELEASE-INFO.txt
+            sha256sum -c SHA256SUMS.txt
+          )
+
+      - name: Upload validated official signed Release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-10.5.0-25-Bazaar-VALIDATED-SIGNED-RELEASE
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Make validated non-debug signed APK directly downloadable
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          name='download/bazaar-10.5.0-signed-20261117'
+          mkdir -p /tmp/pmm-bazaar-release
+          cp dist/* /tmp/pmm-bazaar-release/
+          cd /tmp/pmm-bazaar-release
+          git init --initial-branch="$name"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Verified original-certificate official signed Bazaar 10.5.0 release from $GITHUB_SHA"
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git push origin "HEAD:refs/heads/$name"
+
+      - name: Remove original signing key from temporary runner
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/bazaar-original-release.p12"
