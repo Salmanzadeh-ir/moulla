@@ -1214,9 +1214,9 @@ function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');return x
 function save(change){try{const s=load();change(s);localStorage.setItem(KEY,JSON.stringify(s));return true}catch(_){return false}}
 function getWisdom(){const x=load().wisdom;return x&&typeof x.id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(x.id)?x.id:null}
 function setWisdom(id){return typeof id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(id)&&save(s=>{s.wisdom={id,at:Date.now()}})}
-function getLesson(which){if(!LESSONS.includes(which))return null;const x=load().lessons?.[which];return x&&Number.isInteger(x.number)&&x.number>0&&x.number<=500?{number:x.number,heard:x.heard===true}:null}
-function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;const old=getLesson(which);return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,heard:!!(old&&old.number===number&&old.heard),at:Date.now()}})}
-function markHeard(which,number,heard){const old=getLesson(which);if(!old||old.number!==number)return false;return save(s=>{s.lessons[which]={number,heard:heard===true,at:Date.now()}})}
+// Preserve the last-opened session; the manual listened/finished flag is retired for every lesson section.
+function getLesson(which){if(!LESSONS.includes(which))return null;const x=load().lessons?.[which];return x&&Number.isInteger(x.number)&&x.number>0&&x.number<=500?{number:x.number}:null}
+function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,at:Date.now()}})}
 function getNahj(group){if(!GROUPS.includes(group))return null;const x=load().nahj?.[group];if(!x||typeof x.entryId!=='string'||x.entryId.length>80||!Number.isInteger(x.part)||x.part<0||x.part>100||!Number.isFinite(x.seconds)||x.seconds<0||x.seconds>86400)return null;return {entryId:x.entryId,part:x.part,seconds:x.seconds,finished:x.finished===true}}
 function setNahj(group,entryId,part,seconds,finished=false){
  if(!GROUPS.includes(group)||typeof entryId!=='string'||entryId.length>80||
@@ -1240,7 +1240,7 @@ function getLastNahj(){
  if(!record||record.entryId!==value.entryId)return null;
  return {group:value.group,...record};
 }
-return {getWisdom,setWisdom,getLesson,openLesson,markHeard,getNahj,setNahj,getLastNahj};
+return {getWisdom,setWisdom,getLesson,openLesson,getNahj,setNahj,getLastNahj};
 })());
 </script>
 <script>
@@ -1702,7 +1702,7 @@ window.PMM_NEW_UI=Object.freeze({
 <script src="nahj_audio_links.js"></script>
 <script>
 
-const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"شرح اصول کافی 1","url":"https://eitaa.com/hadis_kafi/393","source":"ایتا"},{"number":2,"title":"شرح اصول کافی 2","url":"https://eitaa.com/hadis_kafi/450","source":"ایتا"},{"number":3,"title":"شرح اصول کافی 3","url":"https://eitaa.com/hadis_kafi/462","source":"ایتا"},{"number":4,"title":"شرح اصول کافی 4","url":"https://eitaa.com/hadis_kafi/474","source":"ایتا"},{"number":5,"title":"شرح اصول کافی 5","url":"https://eitaa.com/hadis_kafi/486","source":"ایتا"},{"number":6,"title":"شرح اصول کافی 6","url":"https://eitaa.com/hadis_kafi/498","source":"ایتا"},{"number":7,"title":"شرح اصول کافی 7","url":"https://eitaa.com/hadis_kafi/509","source":"ایتا"},{"number":8,"title":"شرح اصول کافی 8","url":"https://eitaa.com/hadis_kafi/521","source":"ایتا"},{"number":9,"title":"شرح اصول کافی 9","url":"https://eitaa.com/hadis_kafi/532","source":"ایتا"},{"number":10,"title":"شرح اصول کافی 10","url":"https://eitaa.com/hadis_kafi/544","source":"ایتا"},{"number":11,"title":"شرح اصول کافی 11","url":"https://eitaa.com/hadis_kafi/556","source":"ایتا"},{"number":12,"title":"شرح اصول کافی 12","url":"https://eitaa.com/hadis_kafi/568","source":"ایتا"},{"number":13,"title":"شرح اصول کافی 13","url":"https://eitaa.com/hadis_kafi/581","source":"ایتا"},{"number":14,"title":"شرح اصول کافی 14","url":"https://eitaa.com/hadis_kafi/594","source":"ایتا"},{"number":15,"title":"شرح اصول کافی 15","url":"https://eitaa.com/hadis_kafi/607","source":"ایتا"},{"number":16,"title":"شرح اصول کافی 16","url":"https://eitaa.com/hadis_kafi/620","source":"ایتا"},{"number":17,"title":"شرح اصول کافی 17","url":"https://eitaa.com/hadis_kafi/632","source":"ایتا"},{"number":18,"title":"شرح اصول کافی 18","url":"https://eitaa.com/hadis_kafi/639","source":"ایتا"},{"number":19,"title":"شرح اصول کافی 19","url":"https://eitaa.com/hadis_kafi/647","source":"ایتا"},{"number":20,"title":"شرح اصول کافی 20","url":"https://eitaa.com/hadis_kafi/657","source":"ایتا"},{"number":21,"title":"شرح اصول کافی 21","url":"https://eitaa.com/hadis_kafi/669","source":"ایتا"},{"number":22,"title":"شرح اصول کافی 22","url":"https://eitaa.com/hadis_kafi/680","source":"ایتا"},{"number":23,"title":"شرح اصول کافی 23","url":"https://eitaa.com/hadis_kafi/687","source":"ایتا"},{"number":24,"title":"شرح اصول کافی 24","url":"https://eitaa.com/hadis_kafi/693","source":"ایتا"},{"number":25,"title":"شرح اصول کافی 25","url":"https://eitaa.com/hadis_kafi/704","source":"ایتا"},{"number":26,"title":"شرح اصول کافی 26","url":"https://eitaa.com/hadis_kafi/712","source":"ایتا"},{"number":27,"title":"شرح اصول کافی 27","url":"https://eitaa.com/hadis_kafi/724","source":"ایتا"},{"number":28,"title":"شرح اصول کافی 28","url":"https://eitaa.com/hadis_kafi/737","source":"ایتا"},{"number":29,"title":"شرح اصول کافی 29","url":"https://eitaa.com/hadis_kafi/746","source":"ایتا"},{"number":30,"title":"شرح اصول کافی 30","url":"https://eitaa.com/hadis_kafi/755","source":"ایتا"},{"number":31,"title":"شرح اصول کافی 31","url":"https://eitaa.com/hadis_kafi/775","source":"ایتا"},{"number":32,"title":"شرح اصول کافی 32","url":"https://eitaa.com/hadis_kafi/793","source":"ایتا"},{"number":33,"title":"شرح اصول کافی 33","url":"https://eitaa.com/hadis_kafi/809","source":"ایتا"},{"number":34,"title":"شرح اصول کافی 34","url":"https://eitaa.com/hadis_kafi/823","source":"ایتا"},{"number":35,"title":"شرح اصول کافی 35","url":"https://eitaa.com/hadis_kafi/836","source":"ایتا"},{"number":36,"title":"شرح اصول کافی 36","url":"https://eitaa.com/hadis_kafi/851","source":"ایتا"},{"number":37,"title":"شرح اصول کافی 37","url":"https://eitaa.com/hadis_kafi/864","source":"ایتا"},{"number":38,"title":"شرح اصول کافی 38","url":"https://eitaa.com/hadis_kafi/881","source":"ایتا"},{"number":39,"title":"شرح اصول کافی 39","url":"https://eitaa.com/hadis_kafi/909","source":"ایتا"},{"number":40,"title":"شرح اصول کافی 40","url":"https://eitaa.com/hadis_kafi/923","source":"ایتا"},{"number":41,"title":"شرح اصول کافی 41","url":"https://eitaa.com/hadis_kafi/941","source":"ایتا"},{"number":42,"title":"شرح اصول کافی 42","url":"https://eitaa.com/hadis_kafi/958","source":"ایتا"},{"number":43,"title":"شرح اصول کافی 43","url":"https://eitaa.com/hadis_kafi/981","source":"ایتا"},{"number":44,"title":"شرح اصول کافی 44","url":"https://eitaa.com/hadis_kafi/993","source":"ایتا"},{"number":45,"title":"شرح اصول کافی 45","url":"https://eitaa.com/hadis_kafi/1017","source":"ایتا"},{"number":46,"title":"شرح اصول کافی 46","url":"https://eitaa.com/hadis_kafi/1037","source":"ایتا"},{"number":47,"title":"شرح اصول کافی 47","url":"https://eitaa.com/hadis_kafi/1048","source":"ایتا"},{"number":48,"title":"شرح اصول کافی 48","url":"https://eitaa.com/hadis_kafi/1060","source":"ایتا"},{"number":49,"title":"شرح اصول کافی 49","url":"https://eitaa.com/hadis_kafi/1107","source":"ایتا"},{"number":50,"title":"شرح اصول کافی 50","url":"https://eitaa.com/hadis_kafi/1119","source":"ایتا"},{"number":51,"title":"شرح اصول کافی 51","url":"https://eitaa.com/hadis_kafi/1141","source":"ایتا"},{"number":52,"title":"شرح اصول کافی 52","url":"https://eitaa.com/hadis_kafi/1153","source":"ایتا"},{"number":53,"title":"شرح اصول کافی 53","url":"https://eitaa.com/hadis_kafi/1190","source":"ایتا"},{"number":54,"title":"شرح اصول کافی 54","url":"https://eitaa.com/hadis_kafi/1202","source":"ایتا"},{"number":55,"title":"شرح اصول کافی 55","url":"https://eitaa.com/hadis_kafi/1223","source":"ایتا"},{"number":56,"title":"شرح اصول کافی 56","url":"https://eitaa.com/hadis_kafi/1429","source":"ایتا"},{"number":57,"title":"شرح اصول کافی 57","url":"https://eitaa.com/hadis_kafi/1441","source":"ایتا"},{"number":58,"title":"شرح اصول کافی 58","url":"https://eitaa.com/hadis_kafi/1454","source":"ایتا"},{"number":59,"title":"شرح اصول کافی 59","url":"","source":""}],"nahj":{}}
+const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"کافی شناسی","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi kotobe arbae.mp3","source":"فایل صوتی"},{"number":2,"title":"جلسه ۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 1.mp3","source":"فایل صوتی"},{"number":3,"title":"جلسه ۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 2.mp3","source":"فایل صوتی"},{"number":4,"title":"جلسه ۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 3.mp3","source":"فایل صوتی"},{"number":5,"title":"جلسه ۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 4.mp3","source":"فایل صوتی"},{"number":6,"title":"جلسه ۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 5.mp3","source":"فایل صوتی"},{"number":7,"title":"جلسه ۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 6.mp3","source":"فایل صوتی"},{"number":8,"title":"جلسه ۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 7.mp3","source":"فایل صوتی"},{"number":9,"title":"جلسه ۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 8.mp3","source":"فایل صوتی"},{"number":10,"title":"جلسه ۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 9.mp3","source":"فایل صوتی"},{"number":11,"title":"جلسه ۱۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 10.mp3","source":"فایل صوتی"},{"number":12,"title":"جلسه ۱۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 11.mp3","source":"فایل صوتی"},{"number":13,"title":"جلسه ۱۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 12.mp3","source":"فایل صوتی"},{"number":14,"title":"جلسه ۱۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 13.mp3","source":"فایل صوتی"},{"number":15,"title":"جلسه ۱۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 14.mp3","source":"فایل صوتی"},{"number":16,"title":"جلسه ۱۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 15.mp3","source":"فایل صوتی"},{"number":17,"title":"جلسه ۱۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 16.mp3","source":"فایل صوتی"},{"number":18,"title":"جلسه ۱۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 17.mp3","source":"فایل صوتی"},{"number":19,"title":"جلسه ۱۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 18.mp3","source":"فایل صوتی"},{"number":20,"title":"جلسه ۱۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 19.mp3","source":"فایل صوتی"},{"number":21,"title":"جلسه ۲۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 20.mp3","source":"فایل صوتی"},{"number":22,"title":"جلسه ۲۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 21.mp3","source":"فایل صوتی"},{"number":23,"title":"جلسه ۲۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 22.mp3","source":"فایل صوتی"},{"number":24,"title":"جلسه ۲۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 23.mp3","source":"فایل صوتی"},{"number":25,"title":"جلسه ۲۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 24.mp3","source":"فایل صوتی"},{"number":26,"title":"جلسه ۲۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 25.mp3","source":"فایل صوتی"},{"number":27,"title":"جلسه ۲۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 26.mp3","source":"فایل صوتی"},{"number":28,"title":"جلسه ۲۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 27.mp3","source":"فایل صوتی"},{"number":29,"title":"جلسه ۲۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 28.mp3","source":"فایل صوتی"},{"number":30,"title":"جلسه ۲۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 29.mp3","source":"فایل صوتی"},{"number":31,"title":"جلسه ۳۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 30.mp3","source":"فایل صوتی"},{"number":32,"title":"جلسه ۳۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 31.mp3","source":"فایل صوتی"},{"number":33,"title":"جلسه ۳۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 32.mp3","source":"فایل صوتی"},{"number":34,"title":"جلسه ۳۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 33.mp3","source":"فایل صوتی"},{"number":35,"title":"جلسه ۳۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 34.mp3","source":"فایل صوتی"},{"number":36,"title":"جلسه ۳۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 35.mp3","source":"فایل صوتی"},{"number":37,"title":"جلسه ۳۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 36.mp3","source":"فایل صوتی"},{"number":38,"title":"جلسه ۳۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 37.mp3","source":"فایل صوتی"},{"number":39,"title":"جلسه ۳۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 38.mp3","source":"فایل صوتی"},{"number":40,"title":"جلسه ۳۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 39.mp3","source":"فایل صوتی"},{"number":41,"title":"جلسه ۴۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 40.mp3","source":"فایل صوتی"},{"number":42,"title":"جلسه ۴۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 41.mp3","source":"فایل صوتی"},{"number":43,"title":"جلسه ۴۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 42.mp3","source":"فایل صوتی"},{"number":44,"title":"جلسه ۴۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 43.mp3","source":"فایل صوتی"},{"number":45,"title":"جلسه ۴۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 44.mp3","source":"فایل صوتی"},{"number":46,"title":"جلسه ۴۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 45.mp3","source":"فایل صوتی"},{"number":47,"title":"جلسه ۴۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 46.mp3","source":"فایل صوتی"},{"number":48,"title":"جلسه ۴۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 47.mp3","source":"فایل صوتی"},{"number":49,"title":"جلسه ۴۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 48.mp3","source":"فایل صوتی"},{"number":50,"title":"جلسه ۴۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 49.mp3","source":"فایل صوتی"},{"number":51,"title":"جلسه ۵۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 50.mp3","source":"فایل صوتی"},{"number":52,"title":"جلسه ۵۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 51.mp3","source":"فایل صوتی"},{"number":53,"title":"جلسه ۵۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 52.mp3","source":"فایل صوتی"},{"number":54,"title":"جلسه ۵۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 53.mp3","source":"فایل صوتی"},{"number":55,"title":"جلسه ۵۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 54.mp3","source":"فایل صوتی"}],"nahj":{}}
 const APPROVED_IMAGE_01 = "images/IMAGE_01_APPROVED_ORIGINAL.png";
 const NEW_HOME_IMAGE = "images/home_bg_separated.png";
 const IMG = {"home.webp":APPROVED_IMAGE_01,"list_surface.webp":"images/v8/list_surface_webp.webp","list_other.webp":APPROVED_IMAGE_01,"row_blank.webp":"images/v8/row_blank_webp.webp","title_towhid":"images/v8/title_towhid.png","title_life":"images/v8/title_life.png","title_kafi":"images/v8/title_kafi.png","title_nahj":"images/v8/title_nahj.png","title_player":"images/v8/title_player.png","title_about":"images/v8/title_about.png","title_biography":"images/v8/title_biography.png"}
@@ -1999,6 +1999,7 @@ function renderNahjAudioCatalog(){
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.remove('gone');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.add('gone'),2800)}
 function setState(mode,s=null,v=null){
  if(screen==='list'&&section==='nahj')stopNahjInlineAudio();
+ if(screen==='player'&&section==='kafi')pmmStopKafiAudio();
  if(screen==='list'&&mode==='player')beforePlayerScroll=content.scrollTop;
  screen=mode; if(s!==null)section=s;item=v;render();
  if(mode==='list'&&v==='restore')content.scrollTop=beforePlayerScroll;else content.scrollTop=0;
@@ -2042,26 +2043,20 @@ function openSavedLesson(which,number){
 function lessonResumeSummary(which){
  if(pmmDismissedResume.lessons.has(which))return '';
  const last=PMM_LEARNING_PROGRESS.getLesson(which);
- if(!last||!DATA[which]?.some(x=>x.number===last.number&&x.url))return '';
+ const lastRecord=DATA[which]?.find(x=>x.number===last?.number&&x.url);
+ if(!lastRecord)return '';
+ const lastLabel=which==='kafi'?safe(lastRecord.title):'جلسه '+fa(last.number);
  return '<div class="pmm-resume-card" role="group" aria-label="آخرین جلسه بازشده">'+
  '<button type="button" class="pmm-resume-dismiss" data-resume-dismiss-lesson="'+which+
  '" aria-label="پنهان کردن یادآور تا ورود بعدی">×</button>'+
  '<span class="pmm-resume-title">🎧 آخرین جلسه شما</span>'+
- '<span class="pmm-resume-details">جلسه '+fa(last.number)+(last.heard?' — ✓ شنیده شد':' — آخرین جلسه بازشده')+'</span>'+
- '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن جلسه '+fa(last.number)+'</button>'+
- '<button class="pmm-resume-action pmm-outline" type="button" data-mark-last="'+which+'">'+
- (last.heard?'↶ هنوز کامل نشنیدم':'✓ این جلسه را شنیدم')+'</button></div></div>';
+ '<span class="pmm-resume-details">'+lastLabel+' — آخرین جلسه بازشده</span>'+
+ '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن '+lastLabel+'</button></div></div>';
 }
 function bindLessonResume(){
  contents.querySelectorAll('[data-open-last]').forEach(button=>button.addEventListener('click',()=>{
   const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.openLast);
   if(last)openSavedLesson(button.dataset.openLast,last.number);
- }));
- contents.querySelectorAll('[data-mark-last]').forEach(button=>button.addEventListener('click',()=>{
-  const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.markLast);
-  if(!last)return;
-  PMM_LEARNING_PROGRESS.markHeard(button.dataset.markLast,last.number,!last.heard);
-  const y=content.scrollTop;renderList();content.scrollTop=y;
  }));
  contents.querySelectorAll('[data-resume-dismiss-lesson]').forEach(button=>button.addEventListener('click',()=>{
   pmmDismissedResume.lessons.add(button.dataset.resumeDismissLesson);
@@ -2077,7 +2072,10 @@ function drawRows(){
  const el=document.getElementById('rows');if(!el)return;
  const records=DATA[section];
  const last=PMM_LEARNING_PROGRESS.getLesson(section);
- el.innerHTML=records.length?records.map(x=>`<button type="button" class="session ${x.url?'':'missing'} ${last?.number===x.number?'pmm-last-lesson':''}" data-n="${x.number}" aria-label="جلسه ${fa(x.number)}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">جلسه ${fa(x.number)}</span></button>`).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
+ el.innerHTML=records.length?records.map(x=>{
+   const label=section==='kafi'?safe(x.title):'جلسه '+fa(x.number);
+   return `<button type="button" class="session ${x.url?'':'missing'} ${last?.number===x.number?'pmm-last-lesson':''}" data-n="${x.number}" aria-label="${label}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">${label}</span></button>`;
+ }).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
  el.querySelectorAll('.session').forEach(b=>b.addEventListener('click',()=>{
    openSavedLesson(section,Number(b.dataset.n));
 }));
@@ -2170,12 +2168,115 @@ function renderPhoto(){
   document.getElementById('photo-prev').addEventListener('click',()=>setState('photo',null,(ix-1+USER_PHOTOS.length)%USER_PHOTOS.length));
 }
 
+// Owner-approved new Kafi MP3 catalog: identical navy/gold Nahj control styling.
+// Playback remains inside the WebView; the chosen speed is Kafi-specific.
+const PMM_KAFI_SPEEDS=NAHJ_AUDIO_SPEEDS;
+const PMM_KAFI_SPEED_KEY='pmm_kafi_mp3_speed_v1';
+let pmmKafiSpeed=1;
+try{
+ const stored=Number(localStorage.getItem(PMM_KAFI_SPEED_KEY));
+ if(PMM_KAFI_SPEEDS.includes(stored))pmmKafiSpeed=stored;
+}catch(_){}
+function pmmKafiAudioIsOwnerURL(url){
+ return /^https:\/\/dl\.kazeminia110\.ir\/Audio\/kafi\/(?:kafi kotobe arbae|kafi (?:[1-9]|[1-4][0-9]|5[0-4]))\.mp3$/.test(String(url||''));
+}
+function pmmStopKafiAudio(){
+ if(!contents)return;
+ contents.querySelectorAll('audio.kafi-audio-media').forEach(audio=>{
+  audio.pause();audio.removeAttribute('src');audio.load();
+ });
+}
+function pmmKafiCardHtml(record,url){
+ const label=safe(record.title);
+ const rates=PMM_KAFI_SPEEDS.map(rate=>
+  '<button type="button" class="nahj-part-rate" data-kafi-speed="'+rate+
+  '" aria-label="سرعت '+rate+' برابر" aria-pressed="false">'+rate+'x</button>'
+ ).join('');
+ return '<div class="nahj-part-cards pmm-kafi-audio-cards"><section class="nahj-part-card kafi-audio-card" data-part-title="'+label+'">'+
+  '<div class="nahj-part-heading"><span>'+label+'</span>'+
+  '<span class="nahj-part-headphones" aria-hidden="true">'+NAHJ_SVG_HEADPHONES+'</span></div>'+
+  '<div class="nahj-part-controls">'+
+  '<button type="button" class="nahj-part-play" data-kafi-toggle aria-label="پخش '+label+'">'+NAHJ_SVG_PLAY+'</button>'+
+  '<div class="nahj-part-progress"><input type="range" class="nahj-part-seek" data-kafi-seek min="0" max="100" step="0.5" value="0" aria-label="موقعیت صوت '+label+'" disabled>'+
+  '<div class="nahj-part-times"><span data-kafi-current>۰۰:۰۰</span><span data-kafi-duration>--:--</span></div></div></div>'+
+  '<div class="nahj-part-speed"><span class="nahj-part-speed-label">سرعت پخش</span>'+
+  '<div class="nahj-part-rates" role="group" aria-label="تنظیم سرعت '+label+'">'+rates+'</div></div>'+
+  '<div class="nahj-part-status" data-kafi-status aria-live="polite"></div>'+
+  '<audio class="nahj-part-media kafi-audio-media" preload="none" playsinline data-src="'+safe(encodeURI(url))+
+  '" aria-label="شرح اصول کافی، '+label+'"></audio></section></div>';
+}
+function pmmAttachKafiAudio(){
+ const card=contents.querySelector('.kafi-audio-card');
+ if(!card)return;
+ const audio=card.querySelector('audio.kafi-audio-media');
+ const toggle=card.querySelector('[data-kafi-toggle]');
+ const seek=card.querySelector('[data-kafi-seek]');
+ const current=card.querySelector('[data-kafi-current]');
+ const duration=card.querySelector('[data-kafi-duration]');
+ const status=card.querySelector('[data-kafi-status]');
+ const rates=Array.from(card.querySelectorAll('[data-kafi-speed]'));
+ function display(){
+  const playing=!audio.paused;
+  toggle.innerHTML=playing?NAHJ_SVG_PAUSE:NAHJ_SVG_PLAY;
+  toggle.setAttribute('aria-label',(playing?'توقف':'پخش')+' جلسه صوتی');
+  card.classList.toggle('is-playing',playing);
+  const length=audio.duration;
+  current.textContent=nahjAudioTime(audio.currentTime);
+  duration.textContent=Number.isFinite(length)?nahjAudioTime(length):'--:--';
+  seek.disabled=!(Number.isFinite(length)&&length>0);
+  seek.value=!seek.disabled?String(Math.min(100,100*audio.currentTime/length)):'0';
+ }
+ function applySpeed(){
+  audio.playbackRate=pmmKafiSpeed;
+  rates.forEach(button=>{
+   const active=Number(button.dataset.kafiSpeed)===pmmKafiSpeed;
+   button.classList.toggle('is-active',active);
+   button.setAttribute('aria-pressed',String(active));
+  });
+ }
+ rates.forEach(button=>button.addEventListener('click',()=>{
+  const selected=Number(button.dataset.kafiSpeed);
+  if(!PMM_KAFI_SPEEDS.includes(selected))return;
+  pmmKafiSpeed=selected;
+  try{localStorage.setItem(PMM_KAFI_SPEED_KEY,String(selected))}catch(_){}
+  applySpeed();
+ }));
+ toggle.addEventListener('click',()=>{
+  if(!audio.paused){audio.pause();return;}
+  if(!audio.getAttribute('src'))audio.src=audio.dataset.src;
+  applySpeed();status.textContent='';
+  const request=audio.play();
+  if(request&&typeof request.catch==='function')request.catch(()=>{
+   status.textContent='پخش صوت برقرار نشد؛ اتصال اینترنت را بررسی کنید.';
+   display();
+  });
+ });
+ seek.addEventListener('input',()=>{
+  if(Number.isFinite(audio.duration)&&audio.duration>0){
+   audio.currentTime=audio.duration*Number(seek.value)/100;
+   display();
+  }
+ });
+ ['play','pause','timeupdate','loadedmetadata','durationchange','ended'].forEach(name=>
+  audio.addEventListener(name,display));
+ audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==pmmKafiSpeed)audio.playbackRate=pmmKafiSpeed});
+ audio.addEventListener('error',()=>{
+  status.textContent='این فایل صوتی در حال حاضر بارگذاری نمی‌شود.';
+  display();
+ });
+ applySpeed();display();
+}
+
 function renderPlayer(){
  const x=item; if(!x){setState('home');return}
  const link=String(x.url||'');
  const match=link.match(/^https?:\/\/(?:www\.)?aparat\.com\/v\/([a-z0-9_-]+)/i);
- let html='<div class="content-box"><h2>'+(x.nahjAudio?safe(x.title):'جلسه '+fa(x.number))+'</h2>';
- if(x.nahjAudio){
+ let html='<div class="content-box"><h2>'+(x.nahjAudio||section==='kafi'?safe(x.title):'جلسه '+fa(x.number))+'</h2>';
+ if(section==='kafi'){
+  // Only approved direct Kafi MP3s; never open old Eitaa/Aparat links.
+  html+=pmmKafiAudioIsOwnerURL(link)?pmmKafiCardHtml(x,link):
+    '<p class="player-note">نشانی صوت این جلسه معتبر نیست.</p>';
+ }else if(x.nahjAudio){
   // Stream an owner-supplied MP3 in this WebView; never navigate to the website.
   const valid=/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/(?:khotbe\/khotbe|name\/name|hekmat\/hekmat) [A-Za-z0-9. &]+\.mp3$/i.test(link);
   if(valid){
@@ -2194,21 +2295,10 @@ function renderPlayer(){
  }else{
   html+='<a class="action" href="'+safe(link)+'">باز کردن جلسه</a>';
  }
- if(['towhid','life','kafi'].includes(section)){
-   const played=PMM_LEARNING_PROGRESS.getLesson(section);
-   html+='<button class="action" type="button" id="player-mark-heard">'+
-     (played?.number===x.number&&played.heard?'✓ شنیده شد — لغو':'✓ این جلسه را شنیدم')+'</button>';
- }
  html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
+ if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
  document.getElementById('player-back').addEventListener('click',()=>goBack());
- const mark=document.getElementById('player-mark-heard');
- if(mark)mark.addEventListener('click',()=>{
-   const old=PMM_LEARNING_PROGRESS.getLesson(section);
-   if(old?.number!==x.number)return;
-   PMM_LEARNING_PROGRESS.markHeard(section,x.number,!old.heard);
-   mark.textContent=old.heard?'✓ این جلسه را شنیدم':'✓ شنیده شد — لغو';
- });
 }
 function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){
   if(section==='nahj'&&item?.nahjReturn){
