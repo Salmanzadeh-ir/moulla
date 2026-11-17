@@ -71,6 +71,10 @@ function audioWidget(card,audio,id,title,url,route,number){
   box.querySelector('.pmm-v108-toolrow').insertAdjacentHTML('beforeend',toolButton('جلسه قبل','previous')+toolButton('جلسه بعد','next')+
    toolButton(data.autoplay?'پخش متوالی: روشن':'پخش متوالی: خاموش','autoplay'));
  }
+ if(route.kind==='nahj'){
+  box.querySelector('.pmm-v108-toolrow').insertAdjacentHTML('beforeend',
+   toolButton('بخش قبل','part-previous')+toolButton('بخش بعد','part-next'));
+ }
  const status=box.querySelector('.pmm-v108-status');
  card.appendChild(box);
  const bookmark=box.querySelector('[data-pmm-tool="bookmark"]');
@@ -151,6 +155,15 @@ function audioWidget(card,audio,id,title,url,route,number){
   }else if(action==='previous'||action==='next'){
    const next=number+(action==='previous'?-1:1);
    if(next>=1&&next<=DATA.kafi.length)openSavedLesson('kafi',next);
+  }else if(action==='part-previous'||action==='part-next'){
+   if(route.kind!=='nahj')return;
+   const next=route.part+(action==='part-previous'?-1:1);
+   const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
+   if(next>=0&&next<cards.length){
+    audio.pause();
+    cards[next].querySelector('[data-nahj-toggle]')?.click();
+    cards[next].scrollIntoView({behavior:'smooth',block:'center'});
+   }
   }
  });
  audio.addEventListener('play',()=>{
@@ -181,6 +194,19 @@ function decorateAudio(){
     record?.title+'، بخش '+farsi(i+1),url,{kind:'nahj',group,entry,part:i});
   });
  }
+}
+function decorateDurations(){
+ if(screen!=='list'||section!=='kafi')return;
+ contents.querySelectorAll('.session[data-n]').forEach(button=>{
+  const n=Number(button.dataset.n),seconds=Number(data.kafiDurations?.[n]);
+  const label=button.querySelector('.session-label');
+  if(label&&Number.isFinite(seconds)&&seconds>0&&!label.querySelector('.pmm-v108-duration')){
+   const small=document.createElement('small');
+   small.className='pmm-v108-duration';
+   small.textContent=' — '+time(seconds);
+   label.appendChild(small);
+  }
+ });
 }
 function ribbon(){
  if(screen!=='list'||!['kafi','towhid','life','nahj'].includes(section))return;
@@ -254,7 +280,8 @@ function renderExtras(){
   html+='<p>نشانک‌ها فقط روی همین دستگاه ذخیره می‌شوند. پاک‌کردن داده‌های برنامه آن‌ها را حذف می‌کند.</p>'+
    (marks.length?marks.map(x=>line(x.title,'bookmark-'+x.id)).join(''):'<p>هنوز موردی نشان نکرده‌اید؛ هنگام پخش صوت یا مطالعه حکمت، ☆ را لمس کنید.</p>');
  }else if(feature==='offline'){
-  html+='<p>دریافت صوت فقط با درخواست شما انجام می‌شود و حجم اولیه نصب را افزایش نمی‌دهد. برای حذف فایل‌ها از دکمه کنار همان صوت استفاده کنید.</p>';
+  html+='<p>دریافت صوت فقط با درخواست شما انجام می‌شود و حجم اولیه نصب را افزایش نمی‌دهد. برای حذف فایل‌ها از دکمه کنار همان صوت استفاده کنید.</p>'+
+    line('⟳ به‌روزرسانی وضعیت دریافت‌ها','offline-refresh');
   if(native()){
    let items=[];try{items=JSON.parse(native().getAudioDownloads())||[]}catch(_){}
    html+=(items.length?items.map(x=>line((x.complete?'✅ ':'⬇️ ')+(x.title||x.url.split('/').pop())+(x.complete?'':' — '+farsi(x.percent||0)+'٪'),'offline-'+encodeURIComponent(x.url))).join(''):'<p>هنوز صوتی دریافت نشده است.</p>');
@@ -295,6 +322,7 @@ function renderExtras(){
     }return;
    }
   }
+  if(action==='offline-refresh'){setState('owner-extras',null,{feature:'offline'});return;}
   if(action.startsWith('offline-')){
    const url=decodeURIComponent(action.slice(8));
    if(window.PMMNative?.playAudioInBackground)window.PMMNative.playAudioInBackground(url,'صوت دریافتی',0,1);
@@ -354,7 +382,7 @@ const originalRender=render;
 render=function(){
  originalRender();
  if(screen==='owner-extras'){renderExtras();return}
- if(screen==='list')ribbon();
+ if(screen==='list'){ribbon();decorateDurations();}
  decorateAudio();
 };
 const originalGoBack=goBack;
