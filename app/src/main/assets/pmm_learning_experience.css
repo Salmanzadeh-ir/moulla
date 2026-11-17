@@ -28,3 +28,8 @@ body.pmm-calm-reading #stage .content-box p{line-height:2.1}
 
 #stage .pmm-tool-arabic{font-family:'PMM Amiri',Amiri,serif!important;font-size:clamp(20px,4.7vw,27px);line-height:2.2;text-align:right;direction:rtl;color:#123b5c}
 #stage #pmm-quote-note{display:block;width:100%;min-height:82px}
+
+#pmm-first-tools-tip{position:fixed;bottom:120px;right:14px;z-index:1097;display:flex;max-width:280px;align-items:center;gap:7px;background:#fff3cf;color:#13395d;border:1px solid #ac792e;border-radius:12px;box-shadow:0 4px 12px #0007;padding:9px 10px;font:700 12px/1.7 'PMM Estedad',Tahoma,sans-serif}
+#pmm-first-tools-tip[hidden]{display:none!important}
+#pmm-first-tools-tip button{border:1px solid #a8772b;border-radius:50%;background:#fff9e9;color:#1e3c56;min-width:32px;min-height:32px;font-weight:bold;font-size:19px;cursor:pointer}
+#stage .pmm-tool-duration{font-size:11px;color:#32516e;font-weight:500;white-space:nowrap}
