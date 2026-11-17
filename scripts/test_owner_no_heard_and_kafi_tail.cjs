@@ -8,13 +8,19 @@ const match=html.match(/const DATA = ([^\n]+)\nconst APPROVED_IMAGE_01/);
 assert(match,'owner data catalog exists');
 const catalog=JSON.parse(match[1]);
 const base='https://dl.kazeminia110.ir/Audio/kafi/kafi ';
-assert.equal(catalog.kafi.length,60,'all approved Kafi sessions preserved');
-for(let displayed=55;displayed<=60;displayed++){
+assert.equal(catalog.kafi.length,55,'one Kafi introduction plus 54 numbered sessions remain');
+assert.equal(catalog.kafi[0].title,'کافی شناسی','standalone intro preserved');
+for(let displayed=51;displayed<=55;displayed++){
  const track=displayed-1;
  assert.equal(catalog.kafi[displayed-1].url,base+track+'.mp3',
-  'Kafi tail session '+displayed+' must point to track '+track);
+  'last playable item '+displayed+' must point to track '+track);
+ assert.equal(catalog.kafi[displayed-1].title,'جلسه '+String(track).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[+d]),
+  'visible label must be shifted by one item');
 }
-assert.equal(new Set(catalog.kafi.map(x=>x.url)).size,60,'each lesson URL unique');
+for(let broken=55;broken<=59;broken++){
+ assert(!catalog.kafi.some(x=>x.url===base+broken+'.mp3'),'404 file excluded: '+broken);
+}
+assert.equal(new Set(catalog.kafi.map(x=>x.url)).size,55,'each retained URL unique');
 for(const forbidden of [
  'این جلسه را شنیدم','هنوز کامل نشنیدم','شنیده شد — لغو',
  ' — ✓ شنیده شد','player-mark-heard','data-mark-last',
@@ -33,4 +39,4 @@ assert(html.includes('pmmPhotoWheelOrder=order.slice()'),'photo download carouse
 assert(html.includes("document.getElementById('pmm-clip-save')"),'video download remains');
 for(const [i,script] of [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].entries())
  if(script[1].trim())new vm.Script(script[1],{filename:'app/index inline '+i});
-console.log('PASS: no obsolete listened buttons, labels or handlers across lesson sections; all 60 Kafi URLs unchanged including tail 55–60; legacy resume and Nahj/gallery stay intact; valid inline JavaScript.');
+console.log('PASS: no obsolete listened buttons, labels or handlers across lesson sections; Kafi Shenasi and exactly 54 playable lessons, 404 tail excluded; resume and Nahj/gallery remain intact; valid inline JavaScript.');
