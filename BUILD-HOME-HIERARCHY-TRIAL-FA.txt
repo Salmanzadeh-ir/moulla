@@ -1,0 +1,25 @@
+وضعیت تحویل بازطراحی صفحه اصلی — پای منبر مولا
+تاریخ: ۱۸ نوامبر ۲۰۲۶
+
+سورس: نسخه ۱۰.۵.۱، commit مرجع 1c2b4e9a759af24efb0b913352b0efdababcf8d9
+تغییر فایل برنامه: فقط app/src/main/assets/index.html
+قفل: design/owner-home-hierarchy-v110-app-lock.json (۱۷۵ فایل app)
+
+آزمون‌های موفق:
+- test_owner_home_hierarchy_v110.cjs
+- test_owner_kafi_resume_screenoff_v109.cjs
+- test_owner_kafi_mp3_catalog.cjs
+- test_owner_no_heard_and_kafi_tail.cjs
+- test_owner_nahj_numeric_search.cjs
+- test_owner_media_save.cjs
+- test_v16_back_navigation.js
+
+APK آزمایشی هنوز ساخته نشده است.
+علت: این محیط Android SDK و Gradle ندارد و اتصال GitHub Actions نیز در زمان آماده‌سازی خطای داخلی داد.
+Workflow آماده: .github/workflows/build-owner-home-hierarchy-v110-trial.yml
+
+پس از اجرای موفق workflow روی شاخه feature/owner-home-hierarchy-v110-trial-20261118،
+APK مستقل Debug با شناسه ir.nahj.towhidkarbordi.homeui110، versionCode 27 و
+versionName 10.5.2-home-hierarchy-trial-debug ساخته و در شاخه download جداگانه منتشر می‌شود.
+
+این بسته سورس است، نه APK. نسخه رسمی بازار، کلید امضا و رمز آن تغییر نکرده‌اند.

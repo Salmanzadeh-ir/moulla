@@ -1,0 +1,724 @@
+{
+  "schema": "owner-approved-full-app-git-blob-lock-v1",
+  "ownerDecisionDate": "2026-11-18",
+  "trialName": "1.0.11 offline Nahj course",
+  "sourceBase": "uploaded owner v110 trial source archive",
+  "sourceBaseArchiveSha256": "6b6aee3f072cb14516556b8b319fdc810d6f3b72db1dd9234cbb903c7d1538d4",
+  "policy": "Every file under app/ is pinned to its exact Git blob SHA and mode. Only index.html and the two newly added offline course JavaScript assets are authorized application changes. Production applicationId, versionName, versionCode, manifest, Java, media, fonts, content, images and signing configuration remain unchanged. CI may change app/build.gradle on its ephemeral runner only to create an isolated debug trial package.",
+  "authorizedAppChanges": [
+    "app/src/main/assets/index.html",
+    "app/src/main/assets/pmm_offline_course_logic.js",
+    "app/src/main/assets/pmm_offline_course.js"
+  ],
+  "lockedAppFileCount": 177,
+  "files": {
+    "app/build.gradle": {
+      "sha": "fe9b9292dfc23628b1ddc1f2e2aeb6dec3856d49",
+      "mode": "100644"
+    },
+    "app/src/debug/res/values/strings.xml": {
+      "sha": "7349ea5a269824c58b3e8b963e083f1e446859df",
+      "mode": "100644"
+    },
+    "app/src/main/AndroidManifest.xml": {
+      "sha": "3e7424cd229988dac059bb84e68e63a0d9ecb58d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/Amiri-Bold.ttf": {
+      "sha": "acdbf3943f979bba160f74d49d22f74abaa0e231",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/Amiri-Regular.ttf": {
+      "sha": "1889ccb407ef19679c01552013460fb35d58cc5c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/Estedad-OFL.txt": {
+      "sha": "a3f7464479be728a1f858574ddb23a46dd83c8c8",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/Estedad-VF.woff2": {
+      "sha": "9fe77153f4b5fb25a3d32219edfc09c534eec361",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/OFL.txt": {
+      "sha": "9cd393b5e60e58587e48351eb456891017410918",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/Sahel-OFL.txt": {
+      "sha": "ae3f0411ff5899174d7226d5bf6efb655e623513",
+      "mode": "100644"
+    },
+    "app/src/main/assets/fonts/Sahel-SemiBold.woff2": {
+      "sha": "cd4cfb89977626e7b377be859b2f44c930039d63",
+      "mode": "100644"
+    },
+    "app/src/main/assets/hikam_bank.js": {
+      "sha": "4c569c6f0db371c94de9b9b1eb70d0a674f247ff",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/IMAGE_01_APPROVED_ORIGINAL.png": {
+      "sha": "1f25752438f7717d1ebefff4844b2fa946071cd6",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/back_v1043_approved.png": {
+      "sha": "21edc4ea9fb027d30423acc47ea0a75fd372f5a0",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_01.webp": {
+      "sha": "4d33ab7967b5cfd0374ead55e99bd01bd990a0f5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_02.webp": {
+      "sha": "66aa126bafd214769d976e42594efaca981af49c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_03.webp": {
+      "sha": "2025444f71fa85463581108f0d241f0afb7a3463",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_04.webp": {
+      "sha": "c8bf6744d506739c5782983380b47e94ea02db33",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_05.webp": {
+      "sha": "5b1c48f31b10de2e72377f43b3e2f38c3f5b1e51",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_06.webp": {
+      "sha": "6d1d4b44c61e853145bcc4bcb8241b4d470daf4c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_07.webp": {
+      "sha": "d009591badb1a21b82eecbd923904fd3e2914d49",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_08.webp": {
+      "sha": "0cf870e15234a833535375239df264df0c0213cc",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_09.webp": {
+      "sha": "ff0196d014bae73f2a36aa679d277a2919001576",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/gallery/photo_10.webp": {
+      "sha": "a614486ff40c9cca416c5989ee70866debdd40f8",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_about_button.png": {
+      "sha": "0a520fa830b34045765b9790395d40cc81873df5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_bg_separated.png": {
+      "sha": "5fe7acd03d139adb6269638b2d05fb1256403ce1",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_clips_plaque.png": {
+      "sha": "f1578e75c2b94c5433624ccbdb222b85c2cf7d93",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_guest_plaque.png": {
+      "sha": "19c19d6c57e8d7fe3d4aca127f55380237243df4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_kafi_plaque.png": {
+      "sha": "3449167cb73fc76561f196eced261c3de84a886e",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_life_plaque.png": {
+      "sha": "78a71d64a64029bb1d319c5ec4b6aff3b677721c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_nahj_plaque.png": {
+      "sha": "8acd9769622dfdffab2fed839dd8b94861de50f4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/home_towhid_plaque.png": {
+      "sha": "d058764bf8248bd45e09e8e55111364b2063f647",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/icon_kafi.webp": {
+      "sha": "1b81c2d54bb553b42c118724d40a9091eddffbe4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/icon_life.webp": {
+      "sha": "5029f335dad75229ef08d5b6c9588ac18bf57ba7",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/icon_nahj.webp": {
+      "sha": "0c0fad73a54f4625510ed27e446c2e3be4f5f6d3",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/icon_towhid.webp": {
+      "sha": "66b469d70dc977922d3058dd0d07e1e82ae6cbb8",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/iwan_fixed.webp": {
+      "sha": "d22a036dccd98592ca218e3e3bc591c1af7362e4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/menu_kafi.webp": {
+      "sha": "c13ff3340260d0a009ff3f5e02d14db4c05f0249",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/menu_life.webp": {
+      "sha": "84a0cf694e81e931ca7df29c3216c0d81e634036",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/menu_nahj.webp": {
+      "sha": "2beddce93dd4f5b89aa7519dfe90b81cc731f245",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/menu_towhid.webp": {
+      "sha": "c7fe19817b9e13fe063d599f4f2ca4c1fbfe1851",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/new_ui_bg.png": {
+      "sha": "cca879a819da8b7ef4b7dd6d82f161d91383ef4c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/new_ui_menu.png": {
+      "sha": "261f3537aa39e49e20e57c28b1db4810b14a572f",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_001.jpg": {
+      "sha": "c2b3cee17e53463a58893da30ee185b5d0b7f051",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_002.jpg": {
+      "sha": "580053ddf407cc6d002edb58816b47000061fc7b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_003.jpg": {
+      "sha": "9faeecc005b31fb787ccf9666a4aa4fa7658a56e",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_004.jpg": {
+      "sha": "61e65c8597cf1486f3bae32d81def540b595faf4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_005.jpg": {
+      "sha": "e28611ad8f8a414efa47d6cd197719d287fc0399",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_006.jpg": {
+      "sha": "53a9bb7012c434716d712565282b2c416b2fc67d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_007.jpg": {
+      "sha": "232884d6257873b7712c1ec8bcd9c4ead6aad4cb",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_008.jpg": {
+      "sha": "7dad100eb94fb4c52ae773a1237d0dfd512656f4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_009.jpg": {
+      "sha": "643daa9e205695f2518f989a44bad811f507dc3f",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_010.jpg": {
+      "sha": "8416639fad464c492c817f3277003e0888a65ec6",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_011.jpg": {
+      "sha": "0e9ac0cc2da1b72244a3939674f057071288544b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_012.jpg": {
+      "sha": "aa952d8cb13d0fd763aba453402f05d379a208c4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_013.jpg": {
+      "sha": "b3451adb8acf25d7bb6df16a2139843075b470bd",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_014.jpg": {
+      "sha": "e9191b1c67a3311a5ef0dc9a90d515ea031c7772",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_015.jpg": {
+      "sha": "a6b450c6ce882b0f095ae3430db2705739fa0168",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_016.jpg": {
+      "sha": "39e3f6929c7406da216073de0040c25688e9b021",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_017.jpg": {
+      "sha": "9de465844a896e7f475c92c015d0e6418a948634",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_018.jpg": {
+      "sha": "ea9d16a48279bcc4f158a41919d37479f7bc7f8d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_019.jpg": {
+      "sha": "141cc3047772b20f76dedc4295b63c9ded5d2b34",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_020.jpg": {
+      "sha": "575c24fabcbb43d057e110e050b2d23fd07223bd",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_021.jpg": {
+      "sha": "204ba32d578d5da1a294fbd1004f95ac6a105791",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_022.jpg": {
+      "sha": "46ec5e0f764e878096c7d6de3689cf8e828bf9b3",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_023.jpg": {
+      "sha": "cff76dd54cacb4928a77c52e725454d1a44c0e8c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_024.jpg": {
+      "sha": "77e017d3a91a9214ae81efc699eee4be67e6a1fd",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_025.jpg": {
+      "sha": "fea94165bf3d1976738f33541cf5ba58712e7562",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_026.jpg": {
+      "sha": "855ee1a0fcbe618874c52b299d1f9f371268bf5e",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_027.jpg": {
+      "sha": "067548766b11270e26c52eda96aa3a37ea1277de",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_028.jpg": {
+      "sha": "4f3a82b79623f7245400c088380b19afd57a9d70",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_029.jpg": {
+      "sha": "0862253fc0af6a18e33eda24e0d946b3003cda80",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_030.jpg": {
+      "sha": "ca69da8f916dff8c764366c5d7594184ae5ce896",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_031.jpg": {
+      "sha": "30f78ed9e8de51093777106c318881033405c12e",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_032.jpg": {
+      "sha": "931f278d7ab61be94d390e7110325e001b506a33",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_033.jpg": {
+      "sha": "a1b8c1ad0e1947a659b0ae729040fc05bbf7ea98",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_034.jpg": {
+      "sha": "4bfca19b6cea580a703a223c2c7f06437ade86e4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_035.jpg": {
+      "sha": "b57d563d80a25374eba20758852cb388e81237e4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_036.jpg": {
+      "sha": "e286828561d2050b431e3bac9e9cdf57b9b172b2",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_037.jpg": {
+      "sha": "c9e017d3abd4f36081f5ea15d1baf0d7930467e5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_038.jpg": {
+      "sha": "38f0190eaeb3405e4ba4f7e1d3a3800c177cb7f0",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_039.webp": {
+      "sha": "54b5d82500bb4e15c5f713272329c10888f439b5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_040.jpg": {
+      "sha": "fb95ece8853396317165e36a2a9f323623bc912b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_041.jpg": {
+      "sha": "ed662d1b76ebec91d4c030ff81e9c472e33d1df2",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_042.jpg": {
+      "sha": "30f9d0f73de6e122754a1ab39761c27c91ce328c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_043.jpg": {
+      "sha": "d30ff1e3ff6a55fa5ba8fa15bfad22f5304ca96a",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_044.jpg": {
+      "sha": "955e269b121559022c8c701cb673438d28c26dd4",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_045.jpg": {
+      "sha": "9487d17722228f3e3b18ee60442a69f11902b70a",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_046.jpg": {
+      "sha": "5bba30edf62af1dcc436e5573e1a23bd2cc43b69",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_047.webp": {
+      "sha": "717518f91eaa420560c0940b82c1a64c200e0e53",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_048.jpg": {
+      "sha": "45813e26038cf2818c4329caf364805a57fa5eca",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_049.jpg": {
+      "sha": "9a8f685c327b9f61aec07fa09b145d9d4e7fd11e",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_050.jpg": {
+      "sha": "004ae2b60357ee38372ba8702d007b95993cbc59",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_051.jpg": {
+      "sha": "6cced35abe772d97e5f4f986a74be65a35336fca",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_052.jpg": {
+      "sha": "53a72b3015188d58bb899cb02863674bac9b1d6c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_053.jpg": {
+      "sha": "008b71fe205945927b7233662b80b7bdda23c121",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_054.jpg": {
+      "sha": "7759739b0d406d375fbb8c6573ace09b9183ea7f",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_055.jpg": {
+      "sha": "f36e83ed40cd849dfd660282523abb15a2f806d7",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_056.jpg": {
+      "sha": "86450b08b0bc07b3ab45834c54f2e5a8b331b654",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_057.jpg": {
+      "sha": "77830edd6c2378d149ac1e96080846f514b3bc31",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_058.jpg": {
+      "sha": "bed115ea996893fa02d7742a7a4f2280e8ac4306",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_059.jpg": {
+      "sha": "77875a6b439d2e2fc2f2ea58f16a6ca91af0e2ad",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_060.jpg": {
+      "sha": "a1ea4b204e193b2c97421295e46e2b49bd844f81",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_061.jpg": {
+      "sha": "27d275860ae3e7e61af5394e6b12e80bf0609cf7",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_062.jpg": {
+      "sha": "f5f759797c6b7a70b312cc9cf51acf1eba32fbfa",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_063.jpg": {
+      "sha": "c7cedc265e86f1ab30fffd04520dcc4e42099095",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_064.jpg": {
+      "sha": "03f8729ec74b8a9e4e0e0d0802e97cd6eac43702",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_065.jpg": {
+      "sha": "a3b95e02dd7ae8c7cba0b9155b439dddeb311331",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_066.jpg": {
+      "sha": "221b4fa7923944775dff30582a75397008b05aad",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_067.jpg": {
+      "sha": "422c3decafa67f2d0aeda8516ec8fb8ad5cf9313",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_068.jpg": {
+      "sha": "19bdf8c4aba5823f9fe06f6bc634489f9e15a50f",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_069.jpg": {
+      "sha": "32dcc55021f636ac4f1edff2cd89b12e8916b3b3",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_070.jpg": {
+      "sha": "b8667c11e33a1e61e9e3b7a5aacf1f937f070b70",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_071.jpg": {
+      "sha": "35d04c6da57992082796b8afcd0e0552a6f6297a",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_072.jpg": {
+      "sha": "4963b1be532f22dd2c0449c54d03c987f91ce9b7",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_073.jpg": {
+      "sha": "36e08f976b9c529df385b920f1f09714f89d4489",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_074.jpg": {
+      "sha": "23b46726ea2c60621cc2efe1a3bfdaf2e37a0654",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_075.jpg": {
+      "sha": "18c3feb84b224f885c0ba3a229a6902af81ed180",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_076.jpg": {
+      "sha": "6630bfa380b3c5d9b13dc1d517008d05ae1cf5ea",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_077.jpg": {
+      "sha": "5c3d700ed9a6d5c4f821530937f1c6417a135aa5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_078.jpg": {
+      "sha": "ad1e798782bdd1a9e10b60ca03ddb1a7872987a7",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_079.jpg": {
+      "sha": "882b8a1e7d4a4b26794b8f16c6b457a56886ddcc",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_080.webp": {
+      "sha": "84ee5894c82e772489cac16016b02054e08d807d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_081.jpg": {
+      "sha": "9d0001202675ae3b95f6d4b060edea493949bf53",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_082.jpg": {
+      "sha": "9c541cb35ebc55a6ff2fed8d37209922df6c7a95",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_083.jpg": {
+      "sha": "0dd5b7081355df652171d1fb2bc45e09a6dca704",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_084.jpg": {
+      "sha": "6eacc1f1a1251a66e292f783b1f949cd9f35ba20",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_085.jpg": {
+      "sha": "f717c4f021896705f2e25fa1caaf907a61e8f811",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_086.jpg": {
+      "sha": "d46f9de84ea80817d07489792d9bdd04454a36fe",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_087.jpg": {
+      "sha": "a95b8fc446f0464daa9547086035714c12a67bab",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_088.jpg": {
+      "sha": "dbe4e28b2e9dab00addbe0cca2e85d9e9a14a97f",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_089.jpg": {
+      "sha": "28f9b086fcd892853b1ca68455e0d55e8e20754b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_090.webp": {
+      "sha": "f24e053434b97dacc0616a031c2d5b11cc7f091e",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_091.jpg": {
+      "sha": "5812625f9747ee9ab9130ab4ede364ead085a02d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_092.jpg": {
+      "sha": "898d69f20a6bd5e2652f6e8ab7d36050d960efb5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/photo_quotes/quote_093.jpg": {
+      "sha": "3b5a68c17f6853ff90bcdac4760be3fbc5c5f410",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/title_kafi.png": {
+      "sha": "41048d6611627806983ce315d18bfb262a4eb21a",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/title_life.png": {
+      "sha": "34d3eb55cb23e6aef14b4159d38ea091f012545d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/title_nahj.png": {
+      "sha": "2d219f14766c8e4863ae5afaabf0e729210c1df3",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/title_towhid.png": {
+      "sha": "8a552f13e83040564ec8dafd4a66d81cb5ee3f16",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/home_v9_iwan.webp": {
+      "sha": "618b815d5f5bf005f6165177131b40bc5ef6df03",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/home_webp.webp": {
+      "sha": "cfbdd772c0330fd948dcaefce56b6f5785f9a92b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/list_other_webp.webp": {
+      "sha": "ebc147ff720440c9d0f2be95da589a12528179ec",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/list_surface_webp.webp": {
+      "sha": "930e12e8891359b9edfd1d012a7016585764ed90",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/row_blank_webp.webp": {
+      "sha": "0e7d7b1b29a2f32c701206494ac1dd01acc4f879",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_about.png": {
+      "sha": "f32e5d794fb0d2d8871520e1b6f9ca169357841b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_biography.png": {
+      "sha": "e73b7fec9d00e647d469d7c735b67aa83577d7ee",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_kafi.png": {
+      "sha": "b2df2adcd7c7a2fb2aca886ae2928fcfc535800d",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_life.png": {
+      "sha": "04a6461f1578bb12ddef7161cac15a5187299189",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_nahj.png": {
+      "sha": "11812a23cc45708f51f569561708bb336366cedb",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_player.png": {
+      "sha": "f376b8c6b4c30f3874aeeaa3fa5f3dc21ce66d48",
+      "mode": "100644"
+    },
+    "app/src/main/assets/images/v8/title_towhid.png": {
+      "sha": "e35af36d9541d1eefc7364c3214a419b302c81b5",
+      "mode": "100644"
+    },
+    "app/src/main/assets/index.html": {
+      "sha": "3e6e5cb3bb8741ca5077c984f7da2c1e8cfe646c",
+      "mode": "100644"
+    },
+    "app/src/main/assets/kafi.json": {
+      "sha": "026fcb45f91dc6924a0b56816d4f7ca7eac21875",
+      "mode": "100644"
+    },
+    "app/src/main/assets/lessons.json": {
+      "sha": "cd1d82eedc363e5baee1a6fae468feba3bd94a4b",
+      "mode": "100644"
+    },
+    "app/src/main/assets/library.json": {
+      "sha": "4c1215170649c0e8aadbdbe08e297a9d5f86e2f7",
+      "mode": "100644"
+    },
+    "app/src/main/assets/life.json": {
+      "sha": "42eb16efaf66463d55e15df800b12ac91b398117",
+      "mode": "100644"
+    },
+    "app/src/main/assets/nahj_audio_links.js": {
+      "sha": "0251bbfa3a2b6f8b9e47b9907ecbf4f60612ab58",
+      "mode": "100644"
+    },
+    "app/src/main/assets/photo_quotes_manifest.js": {
+      "sha": "ed431db8fe31e2061622014dcd58ab23eb1c8a17",
+      "mode": "100644"
+    },
+    "app/src/main/assets/pmm_kafi_resume_screenoff.js": {
+      "sha": "1e49cbf7be8531b9cd860d9bb7d90b52c41ca168",
+      "mode": "100644"
+    },
+    "app/src/main/assets/pmm_offline_course.js": {
+      "sha": "68be12b9a47ae2964e1cd437817d5d12e36fa72a",
+      "mode": "100644"
+    },
+    "app/src/main/assets/pmm_offline_course_logic.js": {
+      "sha": "79033cf9cf1f7f913c888bb64e7f51c822b63727",
+      "mode": "100644"
+    },
+    "app/src/main/assets/pmm_online_updates.css": {
+      "sha": "d83f367be3a9d0c485c68566f9a11100dbe898b3",
+      "mode": "100644"
+    },
+    "app/src/main/assets/pmm_online_updates.js": {
+      "sha": "b5c4d582366911622bb43a3c7c581cadf3285670",
+      "mode": "100644"
+    },
+    "app/src/main/assets/session_manifest_v8.json": {
+      "sha": "4bcc9a4d0d859a60a6b680019abf5e5145769671",
+      "mode": "100644"
+    },
+    "app/src/main/assets/v16_info.json": {
+      "sha": "5001f516cd280d01ef843ad4dc8a673ba7eff37e",
+      "mode": "100644"
+    },
+    "app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java": {
+      "sha": "26ad3c8cd6c0b4cad38f6f7ab9848360647124b5",
+      "mode": "100644"
+    },
+    "app/src/main/java/ir/nahj/towhidkarbordi/PmmKafiAudioService.java": {
+      "sha": "871351b9d479fe55f3fd9011c029846558510338",
+      "mode": "100644"
+    },
+    "app/src/main/java/ir/nahj/towhidkarbordi/PmmMediaSaver.java": {
+      "sha": "27329b25ef3af32caf70bfa90cb57a0df52b2aba",
+      "mode": "100644"
+    },
+    "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java": {
+      "sha": "6d9b34515b6bb7bb24f6e718080d72a61f2bbc49",
+      "mode": "100644"
+    },
+    "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java": {
+      "sha": "6a1f323814a4aa6eac7e5262d8b1454f966fd229",
+      "mode": "100644"
+    },
+    "app/src/main/res/drawable/app_icon.png": {
+      "sha": "22c100ce9ee385034059fc904cc68465e67137cb",
+      "mode": "100644"
+    },
+    "app/src/main/res/drawable/app_logo.png": {
+      "sha": "fbbde7f0c96223e6194664538686e65cbda9a854",
+      "mode": "100644"
+    },
+    "app/src/main/res/drawable/pmm_reminder_icon.xml": {
+      "sha": "02c43724b1fcdaa4a4e690f8e88da4ee910d338c",
+      "mode": "100644"
+    },
+    "app/src/main/res/drawable-nodpi/app_icon.png": {
+      "sha": "bf47159114d228913b92b704adf3e66f90c57104",
+      "mode": "100644"
+    },
+    "app/src/main/res/drawable-nodpi/app_logo.png": {
+      "sha": "a63772c6df494055b9a2f03133cea8e6648c7128",
+      "mode": "100644"
+    },
+    "app/src/main/res/values/strings.xml": {
+      "sha": "619b332108ed56eb1059978f66c859f447e785b9",
+      "mode": "100644"
+    },
+    "app/src/main/res/values/styles.xml": {
+      "sha": "4b89b84f3ad54faae0796f633a29e369b1a6d4ab",
+      "mode": "100644"
+    }
+  }
+}
