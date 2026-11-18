@@ -1,0 +1,1 @@
+Owner approved v111. Independent DEBUG test APK, not for Bazaar. Playback MP3 requires Internet; notes/progress saved locally. Source commit: 79a2fefd4908d63625d0f77150c09a502c24d51d
