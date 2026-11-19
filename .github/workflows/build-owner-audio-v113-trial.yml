@@ -42,10 +42,10 @@ jobs:
             "#stage #aparat-user-play{display:block;margin:16% auto}\n")
           s=one(s,
             """  const embed='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
-              html+='<div class="player-frame"><iframe title="پخش آنلاین جلسه '+fa(x.number)+'" src="'+embed+
-                '" loading="eager" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';""",
+            html+='<div class="player-frame"><iframe title="پخش آنلاین جلسه '+fa(x.number)+'" src="'+embed+
+              '" loading="eager" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';""",
             """  // No third-party iframe or website traffic until the visitor explicitly taps Play.
-              html+='<div class="player-frame"><button type="button" class="action" id="aparat-user-play">▶ پخش ویدئو</button></div>';""")
+            html+='<div class="player-frame"><button type="button" class="action" id="aparat-user-play">▶ پخش ویدئو</button></div>';""")
           s=one(s,
             " if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();\n if(x.nahjAudio){",
             """ if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
