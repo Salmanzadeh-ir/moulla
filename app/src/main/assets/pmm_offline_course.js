@@ -72,6 +72,7 @@ function enterScene(){
 function leaveCourse(){
  if(!courseOpen)return;
  savePlayback(true);audio.pause();courseOpen=false;activeTrack=null;activeTrackIndex=-1;activeIsRevisit=false;activeTrackId='';
+ audio.removeAttribute('src');audio.load(); // Abort buffering when leaving the course.
  course.hidden=true;
  if(window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.showHome==='function')window.PMM_NEW_UI.showHome();
  else{
@@ -344,32 +345,53 @@ $('course-extra').addEventListener('click',()=>{
  saveState();state.pendingAdvance=false;activeIsRevisit=false;renderDashboard();
 });
 $('course-notes-open').addEventListener('click',()=>{
- savePlayback(true);audio.pause();renderNotes();showPanel('notes');
+ savePlayback(true);audio.pause();
+ // Opening the saved list must also close the small icon's editor overlay.
+ $('course-notebook').hidden=true;$('course-note-toggle').setAttribute('aria-expanded','false');
+ renderNotes();showPanel('notes');
 });
 $('course-notes-back').addEventListener('click',()=>renderDashboard());
 $('course-revisit-back').addEventListener('click',()=>{savePlayback(true);audio.pause();activeIsRevisit=false;activeTrack=null;activeTrackIndex=-1;activeTrackId='';renderDashboard()});
-function saveNote(){
+function saveNote(allowDelete=true){
  if(!activeTrack)return;
- const text=$('course-note-text').value.slice(0,12000);
- if(text.trim())state.notes[activeTrack.id]={text,updatedAt:Date.now()};
- else delete state.notes[activeTrack.id];
- saveState();$('course-note-status').textContent=text.trim()?'یادداشت شما روی همین گوشی ذخیره شد.':'یادداشت خالی است؛ متن قبلی حذف شد.';
+ const id=activeTrack.id,text=$('course-note-text').value.slice(0,12000);
+ if(!text.trim()&&!allowDelete){
+  $('course-note-status').textContent='برای حذف یادداشت قبلی، متن را خالی کرده و «ذخیره یادداشت» را لمس کنید.';
+  return;
+ }
+ const prior=state.notes[id];
+ if(text.trim())state.notes[id]={text,updatedAt:Date.now()};
+ else delete state.notes[id];
+ if(!saveState()){
+  // Do not claim a note was saved if local storage is full or denied.
+  if(prior)state.notes[id]=prior;else delete state.notes[id];
+  $('course-note-status').textContent='ذخیره انجام نشد؛ فضای ذخیره‌سازی گوشی را بررسی کنید و دوباره بزنید.';
+  return;
+ }
+ $('course-note-status').textContent=text.trim()
+  ?'یادداشت این صوت ذخیره شد و در «فهرست یادداشت‌ها» قابل بازیابی است.'
+  :'یادداشت این صوت با درخواست شما حذف شد.';
 }
-$('course-note-save').addEventListener('click',saveNote);
+$('course-note-save').addEventListener('click',()=>saveNote(true));
 $('course-note-text').addEventListener('input',()=>{
  if(!activeTrack)return;
- const text=$('course-note-text').value.slice(0,12000);
- if(text.trim())state.notes[activeTrack.id]={text,updatedAt:Date.now()};else delete state.notes[activeTrack.id];
- saveState();$('course-note-status').textContent='ذخیره خودکار روی همین گوشی';
+ saveNote(false);
 });
 function renderNotes(){
  const entries=Object.entries(state.notes).filter(([id,note])=>trackById.has(id)&&note&&typeof note.text==='string'&&note.text.trim())
   .sort((a,b)=>(Number(b[1].updatedAt)||0)-(Number(a[1].updatedAt)||0));
- if(!entries.length){$('course-notes-items').innerHTML='<div class="course-note-empty">هنوز یادداشتی ذخیره نکرده‌اید.</div>';return;}
- $('course-notes-items').innerHTML=entries.map(([id,note])=>{
-  const found=trackById.get(id),snippet=note.text.trim().replace(/\s+/g,' ').slice(0,100);
-  return '<button type="button" class="course-saved-note" data-course-note-id="'+escapeHTML(id)+'">'+
-   '<strong>'+escapeHTML(formatTrack(found.track))+'</strong><span>'+escapeHTML(snippet)+'</span><small>'+escapeHTML(new Date(Number(note.updatedAt)||Date.now()).toLocaleDateString('fa-IR'))+'</small></button>';
+ const list=$('course-notes-items');
+ const heading=$('course-note-list').querySelector('h3');
+ if(heading)heading.textContent='یادداشت‌ها ('+logic.fa(entries.length)+')';
+ if(!entries.length){list.innerHTML='<div class="course-note-empty">هنوز یادداشتی ذخیره نکرده‌اید. از آیکون کوچک ✎ کنار صوت، اولین یادداشت را بنویسید.</div>';return;}
+ list.innerHTML=entries.map(([id,note])=>{
+  const found=trackById.get(id);
+  const savedAt=Number(note.updatedAt)||Date.now();
+  return '<button type="button" class="course-saved-note" data-course-note-id="'+escapeHTML(id)+'" aria-label="بازکردن صوت مرتبط با '+escapeHTML(formatTrack(found.track))+'">'+
+   '<strong>صوت مرتبط: '+escapeHTML(formatTrack(found.track))+'</strong>'+
+   '<span class="course-saved-note-text">'+escapeHTML(note.text.trim())+'</span>'+
+   '<small>ذخیره‌شده در '+escapeHTML(new Date(savedAt).toLocaleDateString('fa-IR'))+'</small>'+
+   '<span class="course-note-audio-link">رفتن به همین صوت؛ پخش با لمس Play</span></button>';
  }).join('');
  $('course-notes-items').querySelectorAll('[data-course-note-id]').forEach(button=>button.addEventListener('click',()=>{
   const found=trackById.get(button.dataset.courseNoteId);if(!found)return;

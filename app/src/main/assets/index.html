@@ -1424,6 +1424,56 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  background:#0a4577;color:#ffedc3;font-weight:800;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important}
 #wisdom-scroll .pmm-reminder-settings select:focus-visible,#wisdom-scroll .pmm-reminder-settings button:focus-visible{
  outline:3px solid #0c79b6;outline-offset:2px}
+
+/* Owner review v118: visible Persian Back text in every route, original Estedad font.
+   Preserve the original Back locations and event handlers; suppress prior image skins. */
+#scene #back-top, #stage #legacy-back-top, #scene #exit.is-submenu-back, #stage #guest-return {
+  position:absolute!important;left:73.0%!important;right:auto!important;
+  top:33.54%!important;width:17.4%!important;height:5.1%!important;
+  aspect-ratio:auto!important;min-height:0!important;max-height:none!important;
+  padding:0 3px!important;display:flex!important;
+  align-items:center!important;justify-content:center!important;
+  border:2px solid #eec778!important;border-radius:999px!important;
+  background:linear-gradient(155deg,#10649d,#063a72 60%,#052a54)!important;
+  color:#fff4cb!important;text-shadow:0 1px 1px #032347!important;
+  font-family:'PMM Estedad',Tahoma,Arial,sans-serif!important;
+  font-size:clamp(10px,2.7cqw,18px)!important;font-weight:900!important;line-height:1.3!important;
+  white-space:nowrap!important;overflow:hidden!important;
+  box-shadow:0 0 0 1px #9c6324,0 3px 7px #402d1e7d!important;
+  cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important;
+  z-index:100!important;
+}
+#scene #back-top[hidden],#stage #legacy-back-top[hidden],#stage #guest-return[hidden]{
+  display:none!important;
+}
+#scene #back-top::before,#scene #back-top::after,
+#stage #legacy-back-top::before,#stage #legacy-back-top::after,
+#scene #exit.is-submenu-back::before,#scene #exit.is-submenu-back::after,
+#stage #guest-return::before,#stage #guest-return::after{
+  content:none!important;display:none!important;background:none!important;
+}
+#stage #guest-return{top:33.54%!important;}
+#scene #back-top:focus-visible,#stage #legacy-back-top:focus-visible,
+#scene #exit.is-submenu-back:focus-visible,#stage #guest-return:focus-visible{
+  outline:3px solid #f8d16c!important;outline-offset:2px!important;
+}
+/* The editor and full notes list stay behind the existing small note icon. */
+#offline-course-scroll .course-saved-note{
+  font-family:'PMM Estedad',Tahoma,Arial,sans-serif!important;
+  border:2px solid #bf913e;gap:8px;
+  background:linear-gradient(#fffdf5,#ffefc5);
+  box-shadow:0 2px 6px #6a431a24;
+  cursor:pointer;
+}
+#offline-course-scroll .course-saved-note-text{
+  display:block;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9;
+  text-align:right;direction:rtl;color:#243e58;
+}
+#offline-course-scroll .course-note-audio-link{
+  align-self:flex-start;border:1px solid #b7832b;border-radius:999px;
+  padding:4px 11px;background:#e6f1fb;color:#0a477e;font-weight:900;
+}
+#offline-course-scroll #course-notes-items{max-width:100%;min-width:0;}
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
@@ -1636,7 +1686,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
               <div class="course-speed-row" id="course-speed-options" role="group" aria-label="سرعت پخش صوت" hidden>
                 <button type="button" data-course-speed="0.75" aria-pressed="false">۰٫۷۵×</button><button type="button" data-course-speed="1" aria-pressed="false">۱×</button><button type="button" data-course-speed="1.25" aria-pressed="false">۱٫۲۵×</button><button type="button" data-course-speed="1.5" aria-pressed="false">۱٫۵×</button><button type="button" data-course-speed="2" aria-pressed="false">۲×</button>
               </div></div>
-            <button type="button" class="course-mini-button" id="course-note-toggle" aria-expanded="false" aria-controls="course-notebook" aria-label="نوشتن یادداشت">✎</button>
+            <button type="button" class="course-mini-button" id="course-note-toggle" aria-expanded="false" aria-controls="course-notebook" aria-label="یادداشت‌های این صوت و فهرست یادداشت‌های ذخیره‌شده" title="یادداشت‌ها">✎</button>
             <button type="button" class="course-mini-button" id="course-mini-settings" aria-label="تغییر تنظیمات برنامه">⚙</button>
             <button type="button" class="course-mini-button" id="course-mini-heard" disabled aria-label="تأیید شنیدن صوت">✓</button>
           </div>
@@ -1645,7 +1695,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
           <div class="course-notebook" id="course-notebook" role="dialog" aria-label="دفترچه این صوت" hidden>
             <div class="course-notebook-heading"><strong>دفترچه این صوت</strong><button type="button" class="course-note-close" id="course-note-close" aria-label="بستن یادداشت">×</button></div>
             <textarea id="course-note-text" rows="3" maxlength="12000" placeholder="خلاصه بحث، نکته‌ها یا برداشت شخصی خود را اینجا بنویسید..."></textarea>
-            <div class="course-note-actions"><button type="button" class="course-secondary-button" id="course-note-save">ذخیره یادداشت</button><button type="button" class="course-secondary-button" id="course-notes-open" aria-label="دفترچه یادداشت‌های من">یادداشت‌های من</button><span id="course-note-status" aria-live="polite">یادداشت این صوت را اینجا بنویسید.</span></div>
+            <div class="course-note-actions"><button type="button" class="course-secondary-button" id="course-note-save">ذخیره یادداشت</button><button type="button" class="course-secondary-button" id="course-notes-open" aria-label="نمایش فهرست یادداشت‌های ذخیره‌شده و صوت مرتبط">فهرست یادداشت‌ها</button><span id="course-note-status" aria-live="polite">یادداشت این صوت را اینجا بنویسید.</span></div>
           </div>
           <p class="course-threshold course-visually-hidden" id="course-threshold">پس از شنیدن دست‌کم دو سوم صوت، دکمه ثبت شنیدن فعال می‌شود.</p>
           <button type="button" class="course-heard-button" id="course-heard" disabled hidden>✓ شنیدم؛ ثبت این صوت</button>
@@ -1657,8 +1707,8 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
       </section>
 
       <section class="course-panel course-note-list" id="course-note-list" hidden aria-label="یادداشت‌های ذخیره‌شده">
-        <div class="course-note-list-heading"><h3>دفترچه یادداشت‌های من</h3><button type="button" class="course-secondary-button" id="course-notes-back">بازگشت</button></div>
-        <p class="course-note-list-hint">با بازکردن هر یادداشت، صوت مربوط به همان بخش نیز در دسترس قرار می‌گیرد.</p>
+        <div class="course-note-list-heading"><h3>یادداشت‌ها</h3><button type="button" class="course-secondary-button" id="course-notes-back">بازگشت</button></div>
+        <p class="course-note-list-hint">هر یادداشت با متن کامل، عنوان صوت و تاریخ ذخیره نمایش داده می‌شود. برای رفتن به صوت مربوط، همان یادداشت را لمس کنید؛ صوت فقط با زدن دکمه پخش دریافت می‌شود.</p>
         <div id="course-notes-items"></div>
       </section>
       <audio id="course-audio" preload="none" playsinline></audio>
@@ -1990,6 +2040,8 @@ function syncHomeSubmenuReturn(){
   const button=document.getElementById('exit');
   const isBack=Boolean(activeHomeSubmenu);
   button.classList.toggle('is-submenu-back',isBack);
+  // Keep Home Exit untouched; show the approved Persian word in the same slot for submenu Back.
+  button.textContent=isBack?'بازگشت':'';
   button.setAttribute('aria-label',isBack?'بازگشت به منوی اصلی':'خروج از برنامه');
   button.title=isBack?'بازگشت به منوی اصلی':'خروج از برنامه';
 }
@@ -2258,14 +2310,14 @@ window.PMM_NEW_UI=Object.freeze({
 <div class="pane gone" id="guest-pane" aria-label="یک جمله مهمان مولا">
 <div class="inner-gold-panel" aria-hidden="true"></div>
 <div class="guest-heading">یک جمله مهمان مولا</div>
-<button type="button" class="guest-return" id="guest-return" aria-label="بازگشت به صفحه اصلی"></button>
+<button type="button" class="guest-return" id="guest-return" aria-label="بازگشت به صفحه اصلی">بازگشت</button>
 <div class="guest-carousel" id="guest-carousel" role="region" aria-roledescription="آلبوم چرخشی" aria-label="تابلوهای یک جمله مهمان مولا؛ برای دیدن تابلوهای بعدی به چپ یا راست بکشید"></div>
 <div class="guest-position" id="guest-position" aria-live="polite"></div>
 <div class="guest-fullview" id="guest-fullview" hidden aria-label="نمایش بزرگ تصویر مهمان مولا"><img id="guest-full-image" alt="تصویر مهمان مولا در اندازه بزرگ"><button class="guest-full-close" type="button" id="guest-full-close" aria-label="بستن تصویر">×</button><div class="guest-full-count" id="guest-full-count"></div></div>
 </div>
 <div class="pane gone" id="list-pane">
 <div class="inner-gold-panel" aria-hidden="true"></div>
-<button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
+<button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت">بازگشت</button>
 <form id="nahj-find-panel" role="search" aria-label="جستجوی عددی در شرح نهج‌البلاغه" hidden>
   <label id="nahj-find-label" for="nahj-find-input">شماره مورد</label>
   <div id="nahj-find-row"><input id="nahj-find-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="شماره فارسی یا انگلیسی" aria-describedby="nahj-find-status"><button type="submit" class="nahj-find-action">برو</button><button type="button" id="nahj-find-close" class="nahj-find-action" aria-label="بستن جستجو">×</button></div>
@@ -2351,12 +2403,23 @@ function nahjAudioTime(seconds){
  const n=Math.floor(seconds);
  return fa(Math.floor(n/60))+':'+fa(String(n%60).padStart(2,'0'));
 }
+// Save progress before aborting an already user-requested audio stream.
+const nahjAudioReleaseSavers=new WeakMap();
+function releaseNahjInlineStream(audio){
+ if(!audio)return;
+ if(audio.hasAttribute('src')){
+  const save=nahjAudioReleaseSavers.get(audio);
+  if(save)save();
+ }
+ audio.pause();
+ if(audio.hasAttribute('src')){
+  audio.removeAttribute('src');
+  audio.load(); // Release any previous WebView buffer; never start a new URL.
+ }
+}
 function stopNahjInlineAudio(){
  if(!contents)return;
- contents.querySelectorAll('audio.nahj-part-media').forEach(audio=>{
-   audio.pause();
-   audio.removeAttribute('src');
- });
+ contents.querySelectorAll('audio.nahj-part-media').forEach(releaseNahjInlineStream);
 }
 function attachNahjInlineAudio(groupId,entryId){
  const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
@@ -2402,13 +2465,14 @@ function attachNahjInlineAudio(groupId,entryId){
      lastSavedSecond=seconds;
      PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index,seconds,finished);
    };
+   nahjAudioReleaseSavers.set(audio,()=>persist(false,true));
    const toggle=card.querySelector('[data-nahj-toggle]');
    const seek=card.querySelector('[data-nahj-seek]');
    const status=card.querySelector('[data-nahj-status]');
    const stream=window.PMM_STREAM_HELPER.attach(audio,status);
    toggle.addEventListener('click',()=>{
      if(!audio.paused){audio.pause();return;}
-     players.forEach(other=>{if(other!==audio)other.pause()});
+     players.forEach(other=>{if(other!==audio)releaseNahjInlineStream(other)});
      // Only assign the requested, whitelisted MP3 when the owner explicitly presses Play.
      if(!audio.getAttribute('src')){
        const old=PMM_LEARNING_PROGRESS.getNahj(groupId);
@@ -2432,7 +2496,7 @@ function attachNahjInlineAudio(groupId,entryId){
      }
    });
    audio.addEventListener('play',()=>{
-     players.forEach(other=>{if(other!==audio)other.pause()});
+     players.forEach(other=>{if(other!==audio)releaseNahjInlineStream(other)});
      refresh(card,audio);
    });
    audio.addEventListener('pause',()=>{persist(audio.ended,true);refresh(card,audio)});

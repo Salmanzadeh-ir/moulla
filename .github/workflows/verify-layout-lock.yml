@@ -1,4 +1,4 @@
-name: Verify owner-frozen active v117 and preserve V16/V10.4.9 historical references
+name: Verify owner-approved active v118 and preserve V117/V16/V10.4.9 historical references
 on:
   pull_request:
     branches: [main]
@@ -11,14 +11,23 @@ jobs:
   verify-ui-lock:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout active owner-frozen v117 source
+      - name: Checkout active owner-approved v118 source
         uses: actions/checkout@v4
-      - name: Check every active application file against v117 owner lock
-        run: python3 scripts/verify_owner_v117_lock.py
+      - name: Check every active application file against v118 owner lock
+        run: python3 scripts/verify_owner_v118_lock.py
       - name: Check active course JavaScript parsing and existing Back regression
         run: |
           node --check app/src/main/assets/pmm_offline_course.js
           node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+      - name: Checkout historic owner-frozen v117 main
+        uses: actions/checkout@v4
+        with:
+          ref: snapshot/owner-v117-final-frozen-main-20261119
+          path: preserved-v117
+      - name: Validate 180 historical v117 files against original immutable lock
+        working-directory: preserved-v117
+        run: python3 scripts/verify_owner_v117_lock.py
       - name: Checkout the preserved old main V16 reference
         uses: actions/checkout@v4
         with:
