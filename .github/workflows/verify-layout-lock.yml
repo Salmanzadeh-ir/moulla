@@ -1,4 +1,4 @@
-name: Verify owner-approved V16 sections and historical 10.4.9
+name: Verify owner-frozen active v117 and preserve V16/V10.4.9 historical references
 on:
   pull_request:
     branches: [main]
@@ -11,21 +11,30 @@ jobs:
   verify-ui-lock:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout active V16 preview
+      - name: Checkout active owner-frozen v117 source
         uses: actions/checkout@v4
-      - name: Validate every V16 section and its content
-        run: python3 scripts/verify_v16_preview.py
-      - name: Verify exact hashes and file set of all active app components
-        run: python3 scripts/verify_current_preview_lock.py
-      - name: Regression test Back versus Exit across seven routes
-        run: node scripts/test_v16_back_navigation.js
-      - name: Verify immutable owner-approved V16 source and downloadable APK baseline
-        run: python3 scripts/verify_v16_owner_reference.py
-      - name: Checkout untouched 10.4.9 historical tag
+      - name: Check every active application file against v117 owner lock
+        run: python3 scripts/verify_owner_v117_lock.py
+      - name: Check active course JavaScript parsing and existing Back regression
+        run: |
+          node --check app/src/main/assets/pmm_offline_course.js
+          node scripts/test_v16_back_navigation.js
+      - name: Checkout the preserved old main V16 reference
+        uses: actions/checkout@v4
+        with:
+          ref: snapshot/owner-main-before-v117-20261119
+          path: preserved-v16
+      - name: Validate historical frozen V16 as history, not as active v117
+        working-directory: preserved-v16
+        run: |
+          python3 scripts/verify_v16_preview.py
+          python3 scripts/verify_current_preview_lock.py
+          python3 scripts/verify_v16_owner_reference.py
+      - name: Checkout historical official V10.4.9 tag without modification
         uses: actions/checkout@v4
         with:
           ref: v10.4.9
-          path: approved-v10-4-9
-      - name: Verify V10.4.9 approved source and APK binary
-        working-directory: approved-v10-4-9
+          path: preserved-v10-4-9
+      - name: Validate V10.4.9 historical approved source and APK binary
+        working-directory: preserved-v10-4-9
         run: python3 scripts/verify_layout_lock.py
