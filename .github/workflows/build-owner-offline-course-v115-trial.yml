@@ -192,26 +192,26 @@ jobs:
           p="assert.equal(elements['course-track-title'].textContent,'خطبه ۱ — بخش اول');"
           assert s.count(p)==1
           extra="""elements['course-mini-settings'].click();
-assert.equal(elements['course-setup'].hidden,false,'Settings opens plan');
-vm.runInNewContext('goBack()',uiContext);
-assert.equal(elements['course-dashboard'].hidden,false,'Back returns to the course');
-assert.equal(homeReturned,0,'Settings Back must not go home');
-elements['course-speed-toggle'].click();
-assert.equal(elements['course-speed-options'].hidden,false,'Gauge opens speed options');
-speeds.find(x=>x.dataset.courseSpeed==='1.5').click();
-assert.equal(courseAudio.playbackRate,1.5);
-elements['course-note-toggle'].click();
-assert.equal(elements['course-notebook'].hidden,false,'Notes open');
-vm.runInNewContext('goBack()',uiContext);
-assert.equal(elements['course-notebook'].hidden,true,'Back closes notes');
-"""
+          assert.equal(elements['course-setup'].hidden,false,'Settings opens plan');
+          vm.runInNewContext('goBack()',uiContext);
+          assert.equal(elements['course-dashboard'].hidden,false,'Back returns to the course');
+          assert.equal(homeReturned,0,'Settings Back must not go home');
+          elements['course-speed-toggle'].click();
+          assert.equal(elements['course-speed-options'].hidden,false,'Gauge opens speed options');
+          speeds.find(x=>x.dataset.courseSpeed==='1.5').click();
+          assert.equal(courseAudio.playbackRate,1.5);
+          elements['course-note-toggle'].click();
+          assert.equal(elements['course-notebook'].hidden,false,'Notes open');
+          vm.runInNewContext('goBack()',uiContext);
+          assert.equal(elements['course-notebook'].hidden,true,'Back closes notes');
+          """
           s=s.replace(p,p+'\n'+extra,1)
           p="for(let i=1;i<=200;i++){courseAudio.currentTime=i*2;courseAudio.dispatch('timeupdate')}"
           assert s.count(p)==1
           extra="""for(let i=1;i<=199;i++){courseAudio.currentTime=i*2;courseAudio.dispatch('timeupdate')}
-assert.equal(elements['course-mini-heard'].disabled,true,'Before two-thirds disabled');
-courseAudio.currentTime=400;courseAudio.dispatch('timeupdate');
-assert.equal(elements['course-mini-heard'].disabled,false,'At two-thirds enabled');"""
+          assert.equal(elements['course-mini-heard'].disabled,true,'Before two-thirds disabled');
+          courseAudio.currentTime=400;courseAudio.dispatch('timeupdate');
+          assert.equal(elements['course-mini-heard'].disabled,false,'At two-thirds enabled');"""
           s=s.replace(p,extra,1)
           Path('scripts/test_owner_offline_course_v115_ci.cjs').write_text(s)
           print('PASS: reviewed v115 course-only patch, exact Git blob SHA-1 of both modified app files')
