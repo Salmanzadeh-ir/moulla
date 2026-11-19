@@ -1,3 +1,11 @@
+# Current owner-approved v118 freeze — 2026-11-19
+
+The owner tested and approved the v118 trial APK, then explicitly requested that the exact approved changes be registered on main. **The new active lock is `design/owner-v118-main-app-lock.json`**, verified by `python3 scripts/verify_owner_v118_lock.py` and the unchanged CI status context `verify-ui-lock`. All 180 app files remain covered: exactly two files differ from historical v117 (`app/src/main/assets/index.html`, `app/src/main/assets/pmm_offline_course.js`). The earlier approved audio on-demand cleanup is preserved. All other 178 files, fonts, visual assets, course data and release identifiers are unchanged.
+
+The original v117 lock `design/owner-v117-main-app-lock.json`, its frozen snapshot `snapshot/owner-v117-final-frozen-main-20261119`, historical tags, APK and all official market releases remain untouched. The v118 trial APK was built separately (GitHub Actions run 44603122562), and **this does not authorize an official release**. No subsequent app modifications without a NEW explicit owner command. Branch protection/rulesets still require owner setup in GitHub repository settings. The v117 and older paragraphs below remain as historical records; where they describe "current" v117, read them as historically current at that time.
+
+---
+
 # Active freeze: OWNER-AUTHORIZED v117 source registered 2026-11-19
 
 The owner explicitly instructed registering all tested v117 changes into the repository, locking ALL app sections and forbidding any future change without another **new, specific, explicit owner approval**. The active `main` now uses v117 app behavior and assets; source snapshot: `snapshot/owner-v117-frozen-source-20261119`. Full 180-file lock: `design/owner-v117-main-app-lock.json`; check with `python3 scripts/verify_owner_v117_lock.py`. The pre-v117 main is preserved at `snapshot/owner-main-before-v117-20261119`. Official Bazaar release APKs, signatures, release branches and historical tags remain unchanged. `app/build.gradle` in main intentionally retains its previous identity/signing metadata; v117 trial metadata is applied in the dedicated workflow only.
