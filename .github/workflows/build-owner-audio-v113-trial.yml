@@ -49,19 +49,19 @@ jobs:
           s=one(s,
             " if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();\n if(x.nahjAudio){",
             """ if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
- const playVideo=contents.querySelector('#aparat-user-play');
- if(playVideo&&match){
-   playVideo.addEventListener('click',()=>{
-     const frame=document.createElement('iframe');
-     frame.title='پخش آنلاین جلسه '+fa(x.number);
-     frame.src='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
-     frame.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
-     frame.allowFullscreen=true;
-     frame.referrerPolicy='strict-origin-when-cross-origin';
-     playVideo.replaceWith(frame);
-   });
- }
- if(x.nahjAudio){""")
+           const playVideo=contents.querySelector('#aparat-user-play');
+           if(playVideo&&match){
+             playVideo.addEventListener('click',()=>{
+               const frame=document.createElement('iframe');
+               frame.title='پخش آنلاین جلسه '+fa(x.number);
+               frame.src='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
+               frame.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+               frame.allowFullscreen=true;
+               frame.referrerPolicy='strict-origin-when-cross-origin';
+               playVideo.replaceWith(frame);
+             });
+           }
+           if(x.nahjAudio){""")
           p.write_text(s)
           p=Path('app/src/main/assets/pmm_offline_course.js')
           s=p.read_text()
