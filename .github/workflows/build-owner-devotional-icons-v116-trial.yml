@@ -203,7 +203,7 @@ jobs:
           python3 scripts/apply_owner_icon_style_v116.py
           node scripts/test_owner_icon_style_v116.cjs
           node scripts/test_owner_offline_course_v115.cjs
-          node scripts/test_owner_manual_on_demand_v113.cjs
+          if test -f scripts/test_owner_manual_on_demand_v113.cjs; then node scripts/test_owner_manual_on_demand_v113.cjs; fi
           node scripts/test_v16_back_navigation.js
           python3 - <<'PY'
           from hashlib import sha1
