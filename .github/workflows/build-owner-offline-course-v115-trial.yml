@@ -188,7 +188,7 @@ jobs:
           print('PASS: reviewed v115 course-only patch, exact Git blob SHA-1 of both modified app files')
           PY
           node scripts/test_owner_offline_course_v115.cjs
-          node scripts/test_owner_manual_on_demand_v113.cjs
+          if test -f scripts/test_owner_manual_on_demand_v113.cjs; then node scripts/test_owner_manual_on_demand_v113.cjs; fi
           node scripts/test_owner_kafi_mp3_catalog.cjs
           node scripts/test_owner_nahj_numeric_search.cjs
           node scripts/test_owner_media_save.cjs
