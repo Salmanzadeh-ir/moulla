@@ -72,6 +72,7 @@ function enterScene(){
 function leaveCourse(){
  if(!courseOpen)return;
  savePlayback(true);audio.pause();courseOpen=false;activeTrack=null;activeTrackIndex=-1;activeIsRevisit=false;activeTrackId='';
+ audio.removeAttribute('src');audio.load(); // Abort buffering when leaving the course.
  course.hidden=true;
  if(window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.showHome==='function')window.PMM_NEW_UI.showHome();
  else{
