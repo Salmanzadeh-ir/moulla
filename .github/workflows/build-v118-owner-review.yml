@@ -82,19 +82,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Use existing Android SDK command-line tools on hosted runner
+      - name: Install Android SDK command-line tools without deprecated tools package
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Install Android platform 35 and Build Tools 35.0.0
         shell: bash
         run: |
           set -euo pipefail
-          : "${ANDROID_HOME:=/usr/local/lib/android/sdk}"
-          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          command -v sdkmanager
-          test -x "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" || command -v sdkmanager
-      - name: Install SDK platform 35 and Build Tools 35.0.0
-        shell: bash
-        run: |
-          set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null || true
           sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
           test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
       - name: Set up Gradle 8.7
