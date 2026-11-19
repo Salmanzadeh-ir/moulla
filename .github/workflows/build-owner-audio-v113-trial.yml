@@ -41,6 +41,11 @@ jobs:
           actual=hashlib.sha256(''.join(rows).encode()).hexdigest()
           expected='1567cf927c6a6f2cc5626f6c5bb14c8b31e1281ca3825fbb8cec207397177c50'
           if actual!=expected:
+              for name in ('app/src/main/assets/index.html','app/src/main/assets/pmm_offline_course.js'):
+                  buf=Path(name).read_bytes().splitlines(keepends=True)
+                  print("BLOCK_SUMMARY",name,len(buf),len(b''.join(buf)))
+                  print("BLOCK_HASH",name,[(i//200,hashlib.sha256(b''.join(buf[i:i+200])).hexdigest()[:16]) for i in range(0,len(buf),200)])
+
               for path in paths:
                   if path.suffix in ('.java','.js','.html','.gradle'):
                       print(f"CHECK_FILE {path.as_posix()} {hashlib.sha1(b'blob '+str(path.stat().st_size).encode()+b'\0'+path.read_bytes()).hexdigest()}")
