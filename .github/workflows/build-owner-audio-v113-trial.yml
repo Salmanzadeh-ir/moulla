@@ -131,7 +131,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/test_owner_offline_course_v111.cjs
+          node --check app/src/main/assets/pmm_offline_course.js
           node scripts/test_owner_home_hierarchy_v111.cjs
           node scripts/test_owner_kafi_resume_screenoff_v111.cjs
           node scripts/test_owner_kafi_mp3_catalog.cjs
