@@ -884,6 +884,11 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  margin:15px auto;border:2px solid #bf8a38;border-radius:30px;
  background:#fff2c8;box-shadow:0 3px 8px #61441633}
 #stage .nahj-audio-player:focus-visible{outline:3px solid #0b5b8e;outline-offset:2px}
+#stage .nahj-audio-player[hidden]{display:none!important}
+#stage .nahj-stream-status{min-height:1.3em;margin:7px 5px;color:#8a481e;
+ font:600 clamp(11px,2.3cqw,14px)/1.6 var(--pmm-text-font);text-align:center}
+#stage #nahj-direct-start{display:block;margin:10px auto}
+#stage #aparat-user-play{display:block;margin:16% auto}
 
 /* Owner-authorized inline Nahj audio — compact navy/gold controls inside the existing iwan. */
 #stage .nahj-part-cards{display:grid;gap:clamp(10px,2.6cqw,16px);padding:4px 1% 18px;direction:rtl}
@@ -1261,6 +1266,164 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  .course-dashboard-actions .course-text-button{grid-column:auto}
 }
 
+
+/* v112 trial: accessible bolder home text and compact course controls. */
+.home-menu-title{font-weight:950!important;-webkit-text-stroke:.35px currentColor;text-shadow:0 .5px 0 currentColor}
+.home-menu-icon{stroke-width:3.1}
+.home-submenu-card .home-menu-icon{stroke-width:3}
+.course-floral-icon{width:76%!important;height:76%!important}
+.course-mini-toolbar{display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;gap:clamp(5px,2%,10px);margin:2% 0;direction:ltr}
+.course-mini-button{display:grid;place-items:center;min-width:42px;min-height:42px;padding:4px 9px;border:1.8px solid #ae7a23;border-radius:12px;background:linear-gradient(#fff7d8,#eac27b);color:#073b78;font:900 18px Tahoma,sans-serif;box-shadow:0 2px 4px #73521f26}
+.course-mini-button:disabled{opacity:.45;filter:grayscale(.6)}
+.course-mini-button:focus-visible{outline:3px solid #0874b8;outline-offset:2px}
+.course-speed-wrap{position:relative}
+.course-speed-row[hidden],.course-notebook[hidden],.course-heard-button[hidden]{display:none!important}
+.course-speed-row{position:absolute;bottom:calc(100% + 6px);right:0;z-index:6;width:max-content;max-width:min(260px,75vw);margin:0;padding:7px;background:#fff6d9;border:1.5px solid #bb8b35;border-radius:12px;box-shadow:0 4px 12px #52380f38}
+.course-speed-row button{min-height:34px}
+.course-notebook{margin:2% 0;padding:3%}
+.course-dashboard-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:1.5% 0}
+.course-dashboard-actions button,.course-dashboard-actions .course-text-button{grid-column:auto!important;width:auto!important;min-height:36px!important;padding:5px 9px!important;font-size:clamp(10px,1.45cqw,13px)!important}
+@media(max-width:380px){.course-dashboard-actions{display:flex}.course-mini-toolbar{gap:5px}.course-mini-button{min-width:40px}}
+
+/* v115 trial — five owner-requested offline-course refinements, no changes outside course. */
+.course-progress-panel{padding:1.8% 3.5%!important;margin-bottom:2%!important}
+.course-progress-panel .course-progress-track{margin:1% 0 .5%!important;height:9px}
+.course-progress-panel .course-progress-top,.course-progress-panel .course-progress-count{line-height:1.35}
+.course-mini-toolbar{gap:clamp(5px,2%,10px)!important;margin-bottom:0!important}
+.course-mini-button{box-sizing:border-box;flex:0 0 44px;width:44px;height:44px;min-width:44px!important;min-height:44px!important;padding:0!important;font-size:23px!important;line-height:1!important}
+.course-speed-wrap{flex:0 0 44px;display:flex;align-items:center}
+.course-speedometer{display:block;width:26px;height:26px;stroke-width:2.4}
+.course-speed-row{direction:ltr;bottom:calc(100% + 8px);right:auto;left:50%;transform:translateX(-18%);max-width:min(260px,74vw)}
+.course-speed-row button{font-size:12px;min-width:45px}
+.course-track-card{position:relative;padding-bottom:3%!important}
+.course-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.course-notebook:not([hidden]){position:absolute!important;top:50%;left:3%;right:3%;transform:translateY(-50%);z-index:20;margin:0!important;padding:3.5%!important;box-shadow:0 10px 30px rgba(52,36,6,.40);background:#fff8de}
+.course-notebook-heading{justify-content:space-between}
+.course-note-close{width:34px;height:34px;border:1px solid #b88836;background:#fff0c9;border-radius:9px;color:#07376f;font-size:24px;font-weight:900}
+.course-note-actions{flex-wrap:wrap}
+.course-dashboard-actions{margin:2% 0 0!important;padding:0!important;display:block!important}
+.course-dashboard-actions #course-extra.course-extra-green{display:block;width:100%!important;min-height:45px!important;padding:7px 12px!important;border:2px solid #16783c;border-radius:15px;background:linear-gradient(160deg,#e2f8df,#8fd7a4);color:#07522d;box-shadow:0 2px 5px rgba(8,76,38,.19);font:900 clamp(13px,2.1cqw,18px)/1.5 'PMM Estedad',Tahoma,sans-serif!important}
+#course-settings-open[hidden]{display:none!important}
+@media(max-width:380px){.course-mini-button{flex-basis:40px!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}.course-speed-wrap{flex-basis:40px}}
+
+/* v116 trial — richer devotional plaque-style submenu icons for توحید کاربردی and دیدن خدا در زندگی. */
+.home-menu-icon-wrap.is-devotional{border:none;background:transparent;box-shadow:none;width:clamp(62px,10cqw,96px)!important;height:clamp(62px,10cqw,96px)!important;flex-basis:clamp(62px,10cqw,96px)!important}
+.home-menu-icon.devotional-plaque{width:100%!important;height:100%!important;stroke:none!important;overflow:visible}
+.home-menu-icon.devotional-plaque .plaque-outer{fill:url(#goldBody);stroke:#a96f17;stroke-width:1.8}
+.home-menu-icon.devotional-plaque .plaque-inner{fill:url(#creamInset);stroke:#d6b062;stroke-width:1.1}
+.home-menu-icon.devotional-plaque .arm-band{fill:url(#armBand);stroke:#a96f17;stroke-width:1}
+.home-menu-icon.devotional-plaque .tiny-flower{fill:#f7de74;stroke:#fff7d2;stroke-width:.45}
+.home-menu-icon.devotional-plaque .tiny-dot{fill:#f7de74}
+.home-menu-icon.devotional-plaque .center-mark{fill:#0b2457}
+.home-menu-icon.devotional-plaque .center-mark-outline{fill:none;stroke:#0b2457;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.home-menu-icon.devotional-plaque .kaaba-side{fill:#1a1a1a;stroke:#343434;stroke-width:.7}
+.home-menu-icon.devotional-plaque .kaaba-face{fill:#0b0b0d;stroke:#343434;stroke-width:.7}
+.home-menu-icon.devotional-plaque .kaaba-top{fill:#4a4a4a;stroke:#3a3a3a;stroke-width:.6}
+.home-menu-icon.devotional-plaque .kaaba-gold{fill:#d8b24f}
+.home-submenu-card .home-menu-icon-wrap.is-devotional + .home-menu-title{margin-top:2px}
+@media (max-width:380px){.home-menu-icon-wrap.is-devotional{width:58px!important;height:58px!important;flex-basis:58px!important}}
+
+/* v114 trial — owner-requested six equal-size, heavier single-line main labels. */
+#home-main-menu > .home-menu-card{
+  gap:1.5%; padding-inline:1.6%;
+}
+#home-main-menu > .home-menu-card .home-menu-icon-wrap{
+  flex-basis:clamp(25px,4cqw,40px);
+  width:clamp(25px,4cqw,40px);height:clamp(25px,4cqw,40px);
+}
+#home-main-menu > .home-menu-card .home-menu-arrow{
+  margin-inline-start:0;font-size:clamp(17px,2.7cqw,27px);
+}
+#home-main-menu > .home-menu-card .home-menu-title{
+  font-size:var(--pmm-home-six-title-size,clamp(13px,2.5cqw,23px))!important;
+  font-weight:900!important;
+  -webkit-text-stroke:.6px currentColor!important;
+  text-shadow:0 .7px 0 currentColor!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  word-break:keep-all!important;
+  line-height:1.3!important;
+  letter-spacing:0!important;
+}
+/* Both category submenus have exactly one Back control: replace Home Exit in-place. */
+#scene .home-submenu-header{display:flex;justify-content:center;align-items:center}
+#scene #exit.is-submenu-back{
+  z-index:10;
+  border:2px solid #efc67c;
+  border-radius:46% / 49%;
+  background:linear-gradient(180deg,#10639c 0%,#094575 50%,#06335b 100%);
+  box-shadow:0 0 0 2px #9b672b,inset 0 1px 3px #fff4c340,0 3px 7px #39241170;
+  color:transparent;
+  touch-action:manipulation;
+}
+#scene #exit.is-submenu-back::after{
+  content:"";position:absolute;inset:4% 19%;
+  display:block;background:transparent url('images/back_v1043_approved.png') center / contain no-repeat;
+  pointer-events:none;
+}
+#scene #exit.is-submenu-back:active{filter:brightness(1.08);transform:scale(.96)}
+/* v117: unified Back appearance, hit area, location and native navigation target.
+   Exact approved Nahj image is used; page-specific routing stays in goBack(). */
+#scene #back-top, #stage #legacy-back-top, #scene #exit.is-submenu-back {
+  position:absolute!important;left:78.65%!important;right:auto!important;
+  top:33.54%!important;width:11.75%!important;height:auto!important;
+  aspect-ratio:1/1!important;min-height:0!important;max-height:none!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:transparent url("images/back_v1043_approved.png") center/contain no-repeat!important;
+  color:transparent!important;font-size:0!important;text-shadow:none!important;
+  padding:0!important;display:block!important;z-index:100!important;
+  cursor:pointer;pointer-events:auto!important;touch-action:manipulation!important;
+}
+#scene #back-top[hidden],#stage #legacy-back-top[hidden]{display:none!important}
+#scene #back-top::before,#scene #back-top::after,
+#stage #legacy-back-top::before,#stage #legacy-back-top::after,
+#scene #exit.is-submenu-back::before,#scene #exit.is-submenu-back::after{
+  display:none!important;content:none!important;background:none!important;
+}
+#scene #back-top:active,#stage #legacy-back-top:active,#scene #exit.is-submenu-back:active{
+  transform:scale(.94)!important;filter:brightness(1.08)!important;
+}
+#scene #back-top:focus-visible,#stage #legacy-back-top:focus-visible,#scene #exit.is-submenu-back:focus-visible{
+  outline:3px solid #f8d16c!important;outline-offset:3px!important;
+}
+/* No second Back action under course toolbar; the standard top Back handles nested route. */
+#offline-course-scroll .course-note-list-heading #course-notes-back{display:none!important}
+/* Two high-resolution owner-requested logos, integrated into the existing gold-blue cards. */
+#scene .home-submenu-card .home-menu-icon-wrap.is-devotional{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  width:clamp(70px,11cqw,100px)!important;height:clamp(70px,11cqw,100px)!important;
+  flex-basis:clamp(70px,11cqw,100px)!important;
+}
+#scene .home-submenu-card .home-menu-icon.devotional-logo{
+  display:block;width:100%!important;height:100%!important;object-fit:contain;
+  filter:drop-shadow(0 2px 2px rgba(95,64,19,.19));
+}
+/* Gear lives in Tafal view, not About. Preserve the existing native permission and frequency functions. */
+#wisdom-scroll .wisdom-settings-entry{display:flex;justify-content:flex-start;direction:rtl;margin:0 1% 2%;min-height:43px}
+#wisdom-scroll .wisdom-settings-gear{
+  width:43px;height:43px;min-width:43px;display:grid;place-items:center;
+  background:linear-gradient(140deg,#fff8db,#eac671);border:2px solid #b7862b;
+  border-radius:12px;color:#073e78;box-shadow:0 2px 5px #79603940;cursor:pointer;
+}
+#wisdom-scroll .wisdom-settings-gear svg{width:26px;height:26px;display:block}
+#wisdom-scroll .wisdom-settings-gear:focus-visible{outline:3px solid #094f8f;outline-offset:2px}
+#wisdom-scroll.reminder-open #wisdom-intro,
+#wisdom-scroll.reminder-open #wisdom-drawing,
+#wisdom-scroll.reminder-open #wisdom-result{display:none!important}
+#wisdom-scroll .pmm-wisdom-reminder-panel[hidden]{display:none!important}
+#wisdom-scroll .pmm-reminder-settings{background:linear-gradient(#fff8df,#f3d89a);color:#153f63;
+ border:2px solid #a87835;border-radius:16px;padding:14px 12px;margin:5px 1% 16px;
+ direction:rtl;line-height:1.8;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important}
+#wisdom-scroll .pmm-reminder-settings h2{font-size:clamp(16px,3.2cqw,22px);font-weight:900;margin:0 0 8px}
+#wisdom-scroll .pmm-reminder-settings label{display:block;font-weight:900;margin:10px 0 5px}
+#wisdom-scroll .pmm-reminder-settings select{display:block;width:100%;min-height:46px;border:2px solid #b88936;
+ border-radius:10px;padding:7px;background:#fff9ec;color:#073e78;direction:rtl}
+#wisdom-scroll .pmm-reminder-settings .pmm-reminder-note{margin:8px 0;font-size:clamp(12px,2.45cqw,16px);line-height:1.8}
+#wisdom-scroll .pmm-reminder-settings .pmm-reminder-actions{display:grid;gap:8px;margin-top:12px}
+#wisdom-scroll .pmm-reminder-settings button{min-height:43px;border-radius:10px;border:2px solid #bd954e;
+ background:#0a4577;color:#ffedc3;font-weight:800;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important}
+#wisdom-scroll .pmm-reminder-settings select:focus-visible,#wisdom-scroll .pmm-reminder-settings button:focus-visible{
+ outline:3px solid #0c79b6;outline-offset:2px}
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
@@ -1304,17 +1467,15 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 
       <section class="home-submenu" id="home-submenu-learning" aria-label="زیرمجموعه نهج‌البلاغه کاربردی" hidden>
         <header class="home-submenu-header">
-          <button type="button" class="home-submenu-back" data-home-back aria-label="بازگشت به منوی اصلی"><span aria-hidden="true">›</span> بازگشت</button>
           <h2 class="home-submenu-title">نهج‌البلاغه کاربردی</h2>
-          <span aria-hidden="true"></span>
         </header>
         <div class="home-submenu-grid">
           <button type="button" class="home-menu-card home-submenu-card" data-menu="tawhid" aria-label="توحید کاربردی">
-            <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="9"/><path d="M32 5v10m0 34v10M5 32h10m34 0h10M13 13l7 7m24 24 7 7m0-38-7 7M20 44l-7 7"/><path d="m32 19 3.5 8.5L44 31l-8.5 3.5L32 43l-3.5-8.5L20 31l8.5-3.5z"/></svg></span>
+            <span class="home-menu-icon-wrap is-devotional" aria-hidden="true"><img class="home-menu-icon devotional-logo" src="images/pmm_v117_tawhid_logo.png" alt="" loading="eager" decoding="sync"></span>
             <span class="home-menu-title">توحید کاربردی</span>
           </button>
           <button type="button" class="home-menu-card home-submenu-card" data-menu="see_god" aria-label="دیدن خدا در زندگی">
-            <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><path d="M5 32s10-17 27-17 27 17 27 17-10 17-27 17S5 32 5 32z"/><circle cx="32" cy="32" r="8"/><circle cx="32" cy="32" r="2" fill="currentColor" stroke="none"/><path d="M32 5v5m0 44v5M9 8l4 4m38 40 4 4M55 8l-4 4M13 52l-4 4"/></svg></span>
+            <span class="home-menu-icon-wrap is-devotional" aria-hidden="true"><img class="home-menu-icon devotional-logo" src="images/pmm_v117_kaaba_logo.png" alt="" loading="eager" decoding="sync"></span>
             <span class="home-menu-title">دیدن خدا در زندگی</span>
           </button>
         </div>
@@ -1322,9 +1483,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 
       <section class="home-submenu" id="home-submenu-media" aria-label="زیرمجموعه رسانه پای منبر مولا" hidden>
         <header class="home-submenu-header">
-          <button type="button" class="home-submenu-back" data-home-back aria-label="بازگشت به منوی اصلی"><span aria-hidden="true">›</span> بازگشت</button>
           <h2 class="home-submenu-title">رسانه پای منبر مولا</h2>
-          <span aria-hidden="true"></span>
         </header>
         <div class="home-submenu-grid">
           <button type="button" class="home-menu-card home-submenu-card" data-menu="videos" aria-label="کلیپ‌های تصویری">
@@ -1341,7 +1500,8 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   </section>
   <section class="wisdom-scroll" id="wisdom-scroll" aria-label="یک جمله مهمان مولا" hidden tabindex="0">
     <div class="wisdom-body">
-      
+      <div class="wisdom-settings-entry"><button type="button" id="wisdom-reminder-gear" class="wisdom-settings-gear" title="تنظیمات یادآوری" aria-label="تنظیم یادآور مهمانی مولا" aria-controls="wisdom-reminder-panel" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4l.6 2.4c.5.2 1 .4 1.4.7l2.3-1.1 2.8 2.8-1.1 2.3c.3.4.5.9.7 1.4L23 11v4l-2.4.6c-.2.5-.4 1-.7 1.4l1.1 2.3-2.8 2.8-2.3-1.1c-.4.3-.9.5-1.4.7L14 23h-4l-.6-2.4c-.5-.2-1-.4-1.4-.7l-2.3 1.1-2.8-2.8 1.1-2.3c-.3-.4-.5-.9-.7-1.4L1 14v-4l2.4-.6c.2-.5.4-1 .7-1.4L3 5.7l2.8-2.8 2.3 1.1c.4-.3.9-.5 1.4-.7L10 2Z" transform="translate(1 0) scale(.91)"/><circle cx="12" cy="12" r="3.2"/></svg></button></div>
+      <section id="wisdom-reminder-panel" class="pmm-wisdom-reminder-panel" aria-label="تنظیمات یادآوری تفال به نهج‌البلاغه" hidden></section>
       <section id="wisdom-intro" class="wisdom-intro" aria-label="نیت و آغاز قرعه حکمت">
         <div class="intention-emblem" aria-hidden="true">✦</div>
         <p class="intention-message">نیت کنید و یک جمله مهمان کلام امیرالمؤمنین باشید</p>
@@ -1381,7 +1541,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
         <button type="button" id="audio-action" class="navy-button"><span aria-hidden="true">🎧</span> شرح این جمله را بشنوید</button>
         <button type="button" id="other-action" class="gold-button"><span aria-hidden="true">✦</span> یک جمله‌ی دیگر مهمان حضرت باشید</button>
       </div>
-      <div id="audio-box" class="audio-box" hidden><div class="wisdom-audio-parts" id="wisdom-audio-parts"></div><audio id="audio-player" controls preload="none"></audio></div>
+      <div id="audio-box" class="audio-box" hidden><div class="wisdom-audio-parts" id="wisdom-audio-parts"></div><audio id="audio-player" controls preload="none"></audio><div id="wisdom-audio-status" role="status" aria-live="polite"></div></div>
       
       </section>
     </div>
@@ -1435,7 +1595,6 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
             <div class="course-progress-fill" id="course-progress-fill"></div>
           </div>
           <div class="course-progress-count" id="course-progress-count">شنیده‌شده: ۰ از ۱۰۱۹ صوت</div>
-          <div class="course-plan-summary" id="course-plan-summary"></div>
         </section>
 
         <section class="course-panel course-after-mark" id="course-after-mark" hidden>
@@ -1460,6 +1619,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
         </section>
 
         <section class="course-panel course-track-card" id="course-track-card" hidden>
+          <button type="button" class="course-secondary-button course-revisit-back" id="course-revisit-back" hidden>بازگشت به صوت برنامه روزانه</button>
           <div class="course-track-meta"><span id="course-track-group">خطبه‌ها</span><span id="course-track-sequence"></span></div>
           <h3 class="course-track-title" id="course-track-title">خطبه ۱</h3>
           <div class="course-player" aria-label="پخش صوت امروز">
@@ -1471,32 +1631,29 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
               <div class="course-player-times"><span id="course-current-time">۰۰:۰۰</span><span id="course-duration-time">--:--</span></div>
             </div>
           </div>
-          <div class="course-speed-row" role="group" aria-label="سرعت پخش صوت">
-            <span>سرعت</span>
-            <button type="button" data-course-speed="0.75" aria-pressed="false">۰٫۷۵×</button>
-            <button type="button" data-course-speed="1" aria-pressed="false">۱×</button>
-            <button type="button" data-course-speed="1.25" aria-pressed="false">۱٫۲۵×</button>
-            <button type="button" data-course-speed="1.5" aria-pressed="false">۱٫۵×</button>
-            <button type="button" data-course-speed="2" aria-pressed="false">۲×</button>
+          <div class="course-mini-toolbar" role="toolbar" aria-label="ابزارهای پخش و دوره">
+            <div class="course-speed-wrap"><button type="button" class="course-mini-button" id="course-speed-toggle" aria-expanded="false" aria-controls="course-speed-options" aria-label="انتخاب سرعت پخش، سرعت فعلی ۱ برابر" title="سرعت پخش"><svg class="course-speedometer" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 25a12 12 0 1 1 22 0"/><path d="M9 21l-2-1m5-7-1-2m5-1V7m6 6 1-2m2 10 2-1"/><path d="M16 24l6-10"/><circle cx="16" cy="24" r="2" fill="currentColor" stroke="none"/></svg></button>
+              <div class="course-speed-row" id="course-speed-options" role="group" aria-label="سرعت پخش صوت" hidden>
+                <button type="button" data-course-speed="0.75" aria-pressed="false">۰٫۷۵×</button><button type="button" data-course-speed="1" aria-pressed="false">۱×</button><button type="button" data-course-speed="1.25" aria-pressed="false">۱٫۲۵×</button><button type="button" data-course-speed="1.5" aria-pressed="false">۱٫۵×</button><button type="button" data-course-speed="2" aria-pressed="false">۲×</button>
+              </div></div>
+            <button type="button" class="course-mini-button" id="course-note-toggle" aria-expanded="false" aria-controls="course-notebook" aria-label="نوشتن یادداشت">✎</button>
+            <button type="button" class="course-mini-button" id="course-mini-settings" aria-label="تغییر تنظیمات برنامه">⚙</button>
+            <button type="button" class="course-mini-button" id="course-mini-heard" disabled aria-label="تأیید شنیدن صوت">✓</button>
           </div>
-          <p class="course-audio-status" id="course-audio-status" role="status" aria-live="polite">برای شروع، دکمه پخش را لمس کنید.</p>
-          <p class="course-listened-status" id="course-listened-status"></p>
-          <div class="course-notebook">
-            <div class="course-notebook-heading"><span aria-hidden="true">✎</span><strong>دفترچه این صوت</strong></div>
+          <p class="course-audio-status course-visually-hidden" id="course-audio-status" role="status" aria-live="polite">برای شروع، دکمه پخش را لمس کنید.</p>
+          <p class="course-listened-status course-visually-hidden" id="course-listened-status"></p>
+          <div class="course-notebook" id="course-notebook" role="dialog" aria-label="دفترچه این صوت" hidden>
+            <div class="course-notebook-heading"><strong>دفترچه این صوت</strong><button type="button" class="course-note-close" id="course-note-close" aria-label="بستن یادداشت">×</button></div>
             <textarea id="course-note-text" rows="3" maxlength="12000" placeholder="خلاصه بحث، نکته‌ها یا برداشت شخصی خود را اینجا بنویسید..."></textarea>
-            <div class="course-note-actions"><button type="button" class="course-secondary-button" id="course-note-save">ذخیره یادداشت</button><span id="course-note-status" aria-live="polite">یادداشت این صوت را اینجا بنویسید.</span></div>
+            <div class="course-note-actions"><button type="button" class="course-secondary-button" id="course-note-save">ذخیره یادداشت</button><button type="button" class="course-secondary-button" id="course-notes-open" aria-label="دفترچه یادداشت‌های من">یادداشت‌های من</button><span id="course-note-status" aria-live="polite">یادداشت این صوت را اینجا بنویسید.</span></div>
           </div>
-          <p class="course-threshold" id="course-threshold">پس از شنیدن دست‌کم دو سوم صوت، دکمه ثبت شنیدن فعال می‌شود.</p>
-          <button type="button" class="course-heard-button" id="course-heard" disabled>✓ شنیدم؛ ثبت این صوت</button>
-          <button type="button" class="course-secondary-button course-revisit-back" id="course-revisit-back" hidden>بازگشت به صوت برنامه روزانه</button>
+          <p class="course-threshold course-visually-hidden" id="course-threshold">پس از شنیدن دست‌کم دو سوم صوت، دکمه ثبت شنیدن فعال می‌شود.</p>
+          <button type="button" class="course-heard-button" id="course-heard" disabled hidden>✓ شنیدم؛ ثبت این صوت</button>
         </section>
-
-        <div class="course-dashboard-actions">
-          <button type="button" class="course-secondary-button" id="course-extra">امروز یک صوت بیشتر بشنوم</button>
-          <button type="button" class="course-secondary-button" id="course-notes-open">دفترچه یادداشت‌های من</button>
-          <button type="button" class="course-text-button" id="course-settings-open">تغییر برنامه شنیدن</button>
+        <div class="course-dashboard-actions" aria-label="صوت بیشتر">
+          <button type="button" class="course-extra-green" id="course-extra" aria-label="امروز یک صوت بیشتر بشنوم">＋ صوت بیشتر</button>
         </div>
-        <p class="course-offline-note">برنامه، پیشرفت و یادداشت‌ها روی همین گوشی ذخیره می‌شوند. برای پخش فایل‌های صوتی، اتصال اینترنت لازم است.</p>
+        <button type="button" id="course-settings-open" hidden aria-label="تغییر تنظیمات برنامه"></button>
       </section>
 
       <section class="course-panel course-note-list" id="course-note-list" hidden aria-label="یادداشت‌های ذخیره‌شده">
@@ -1543,6 +1700,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 <!-- Fully offline data file, packed inside the APK. No web request is necessary. -->
 <script src="hikam_bank.js"></script>
 <script src="photo_quotes_manifest.js"></script>
+<script src="pmm_audio_stream_helper.js"></script>
 <script>
 /* Offline-only learning history. No media or listening data is sent to a server. */
 const PMM_LEARNING_PROGRESS=Object.freeze((function(){
@@ -1619,6 +1777,7 @@ const thumb=document.getElementById('scroll-thumb');
 const toast=document.getElementById('new-toast');
 const audioPlayer=document.getElementById('audio-player');
 const audioBox=document.getElementById('audio-box');
+const wisdomStream=window.PMM_STREAM_HELPER.attach(audioPlayer,document.getElementById('wisdom-audio-status'));
 let lastId=null,bag=[],current=null,noticeTimer=null,originalFocus=null;
 let drawTimer=null,drawRun=0,isDrawing=false;
 const wisdomIntro=document.getElementById('wisdom-intro');
@@ -1827,6 +1986,45 @@ const homeMenuRoot=document.getElementById('home-main-menu');
 const homeSubmenus=Array.from(document.querySelectorAll('.home-submenu'));
 const homeSubmenuTriggers=Array.from(document.querySelectorAll('[data-home-submenu]'));
 let activeHomeSubmenu='',homeSubmenuTrigger=null;
+function syncHomeSubmenuReturn(){
+  const button=document.getElementById('exit');
+  const isBack=Boolean(activeHomeSubmenu);
+  button.classList.toggle('is-submenu-back',isBack);
+  button.setAttribute('aria-label',isBack?'بازگشت به منوی اصلی':'خروج از برنامه');
+  button.title=isBack?'بازگشت به منوی اصلی':'خروج از برنامه';
+}
+// Measure the actual loaded Estedad text at the available title width. All six
+// labels share ONE maximized size, bounded by the longest label (no wrapping).
+function fitHomeMainMenuTitles(){
+  if(!homeMenuRoot||homeMenuRoot.hidden||!homeMenuRoot.clientWidth)return;
+  const titles=Array.from(homeMenuRoot.querySelectorAll(':scope > .home-menu-card > .home-menu-title'));
+  if(titles.length!==6)return;
+  const canvas=document.createElement('canvas');
+  const context=canvas.getContext('2d');
+  if(!context)return;
+  const reference=30;
+  context.font=`900 ${reference}px "PMM Estedad",Tahoma,Arial,sans-serif`;
+  let size=reference;
+  for(const title of titles){
+    const width=title.getBoundingClientRect().width;
+    const textWidth=context.measureText(title.textContent.trim()).width;
+    if(width>0&&textWidth>0)size=Math.min(size,(width-7)*reference/textWidth);
+  }
+  // Canvas can slightly underestimate Arabic shaping/stroke; verify against
+  // the actual rendered, single-line widths and shrink every label together.
+  size=Math.max(9,Math.floor(Math.min(reference,size)*10)/10);
+  for(let attempt=0;attempt<4;attempt++){
+    homeMenuRoot.style.setProperty('--pmm-home-six-title-size',`${size}px`);
+    const overflowRatio=Math.max(1,...titles.map(t=>t.scrollWidth/Math.max(1,t.clientWidth-3)));
+    if(overflowRatio<=1.001)break;
+    size=Math.max(9,Math.floor((size/overflowRatio)*9.7)/10);
+  }
+}
+function queueHomeTitleFit(){requestAnimationFrame(fitHomeMainMenuTitles)}
+if(document.fonts?.ready)document.fonts.ready.then(queueHomeTitleFit);
+window.addEventListener('resize',queueHomeTitleFit);
+window.addEventListener('load',queueHomeTitleFit);
+queueHomeTitleFit();
 function resetHomeMenu(restoreFocus=false){
   const previous=homeSubmenuTrigger;
   activeHomeSubmenu='';
@@ -1834,8 +2032,10 @@ function resetHomeMenu(restoreFocus=false){
   if(homeMenuRoot)homeMenuRoot.hidden=false;
   homeSubmenus.forEach(panel=>panel.hidden=true);
   homeSubmenuTriggers.forEach(button=>button.setAttribute('aria-expanded','false'));
+  syncHomeSubmenuReturn();
   mainScroll.scrollTop=0;
   if(restoreFocus&&previous&&previous.isConnected)previous.focus({preventScroll:true});
+  queueHomeTitleFit();
   requestAnimationFrame(updateScrollbar);
 }
 function openHomeSubmenu(key,trigger){
@@ -1846,6 +2046,7 @@ function openHomeSubmenu(key,trigger){
   homeMenuRoot.hidden=true;
   homeSubmenus.forEach(value=>value.hidden=value!==panel);
   homeSubmenuTriggers.forEach(button=>button.setAttribute('aria-expanded',String(button===trigger)));
+  syncHomeSubmenuReturn();
   mainScroll.scrollTop=0;
   requestAnimationFrame(updateScrollbar);
 }
@@ -1857,8 +2058,7 @@ function closeHomeSubmenu(){
 homeSubmenuTriggers.forEach(button=>button.addEventListener('click',()=>{
   openHomeSubmenu(button.dataset.homeSubmenu,button);
 }));
-document.querySelectorAll('[data-home-back]').forEach(button=>button.addEventListener('click',closeHomeSubmenu));
-function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true;document.getElementById('wisdom-audio-parts').replaceChildren();selectedExplanation=null}
+function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true;document.getElementById('wisdom-audio-parts').replaceChildren();document.getElementById('wisdom-audio-status').textContent='';selectedExplanation=null}
 function showSelectedWisdom(w){
   if(!w)return;
   stopSound();current=w;
@@ -1875,6 +2075,7 @@ function showSelectedWisdom(w){
 }
 function showRandomWisdom(){startWisdomDraw()}
 function enterWisdom(){
+   closeWisdomReminderSettings();
   originalFocus=document.activeElement;
   mainScroll.hidden=true;wisdomScroll.hidden=false;
   document.getElementById('exit').hidden=true;document.getElementById('about').hidden=true;
@@ -1944,7 +2145,8 @@ function playExplanation(){
    },{once:true});
    selector.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
    audioBox.hidden=false;
-   audioPlayer.play().catch(()=>showToast('برای پخش، دکمه پخش‌کننده را لمس کنید یا اینترنت را بررسی کنید.'));
+   wisdomStream.started();
+   audioPlayer.play().catch(()=>showToast('پخش آغاز نشد؛ اتصال اینترنت را بررسی کنید یا دوباره پخش را بزنید.'));
  }
  const ordinal=['اول','دوم','سوم','چهارم','پنجم','ششم','هفتم','هشتم','نهم','دهم'];
  if(urls.length>1)urls.forEach((unused,index)=>{
@@ -1995,7 +2197,7 @@ Object.defineProperty(window,'PMM_WISDOM_PROTOTYPE',{value:Object.freeze({
 }),writable:false});
 
 window.PMM_NEW_UI=Object.freeze({
- enterWisdom, leaveWisdom,
+ enterWisdom, leaveWisdom, openSubmenu:key=>openHomeSubmenu(key,document.querySelector(`[data-home-submenu="${key}"]`)),
  showHome:()=>{
    stopSound();wisdomScroll.hidden=true;
    document.getElementById('gallery-scroll').hidden=true;
@@ -2203,6 +2405,7 @@ function attachNahjInlineAudio(groupId,entryId){
    const toggle=card.querySelector('[data-nahj-toggle]');
    const seek=card.querySelector('[data-nahj-seek]');
    const status=card.querySelector('[data-nahj-status]');
+   const stream=window.PMM_STREAM_HELPER.attach(audio,status);
    toggle.addEventListener('click',()=>{
      if(!audio.paused){audio.pause();return;}
      players.forEach(other=>{if(other!==audio)other.pause()});
@@ -2215,7 +2418,7 @@ function attachNahjInlineAudio(groupId,entryId){
        audio.src=audio.dataset.src;
      }else persist(false,true);
      audio.playbackRate=nahjAudioSpeed;
-     status.textContent='';
+     stream.started();
      const requested=audio.play();
      if(requested&&typeof requested.catch==='function')requested.catch(()=>{
        status.textContent='پخش صوت برقرار نشد؛ اتصال اینترنت را بررسی کنید.';
@@ -2243,10 +2446,7 @@ function attachNahjInlineAudio(groupId,entryId){
      refresh(card,audio);
    });
    audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==nahjAudioSpeed)audio.playbackRate=nahjAudioSpeed});
-   audio.addEventListener('error',()=>{
-     status.textContent='این فایل صوتی در حال حاضر بارگذاری نمی‌شود.';
-     refresh(card,audio);
-   });
+   audio.addEventListener('error',()=>{refresh(card,audio)});
    refresh(card,audio);
  });
  contents.querySelectorAll('[data-nahj-speed]').forEach(button=>button.addEventListener('click',()=>{
@@ -2480,7 +2680,6 @@ function renderAbout(){
   contents.innerHTML=`<div class="about-menu">
       <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>معرفی‌نامه</span></button>
       <button class="about-entry" type="button" id="about-contact"><span class="about-entry-icon">✉</span><span>ارتباط با ما</span></button>
-      <button class="about-entry" type="button" id="about-reminder"><span class="about-entry-icon">♧</span><span>تنظیم یادآور مهمانی مولا</span></button>
       <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
         <div class="gallery-track"><div class="gallery-group">${group}</div><div class="gallery-group" aria-hidden="true">${group}</div></div>
       </div>
@@ -2488,10 +2687,12 @@ function renderAbout(){
     </div>`;
   document.getElementById('about-biography').addEventListener('click',()=>setState('biography'));
   document.getElementById('about-contact').addEventListener('click',()=>openEitaa(CONTACT_URL));
-  document.getElementById('about-reminder').addEventListener('click',renderReminderSettings);
   contents.querySelectorAll('[data-photo]').forEach(b=>b.addEventListener('click',()=>setState('photo',null,Number(b.dataset.photo))));
 }
 function renderReminderSettings(){
+  const panel=document.getElementById('wisdom-reminder-panel');
+  const wisdom=document.getElementById('wisdom-scroll');
+  if(!panel||wisdom.hidden)return;
  let current={frequency:'daily',consent:false,allowed:false};
  try{
   if(window.PMMNative&&typeof window.PMMNative.getReminderSettings==='function'){
@@ -2505,7 +2706,7 @@ function renderReminderSettings(){
   ['daily','هر روز (پیش‌فرض)'],['weekly','هفته‌ای یک‌بار'],
   ['monthly','ماهی یک‌بار'],['off','خاموش']
  ];
- contents.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
+  panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
  '<h2>یادآور مهمانی مولا</h2>'+
  '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، اولین اعلان آزمایشی از ۵ دقیقه پس از اولین ورود زمان‌بندی می‌شود و حتی با بسته بودن برنامه نیز دریافت‌شدنی است. زمان نمایش ممکن است با محدودیت باتری گوشی کمی تأخیر داشته باشد.</p>'+
  '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
@@ -2514,7 +2715,11 @@ function renderReminderSettings(){
  '<p class="pmm-reminder-note" id="pmm-reminder-status">'+
  (current.consent?(current.allowed?'یادآوری‌ها مجاز هستند.':'برای نمایش اعلان، اجازهٔ اندروید لازم است.'):'هنوز اجازهٔ یادآوری دریافت نشده است.')+'</p>'+
  '<div class="pmm-reminder-actions"><button type="button" id="pmm-reminder-permission">اجازهٔ نمایش اعلان</button>'+
- '<button type="button" id="pmm-reminder-back">بازگشت به درباره ما</button></div></section>';
+ '<button type="button" id="pmm-reminder-back">بازگشت به تفال</button></div></section>';
+  panel.hidden=false;
+  wisdom.classList.add('reminder-open');
+  document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','true');
+  wisdom.scrollTop=0;
  document.getElementById('pmm-reminder-frequency').addEventListener('change',event=>{
   const value=event.target.value;
   if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
@@ -2527,8 +2732,19 @@ function renderReminderSettings(){
    window.PMMNative.askReminderPermission();
   else document.getElementById('pmm-reminder-status').textContent='این تنظیم در نسخهٔ اندروید قابل فعال‌سازی است.';
  });
- document.getElementById('pmm-reminder-back').addEventListener('click',renderAbout);
+  document.getElementById('pmm-reminder-back').addEventListener('click',closeWisdomReminderSettings);
 }
+function closeWisdomReminderSettings(){
+  const panel=document.getElementById('wisdom-reminder-panel');
+  panel.hidden=true;
+  document.getElementById('wisdom-scroll').classList.remove('reminder-open');
+  document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','false');
+  document.getElementById('wisdom-scroll').scrollTop=0;
+}
+document.getElementById('wisdom-reminder-gear').addEventListener('click',()=>{
+  if(document.getElementById('wisdom-reminder-panel').hidden)renderReminderSettings();
+  else closeWisdomReminderSettings();
+});
 function renderBiography(){
   contents.innerHTML='<article class="about-story">'+ABOUT_HTML+'</article>';
 }
@@ -2597,6 +2813,7 @@ function pmmAttachKafiAudio(){
  const duration=card.querySelector('[data-kafi-duration]');
  const status=card.querySelector('[data-kafi-status]');
  const rates=Array.from(card.querySelectorAll('[data-kafi-speed]'));
+ const stream=window.PMM_STREAM_HELPER.attach(audio,status);
  function display(){
   const playing=!audio.paused;
   toggle.innerHTML=playing?NAHJ_SVG_PAUSE:NAHJ_SVG_PLAY;
@@ -2626,7 +2843,7 @@ function pmmAttachKafiAudio(){
  toggle.addEventListener('click',()=>{
   if(!audio.paused){audio.pause();return;}
   if(!audio.getAttribute('src'))audio.src=audio.dataset.src;
-  applySpeed();status.textContent='';
+  applySpeed();stream.started();
   const request=audio.play();
   if(request&&typeof request.catch==='function')request.catch(()=>{
    status.textContent='پخش صوت برقرار نشد؛ اتصال اینترنت را بررسی کنید.';
@@ -2642,10 +2859,7 @@ function pmmAttachKafiAudio(){
  ['play','pause','timeupdate','loadedmetadata','durationchange','ended'].forEach(name=>
   audio.addEventListener(name,display));
  audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==pmmKafiSpeed)audio.playbackRate=pmmKafiSpeed});
- audio.addEventListener('error',()=>{
-  status.textContent='این فایل صوتی در حال حاضر بارگذاری نمی‌شود.';
-  display();
- });
+ audio.addEventListener('error',()=>{display()});
  applySpeed();display();
 }
 
@@ -2662,15 +2876,16 @@ function renderPlayer(){
   // Stream an owner-supplied MP3 in this WebView; never navigate to the website.
   const valid=/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/(?:khotbe\/khotbe|name\/name|hekmat\/hekmat) [A-Za-z0-9. &]+\.mp3$/i.test(link);
   if(valid){
-    html+='<audio class="nahj-audio-player" controls preload="none" src="'+safe(encodeURI(link))+
-      '" aria-label="'+safe(x.title)+'">مرورگر داخلی از پخش این صوت پشتیبانی نمی‌کند.</audio>';
+    html+='<button type="button" class="action" id="nahj-direct-start">▶ پخش صوت</button>'+
+      '<audio class="nahj-audio-player" controls preload="none" playsinline hidden data-src="'+safe(encodeURI(link))+
+      '" aria-label="'+safe(x.title)+'">مرورگر داخلی از پخش این صوت پشتیبانی نمی‌کند.</audio>'+
+      '<div class="nahj-stream-status" role="status" aria-live="polite"></div>';
   }else{
     html+='<p class="player-note">نشانی این فایل صوتی معتبر نیست.</p>';
   }
  }else if(match){
-  const embed='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
-  html+='<div class="player-frame"><iframe title="پخش آنلاین جلسه '+fa(x.number)+'" src="'+embed+
-    '" loading="eager" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
+  // No third-party iframe or website traffic until the visitor explicitly taps Play.
+  html+='<div class="player-frame"><button type="button" class="action" id="aparat-user-play">▶ پخش ویدئو</button></div>';
  }else if(/eitaa\.com/i.test(link)){
   // Other sections' Eitaa links keep their original behavior.
   html+='<p class="player-note">این جلسه در ایتا قرار دارد.</p>';
@@ -2680,6 +2895,34 @@ function renderPlayer(){
  html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
  if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
+ const playVideo=contents.querySelector('#aparat-user-play');
+ if(playVideo&&match){
+   playVideo.addEventListener('click',()=>{
+     const frame=document.createElement('iframe');
+     frame.title='پخش آنلاین جلسه '+fa(x.number);
+     frame.src='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
+     frame.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+     frame.allowFullscreen=true;
+     frame.referrerPolicy='strict-origin-when-cross-origin';
+     playVideo.replaceWith(frame);
+   });
+ }
+ if(x.nahjAudio){
+   const player=contents.querySelector('audio.nahj-audio-player');
+   const start=contents.querySelector('#nahj-direct-start');
+   if(player&&start){
+     const stream=window.PMM_STREAM_HELPER.attach(player,contents.querySelector('.nahj-stream-status'));
+     start.addEventListener('click',()=>{
+       // User action is the only place where src is ever assigned.
+       if(!player.getAttribute('src')||player.error){player.src=player.dataset.src;}
+       player.hidden=false;stream.started();
+       const request=player.play();
+       if(request&&typeof request.catch==='function')request.catch(()=>{start.hidden=false});
+     });
+     player.addEventListener('playing',()=>{start.hidden=true});
+     player.addEventListener('error',()=>{start.hidden=false});
+   }
+ }
  document.getElementById('player-back').addEventListener('click',()=>goBack());
 }
 function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){
@@ -2885,10 +3128,13 @@ setState=function(mode,s=null,v=null){
  if(mode==='home'){pmmOldStage.hidden=true;window.PMM_NEW_UI.restore();window.PMM_NEW_UI.showHome()}
  else{syncOldTitle();}
 };
+let legacyParentSubmenu='';
 const oldGoBack=goBack;
 goBack=function(){
+  // A nested reminder screen returns to the same Wisdom draw/result, not Home.
+  if(screen==='wisdom'&&!document.getElementById('wisdom-reminder-panel').hidden){closeWisdomReminderSettings();return;}
  // Back inside a home submenu returns to the six-item root before leaving Home.
- if(window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;
+ if(screen==='home'&&window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;
  // Back is navigation only. Never permit the overlapping Exit to activate
  // until the touch/keyboard gesture has fully ended and Home is stable.
  window.PMM_LAST_BACK_NAV_AT=Date.now();
@@ -2901,13 +3147,16 @@ goBack=function(){
  if(screen==='wisdom'){window.PMM_NEW_UI.leaveWisdom();screen='home';return;}
  if(screen==='gallery'){
    if(galleryIndex!==null){galleryRenderGrid();return;}
-   window.PMM_NEW_UI.closeGallery();screen='home';return;
+   window.PMM_NEW_UI.closeGallery();screen='home';window.PMM_NEW_UI.openSubmenu('media');return;
  }
  if(screen==='home'){return;}
+ const returnParent=screen==='list'&&['towhid','life','clips'].includes(section)?legacyParentSubmenu:'';
  oldGoBack();
+ if(returnParent&&screen==='home'){window.PMM_NEW_UI.openSubmenu(returnParent);legacyParentSubmenu='';}
 };
 // Delegated click routing also handles the legacy top Back button.
 const openLegacy=kind=>{
+ legacyParentSubmenu=kind==='towhid'||kind==='life'?'learning':kind==='clips'?'media':'';
  if(kind==='about'){setState('about')}
  else{if(!['nahj','towhid','life','kafi','clips'].includes(kind)){window.PMM_NEW_UI.showToast('بخش نامعتبر است');return;}setState('list',kind)}
  pmmOldStage.hidden=false;window.PMM_NEW_UI.showLegacy();
@@ -3285,7 +3534,8 @@ function resumed(){
  requestAnimationFrame(()=>{
   displayReturn();
   const top=stage.hidden?document.getElementById('back-top'):document.getElementById('legacy-back-top');
-  if(top&&!top.hidden){top.style.pointerEvents='auto';top.style.visibility='visible';}
+  if(top&&!top.hidden){top.disabled=false;top.style.pointerEvents='auto';top.style.visibility='visible';top.style.zIndex='100';}
+  const legacy=document.getElementById('back-button');if(legacy){legacy.disabled=false;legacy.style.pointerEvents='auto';}
  });
  if(openedAt){openedAt=0;try{localStorage.removeItem(STAMP)}catch(_){}}
 }
@@ -3313,7 +3563,7 @@ function recoverReload(){
 // Never navigate on touchend/pointerup: Exit overlaps Back on the Home image.
 let lastBackClick=-1000;
 function handleOnScreenBack(e){
- const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
+ const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top,#back-button'):null;
  if(!btn||btn.hidden)return;
  e.preventDefault();e.stopImmediatePropagation();
  const now=performance.now();
@@ -3353,6 +3603,13 @@ document.addEventListener('click',e=>{
  if(!btn)return;
  // No other listener may send Exit: this capture handler owns authorization.
  e.preventDefault();e.stopImmediatePropagation();
+ if(btn.id==='exit'&&btn.classList?.contains('is-submenu-back')&&
+    !scene.hidden&&stage.hidden&&scene.dataset.screen==='home'){
+   exitStart=null;exitStartAt=0;
+   if(window.PMM_NEW_UI&&window.PMM_NEW_UI.closeSubmenu())
+     window.PMM_LAST_BACK_NAV_AT=Date.now();
+   return;
+ }
  const now=Date.now();
  const deliberate=exitStart===btn&&now-exitStartAt>=0&&now-exitStartAt<1600;
  const accessible=e.detail===0&&e.isTrusted===true&&document.activeElement===btn;

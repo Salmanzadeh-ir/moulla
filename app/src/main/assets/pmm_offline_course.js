@@ -10,6 +10,7 @@ const KEY='pmm_offline_nahj_course_v111';
 const tracks=logic.buildTracks(window.PMM_NAHJ_AUDIO_DATA);
 const trackById=new Map(tracks.map((track,index)=>[track.id,{track,index}]));
 const audio=$('course-audio');
+const courseStream=window.PMM_STREAM_HELPER.attach(audio,$('course-audio-status'));
 const mainScroll=$('main-scroll'),wisdomScroll=$('wisdom-scroll'),galleryScroll=$('gallery-scroll');
 const scene=$('scene'),backTop=$('back-top'),exit=$('exit'),about=$('about'),floor=$('wisdom-floor-cover');
 const weekdays=[
@@ -21,7 +22,7 @@ const SPEED_KEY='pmm_nahj_audio_speed_v1';
 let speed=1;
 try{const saved=Number(localStorage.getItem(SPEED_KEY));if(SPEEDS.includes(saved))speed=saved}catch(_){}
 let state=loadState(),courseOpen=false,draftMode='daily1',draftWeekday=null;
-let activeTrack=null,activeTrackIndex=-1,activeTrackId='',activeIsRevisit=false,lastObservedTime=null,lastPersistedAt=0,switchingTrack=false;
+let activeTrack=null,activeTrackIndex=-1,activeTrackId='',activeIsRevisit=false,lastObservedTime=null,lastObservedWall=null,lastPersistedAt=0,switchingTrack=false;
 let pendingRestoreId='',restorePosition=0;
 function blankState(){return {accepted:false,plan:null,completedCount:0,extras:{},positions:{},notes:{},pendingAdvance:false}}
 function loadState(){
@@ -163,7 +164,6 @@ function updateProgress(){
  $('course-progress-fill').style.width=value.percent+'%';
  $('course-progress-count').textContent='شنیده‌شده: '+logic.fa(value.completed)+' از '+logic.fa(value.total)+' صوت';
  $('course-progress-percent').textContent=logic.fa(value.percent.toFixed(1))+'٪';
- $('course-plan-summary').textContent='برنامه همراهی شما: '+planLabel(state.plan);
 }
 function pauseOtherPlayers(){
  document.querySelectorAll('audio').forEach(other=>{if(other!==audio){try{other.pause()}catch(_){}}});
@@ -214,11 +214,12 @@ function showTrack(track,index,isRevisit){
  $('course-heard').disabled=true;
  $('course-threshold').hidden=isRevisit;
  const note=state.notes[track.id];$('course-note-text').value=note&&typeof note.text==='string'?note.text:'';
+ $('course-notebook').hidden=true;$('course-note-toggle').setAttribute('aria-expanded','false');
  $('course-note-status').textContent=note&&note.text?'یادداشت ذخیره‌شده شما روی همین گوشی':'یادداشت این صوت را اینجا بنویسید.';
  if(changed){
   lastObservedTime=null;pendingRestoreId=track.id;
   const saved=getPosition(track.id);restorePosition=saved.position;
-  audio.removeAttribute('src');audio.src=encodeURI(track.url);audio.load();
+  audio.removeAttribute('src');audio.load(); // no URL or network until Play
   $('course-audio-status').textContent='برای شروع، دکمه پخش را لمس کنید.';
   $('course-audio-toggle').innerHTML=playIcon();$('course-audio-toggle').setAttribute('aria-label','پخش '+track.displayTitle);
   $('course-seek').value='0';$('course-current-time').textContent=formatTime(saved.position);
@@ -246,9 +247,9 @@ function updateAudioUI(){
  updateHeardButton();
 }
 function updateHeardButton(){
- const button=$('course-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;return;}
+ const button=$('course-heard'),mini=$('course-mini-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;mini.disabled=true;return;}
  const pos=getPosition(activeTrack.id),duration=Number.isFinite(audio.duration)&&audio.duration>0?audio.duration:pos.duration;
- button.disabled=!logic.canMarkHeard(pos.listened,duration);
+ button.disabled=!logic.canMarkHeard(pos.listened,duration);mini.disabled=button.disabled;
 }
 function persistPosition(){
  if(!activeTrack)return;
@@ -261,7 +262,7 @@ function persistPosition(){
 }
 function savePlayback(force){
  if(!activeTrack)return;
- persistPosition();lastObservedTime=null;lastPersistedAt=Date.now();
+ persistPosition();lastObservedTime=null;lastObservedWall=null;lastPersistedAt=Date.now();
 }
 audio.addEventListener('loadedmetadata',()=>{
  if(!activeTrack||pendingRestoreId!==activeTrack.id)return;
@@ -269,38 +270,42 @@ audio.addEventListener('loadedmetadata',()=>{
  if(restorePosition>0&&Number.isFinite(audio.duration)&&audio.duration>0){
   try{audio.currentTime=Math.min(restorePosition,Math.max(0,audio.duration-0.25))}catch(_){}
  }
- pendingRestoreId='';restorePosition=0;lastObservedTime=audio.currentTime;
+ pendingRestoreId='';restorePosition=0;lastObservedTime=audio.currentTime;lastObservedWall=Date.now();
  setPosition(activeTrack.id,{position:audio.currentTime,duration:audio.duration,listened:saved.listened});
  saveState();updateAudioUI();
 });
-audio.addEventListener('play',()=>{pauseOtherPlayers();lastObservedTime=audio.currentTime;updateAudioUI();$('course-audio-status').textContent='در حال پخش';});
+audio.addEventListener('play',()=>{pauseOtherPlayers();lastObservedTime=audio.currentTime;lastObservedWall=Date.now();updateAudioUI();$('course-audio-status').textContent='در حال پخش';});
 audio.addEventListener('pause',()=>{if(switchingTrack)return;savePlayback(true);updateAudioUI();if(activeTrack)$('course-audio-status').textContent='پخش متوقف شد؛ زمان شنیدن ذخیره شد.';});
 audio.addEventListener('timeupdate',()=>{
  if(!activeTrack)return;
  const now=audio.currentTime;
+ const wall=Date.now();
  if(!audio.paused&&lastObservedTime!==null){
   const delta=now-lastObservedTime;
-  if(delta>0&&delta<=4){const old=getPosition(activeTrack.id);setPosition(activeTrack.id,{listened:Math.min(Number.isFinite(audio.duration)?audio.duration:86400,old.listened+delta)});}
+  const elapsed=lastObservedWall===null?0:Math.max(0,(wall-lastObservedWall)/1000);
+  const allowed=Math.max(4,(elapsed+1.5)*Math.max(.75,Number(audio.playbackRate)||1));
+  if(delta>0&&delta<=allowed){const old=getPosition(activeTrack.id);setPosition(activeTrack.id,{listened:Math.min(Number.isFinite(audio.duration)?audio.duration:86400,old.listened+delta)});}
  }
- lastObservedTime=now;
+ lastObservedTime=now;lastObservedWall=wall;
  if(Date.now()-lastPersistedAt>=1800){persistPosition();lastPersistedAt=Date.now();}
  updateAudioUI();
 });
-audio.addEventListener('seeking',()=>{lastObservedTime=null});
-audio.addEventListener('seeked',()=>{lastObservedTime=audio.currentTime;persistPosition();updateAudioUI()});
+audio.addEventListener('seeking',()=>{lastObservedTime=null;lastObservedWall=null});
+audio.addEventListener('seeked',()=>{lastObservedTime=audio.currentTime;lastObservedWall=Date.now();persistPosition();updateAudioUI()});
 audio.addEventListener('durationchange',()=>{if(activeTrack&&Number.isFinite(audio.duration)&&audio.duration>0){setPosition(activeTrack.id,{duration:audio.duration});saveState();updateAudioUI()}});
 audio.addEventListener('ended',()=>{
  if(!activeTrack)return;
  setPosition(activeTrack.id,{position:0,listened:Number.isFinite(audio.duration)?audio.duration:getPosition(activeTrack.id).listened,duration:audio.duration||getPosition(activeTrack.id).duration});
  lastObservedTime=null;saveState();updateAudioUI();$('course-audio-status').textContent='این صوت به پایان رسید؛ پس از شنیدن دو سوم، می‌توانید آن را ثبت کنید.';
 });
-audio.addEventListener('error',()=>{$('course-audio-status').textContent='بارگذاری صوت انجام نشد. اتصال اینترنت و لینک صوت را بررسی کنید.';updateAudioUI()});
+audio.addEventListener('error',()=>{updateAudioUI()});
 $('course-audio-toggle').addEventListener('click',()=>{
  if(!activeTrack)return;
  if(!audio.paused){audio.pause();return;}
  pauseOtherPlayers();
  if(!audio.getAttribute('src'))audio.src=encodeURI(activeTrack.url);
  audio.playbackRate=speed;
+ courseStream.started();
  const request=audio.play();if(request&&typeof request.catch==='function')request.catch(()=>{$('course-audio-status').textContent='پخش شروع نشد؛ اتصال اینترنت را بررسی کنید و دوباره بزنید.';updateAudioUI()});
 });
 $('course-seek').addEventListener('input',()=>{
@@ -313,8 +318,17 @@ document.querySelectorAll('[data-course-speed]').forEach(button=>{
   if(!SPEEDS.includes(value))return;speed=value;audio.playbackRate=value;
   try{localStorage.setItem(SPEED_KEY,String(value));if(typeof nahjAudioSpeed!=='undefined')nahjAudioSpeed=value}catch(_){}
   document.querySelectorAll('[data-course-speed]').forEach(other=>{const active=Number(other.dataset.courseSpeed)===speed;other.classList.toggle('is-selected',active);other.setAttribute('aria-pressed',String(active))});
+  $('course-speed-toggle').setAttribute('aria-label','انتخاب سرعت پخش، سرعت فعلی '+String(value).replace('.', '٫').replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[Number(d)])+' برابر');$('course-speed-options').hidden=true;$('course-speed-toggle').setAttribute('aria-expanded','false');
  });
 });
+const miniHeard=$('course-mini-heard'),realHeard=$('course-heard');
+miniHeard.disabled=realHeard.disabled;
+$('course-speed-toggle').setAttribute('aria-label','انتخاب سرعت پخش، سرعت فعلی '+String(speed).replace('.', '٫').replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[Number(d)])+' برابر');
+$('course-mini-heard').addEventListener('click',()=>$('course-heard').click());
+$('course-mini-settings').addEventListener('click',()=>$('course-settings-open').click());
+$('course-note-toggle').addEventListener('click',()=>{const panel=$('course-notebook');panel.hidden=!panel.hidden;$('course-note-toggle').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)$('course-note-text').focus();});
+$('course-note-close').addEventListener('click',()=>{$('course-notebook').hidden=true;$('course-note-toggle').setAttribute('aria-expanded','false');$('course-note-toggle').focus();});
+$('course-speed-toggle').addEventListener('click',()=>{const panel=$('course-speed-options');panel.hidden=!panel.hidden;$('course-speed-toggle').setAttribute('aria-expanded',String(!panel.hidden));});
 $('course-heard').addEventListener('click',()=>{
  if(!activeTrack||activeIsRevisit)return;
  const pos=getPosition(activeTrack.id),duration=Number.isFinite(audio.duration)&&audio.duration>0?audio.duration:pos.duration;
@@ -376,9 +390,15 @@ window.addEventListener('resize',updateCourseScrollbar);
 window.addEventListener('pagehide',()=>{savePlayback(true)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')savePlayback(true)});
 const previousGoBack=goBack;
-goBack=function(){if(courseOpen){leaveCourse();return;}return previousGoBack();};
+function courseBack(){
+ if(!$('course-notebook').hidden){$('course-notebook').hidden=true;$('course-note-toggle').setAttribute('aria-expanded','false');return;}
+ if(!$('course-setup').hidden&&state.plan){renderDashboard();return;}
+ if(!$('course-note-list').hidden){renderDashboard();return;}
+ leaveCourse();
+}
+goBack=function(){if(courseOpen){courseBack();return;}return previousGoBack();};
 window.PMM_OFFLINE_COURSE=Object.freeze({
- open:openCourse,back:leaveCourse,
+ open:openCourse,back:courseBack,
  getStatus:()=>({accepted:state.accepted,plan:state.plan?{...state.plan}:null,
   completed:state.completedCount,total:tracks.length,notes:Object.keys(state.notes).length,
   current:activeTrack?{id:activeTrack.id,title:activeTrack.displayTitle,index:activeTrackIndex}:null}),

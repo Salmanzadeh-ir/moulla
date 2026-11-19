@@ -86,6 +86,8 @@
       }
       if(preparing){
         status.textContent='در حال آماده‌سازی صوت…';
+      }else if(state.buffering){
+        status.textContent='در حال دریافت ادامه صوت؛ اتصال اینترنت کند شده است…';
       }else if(isPlaying){
         status.textContent='پخش ادامه دارد؛ با خاموش‌شدن صفحه هم متوقف نمی‌شود.';
       }else if(state.error){

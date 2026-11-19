@@ -1,0 +1,1090 @@
+{
+  "schema": "owner-freeze-v117-git-blobs-sha256-v1",
+  "app_file_count": 180,
+  "source": "Exact owner-authorized v117 trial source reconstructed and verified in GitHub Actions",
+  "trial_workflow_run": "https://github.com/Salmanzadeh-ir/moulla/actions/runs/44502443550",
+  "official_release_changed": false,
+  "requires_explicit_owner_approval_for_any_change": true,
+  "files": [
+    {
+      "path": "app/build.gradle",
+      "blob_sha1": "fe9b9292dfc23628b1ddc1f2e2aeb6dec3856d49",
+      "sha256": "7d49a4247691b9f85c9abd49c8995de4887b584bbe41768b605da2b5bf1e6528",
+      "size": 1435
+    },
+    {
+      "path": "app/src/debug/res/values/strings.xml",
+      "blob_sha1": "7349ea5a269824c58b3e8b963e083f1e446859df",
+      "sha256": "0ea234b75b58113120d81258b2cdb4f2585f097a4d7a5c16c3b355791744aa48",
+      "size": 135
+    },
+    {
+      "path": "app/src/main/AndroidManifest.xml",
+      "blob_sha1": "3e7424cd229988dac059bb84e68e63a0d9ecb58d",
+      "sha256": "d2689f3c5e0b0e784b72c7be3636fb7f9735d871f850470b2394bd92a2cad311",
+      "size": 2225
+    },
+    {
+      "path": "app/src/main/assets/fonts/Amiri-Bold.ttf",
+      "blob_sha1": "acdbf3943f979bba160f74d49d22f74abaa0e231",
+      "sha256": "dae72d335a403759e882f66bcb0396f3a6ea92650496fd09eac55c5c620fe502",
+      "size": 587152
+    },
+    {
+      "path": "app/src/main/assets/fonts/Amiri-Regular.ttf",
+      "blob_sha1": "1889ccb407ef19679c01552013460fb35d58cc5c",
+      "sha256": "30ea8514fb4d7cc867e799a05bd501cf123ba358745557a46c10737549b5e9c9",
+      "size": 606292
+    },
+    {
+      "path": "app/src/main/assets/fonts/Estedad-OFL.txt",
+      "blob_sha1": "a3f7464479be728a1f858574ddb23a46dd83c8c8",
+      "sha256": "0417da48fc44780476e074f02f8400028ee704b3e222be5855fa6d960b9200ca",
+      "size": 4388
+    },
+    {
+      "path": "app/src/main/assets/fonts/Estedad-VF.woff2",
+      "blob_sha1": "9fe77153f4b5fb25a3d32219edfc09c534eec361",
+      "sha256": "18a2278ad5c9c2f60e034270ea2d5856d04c4e984e47c65483aa63b41e3c5a1e",
+      "size": 128304
+    },
+    {
+      "path": "app/src/main/assets/fonts/OFL.txt",
+      "blob_sha1": "9cd393b5e60e58587e48351eb456891017410918",
+      "sha256": "0905cc4de013e352507a555cc42475faa33d997f7d8d29dff596b1631834d33b",
+      "size": 4661
+    },
+    {
+      "path": "app/src/main/assets/fonts/Sahel-OFL.txt",
+      "blob_sha1": "ae3f0411ff5899174d7226d5bf6efb655e623513",
+      "sha256": "4de56cc5fc458113a5704ec4d850191e640396008a6e45ff2a70d67ea6c5c74f",
+      "size": 4518
+    },
+    {
+      "path": "app/src/main/assets/fonts/Sahel-SemiBold.woff2",
+      "blob_sha1": "cd4cfb89977626e7b377be859b2f44c930039d63",
+      "sha256": "6e6a49a9c1d148c3679b60f1144e05cf5651838df6362a04a463ce35556bade0",
+      "size": 35864
+    },
+    {
+      "path": "app/src/main/assets/hikam_bank.js",
+      "blob_sha1": "4c569c6f0db371c94de9b9b1eb70d0a674f247ff",
+      "sha256": "608078e823706025314729978bab4bea3700e80eb28099cd4a9d684c985ea647",
+      "size": 369530
+    },
+    {
+      "path": "app/src/main/assets/images/IMAGE_01_APPROVED_ORIGINAL.png",
+      "blob_sha1": "1f25752438f7717d1ebefff4844b2fa946071cd6",
+      "sha256": "6ebba68081773d58a63dd5f4ec25561f9fb8b86bea46ea62ca7e5e8866c973a1",
+      "size": 2573218
+    },
+    {
+      "path": "app/src/main/assets/images/back_v1043_approved.png",
+      "blob_sha1": "21edc4ea9fb027d30423acc47ea0a75fd372f5a0",
+      "sha256": "bc3557d2a8ffffa20405edbfcb29e37d383dea9bd8e49dd901c96df13c4bba47",
+      "size": 65569
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_01.webp",
+      "blob_sha1": "4d33ab7967b5cfd0374ead55e99bd01bd990a0f5",
+      "sha256": "95408e98353add846dc2de5a5476be7880f31755779014f3c261bedbc142cf09",
+      "size": 63066
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_02.webp",
+      "blob_sha1": "66aa126bafd214769d976e42594efaca981af49c",
+      "sha256": "3db91f10a053b3b25a1e1dbf6f75cc639841d2c999274984a8ca02fa4df13c18",
+      "size": 148548
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_03.webp",
+      "blob_sha1": "2025444f71fa85463581108f0d241f0afb7a3463",
+      "sha256": "1391b82a68c35fbcfeb0db4c9e8ae27feb12d6ad8c17fece591eb09189cae223",
+      "size": 181976
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_04.webp",
+      "blob_sha1": "c8bf6744d506739c5782983380b47e94ea02db33",
+      "sha256": "114a02332cfa832f891b7a6f763ae5e028b53cf43222450fafb2491de1c5844e",
+      "size": 62102
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_05.webp",
+      "blob_sha1": "5b1c48f31b10de2e72377f43b3e2f38c3f5b1e51",
+      "sha256": "dd5ceb0feb5993ee2aca7a4073438f926064a03f05215101dae540b738bfc6a4",
+      "size": 126210
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_06.webp",
+      "blob_sha1": "6d1d4b44c61e853145bcc4bcb8241b4d470daf4c",
+      "sha256": "5946a881f34e77cb42cff5532fd479688841c69dee77a5a8de2386cbe74f1f45",
+      "size": 69808
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_07.webp",
+      "blob_sha1": "d009591badb1a21b82eecbd923904fd3e2914d49",
+      "sha256": "d0ae241dcab77f9ea064048cbbf0b37325d1c354001081a25125df5349b2201d",
+      "size": 75418
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_08.webp",
+      "blob_sha1": "0cf870e15234a833535375239df264df0c0213cc",
+      "sha256": "4a50e2a6ae2695b73ca1f7b657068770e491bfbcdfc7d6b05d51a04aaff249d3",
+      "size": 123506
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_09.webp",
+      "blob_sha1": "ff0196d014bae73f2a36aa679d277a2919001576",
+      "sha256": "c9b3dd1968b1831adad4c374a80481d9aec4dd2033fac51768f2328765b2a3e6",
+      "size": 76650
+    },
+    {
+      "path": "app/src/main/assets/images/gallery/photo_10.webp",
+      "blob_sha1": "a614486ff40c9cca416c5989ee70866debdd40f8",
+      "sha256": "20b83e923a735f47205cd7756e783a6625807d092d4b5fd980a244ca56df8512",
+      "size": 68816
+    },
+    {
+      "path": "app/src/main/assets/images/home_about_button.png",
+      "blob_sha1": "0a520fa830b34045765b9790395d40cc81873df5",
+      "sha256": "11fdc6f3fdc19d3d78f5ce30c9c575fbb3dc4789334e791334c03f02768dcb1e",
+      "size": 85682
+    },
+    {
+      "path": "app/src/main/assets/images/home_bg_separated.png",
+      "blob_sha1": "5fe7acd03d139adb6269638b2d05fb1256403ce1",
+      "sha256": "c51546e5f76f0331a4b8a3f2e20bbf302bac9ec298bc65407c24119d2076bbe8",
+      "size": 2533266
+    },
+    {
+      "path": "app/src/main/assets/images/home_clips_plaque.png",
+      "blob_sha1": "f1578e75c2b94c5433624ccbdb222b85c2cf7d93",
+      "sha256": "7372f70d71a45801b2c3226bb3e36048615c9fb5a51fa812e82f6182853d7b43",
+      "size": 1429260
+    },
+    {
+      "path": "app/src/main/assets/images/home_guest_plaque.png",
+      "blob_sha1": "19c19d6c57e8d7fe3d4aca127f55380237243df4",
+      "sha256": "bf9921c6c4eb8bbbe85a1688528a4b2d90272174a97917c9937163d4486e110a",
+      "size": 1356053
+    },
+    {
+      "path": "app/src/main/assets/images/home_kafi_plaque.png",
+      "blob_sha1": "3449167cb73fc76561f196eced261c3de84a886e",
+      "sha256": "ffb2a839e19975af7646fe3e427d43397cd69e8ec4e55d2ef80db649b9dac4ed",
+      "size": 1626805
+    },
+    {
+      "path": "app/src/main/assets/images/home_life_plaque.png",
+      "blob_sha1": "78a71d64a64029bb1d319c5ec4b6aff3b677721c",
+      "sha256": "d19ed956eb4388c92eb7604fc048fe8e5ddc51cd4565c147c3bd8f39d0a0e26a",
+      "size": 1557493
+    },
+    {
+      "path": "app/src/main/assets/images/home_nahj_plaque.png",
+      "blob_sha1": "8acd9769622dfdffab2fed839dd8b94861de50f4",
+      "sha256": "0f63a72ca9fe3a369d46f10a53978739b060a732e5bab337fb4fc563a8d1285c",
+      "size": 1505586
+    },
+    {
+      "path": "app/src/main/assets/images/home_towhid_plaque.png",
+      "blob_sha1": "d058764bf8248bd45e09e8e55111364b2063f647",
+      "sha256": "af054eb472a32e9dbff8cfd900d6dbb569dc84ceb5253a298f0482ce8d126db0",
+      "size": 1549851
+    },
+    {
+      "path": "app/src/main/assets/images/icon_kafi.webp",
+      "blob_sha1": "1b81c2d54bb553b42c118724d40a9091eddffbe4",
+      "sha256": "7ad1b0bfcb6ddb6f096309f2805ded8dd222668c32afe76f499c1db7e6aa7e35",
+      "size": 30328
+    },
+    {
+      "path": "app/src/main/assets/images/icon_life.webp",
+      "blob_sha1": "5029f335dad75229ef08d5b6c9588ac18bf57ba7",
+      "sha256": "919ffcbb869c5dcc5cc8269aabd0d571b25c39efe508f85e2c3226d1371c5efb",
+      "size": 27066
+    },
+    {
+      "path": "app/src/main/assets/images/icon_nahj.webp",
+      "blob_sha1": "0c0fad73a54f4625510ed27e446c2e3be4f5f6d3",
+      "sha256": "28358747a449054e08ea1a364dddec810df4859ded9b9ecce60b41b499471305",
+      "size": 29780
+    },
+    {
+      "path": "app/src/main/assets/images/icon_towhid.webp",
+      "blob_sha1": "66b469d70dc977922d3058dd0d07e1e82ae6cbb8",
+      "sha256": "dc82f0802a965ed1d54cc65a60948f459b9af46dc3902f409e4da486a15c9463",
+      "size": 28020
+    },
+    {
+      "path": "app/src/main/assets/images/iwan_fixed.webp",
+      "blob_sha1": "d22a036dccd98592ca218e3e3bc591c1af7362e4",
+      "sha256": "8f135dd3d1901f9b48d91be70abeebbc97b5e1aab9924c1c37eb7698cd15283c",
+      "size": 524736
+    },
+    {
+      "path": "app/src/main/assets/images/menu_kafi.webp",
+      "blob_sha1": "c13ff3340260d0a009ff3f5e02d14db4c05f0249",
+      "sha256": "4a91358e31d78f446f146862579213610cefecb596d5fa2aab3fda9b2f070a4f",
+      "size": 47564
+    },
+    {
+      "path": "app/src/main/assets/images/menu_life.webp",
+      "blob_sha1": "84a0cf694e81e931ca7df29c3216c0d81e634036",
+      "sha256": "f772d709f1c25c24c0fe0d9883d75483c41a381144cd968ff06e6ac9cbd89899",
+      "size": 44192
+    },
+    {
+      "path": "app/src/main/assets/images/menu_nahj.webp",
+      "blob_sha1": "2beddce93dd4f5b89aa7519dfe90b81cc731f245",
+      "sha256": "dbb58c02ccd4f6105db2d2e743e5f8169fea25f55a369cb4d3ecc094537fd6ed",
+      "size": 53826
+    },
+    {
+      "path": "app/src/main/assets/images/menu_towhid.webp",
+      "blob_sha1": "c7fe19817b9e13fe063d599f4f2ca4c1fbfe1851",
+      "sha256": "faed3c783b2161b9725d3c1b63a00784792099dfaa24a76fe1deb71a3b0986b0",
+      "size": 51932
+    },
+    {
+      "path": "app/src/main/assets/images/new_ui_bg.png",
+      "blob_sha1": "cca879a819da8b7ef4b7dd6d82f161d91383ef4c",
+      "sha256": "7f911cd1d12bb014eee9660f2be4dbaaf5e49d84a198291ca9f51f2bc36e86e3",
+      "size": 2046245
+    },
+    {
+      "path": "app/src/main/assets/images/new_ui_menu.png",
+      "blob_sha1": "261f3537aa39e49e20e57c28b1db4810b14a572f",
+      "sha256": "e0292655a3a6fae05419912fe681362634107ef2d84940a7c96946a8f7360edf",
+      "size": 761162
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_001.jpg",
+      "blob_sha1": "c2b3cee17e53463a58893da30ee185b5d0b7f051",
+      "sha256": "e3746bae3f65c7f94fb3b2e4dcdb87397055e72f697012bb3698193f4c1e2725",
+      "size": 140483
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_002.jpg",
+      "blob_sha1": "580053ddf407cc6d002edb58816b47000061fc7b",
+      "sha256": "67869fff31593a7f189dc751fa13a5513738eb3233d9893753e205154eaae08d",
+      "size": 104473
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_003.jpg",
+      "blob_sha1": "9faeecc005b31fb787ccf9666a4aa4fa7658a56e",
+      "sha256": "e78233e11ed8cb837bc3b422636fee0353056182f1028734fcb28f9a85c0af0c",
+      "size": 101592
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_004.jpg",
+      "blob_sha1": "61e65c8597cf1486f3bae32d81def540b595faf4",
+      "sha256": "9df4b9a7d3eec3f1619137e4f960c34d3e7baa38f675b4f544c1dedf31d951be",
+      "size": 73232
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_005.jpg",
+      "blob_sha1": "e28611ad8f8a414efa47d6cd197719d287fc0399",
+      "sha256": "4abe199cbad5688dcee06e0d763cb396fa3284a4ac0564564eadcabb3298b59f",
+      "size": 58979
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_006.jpg",
+      "blob_sha1": "53a9bb7012c434716d712565282b2c416b2fc67d",
+      "sha256": "779b5f9485d6cc2b979d881c6f1e812d90f9aec84b66da13355f347ec76bb5ae",
+      "size": 46204
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_007.jpg",
+      "blob_sha1": "232884d6257873b7712c1ec8bcd9c4ead6aad4cb",
+      "sha256": "07b3730c09df82f565fde46a2a28e098b363066e6e13c288ef56b69ea01d70d5",
+      "size": 90553
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_008.jpg",
+      "blob_sha1": "7dad100eb94fb4c52ae773a1237d0dfd512656f4",
+      "sha256": "72bea2af6d59f7b4ba80e10394b8b6b1a2d12af2d853d47a163d5a5a34b5fc5e",
+      "size": 68138
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_009.jpg",
+      "blob_sha1": "643daa9e205695f2518f989a44bad811f507dc3f",
+      "sha256": "f25e229c0652fecbbfa0029e01903f8068c01564f3c49488231e9681b301be7b",
+      "size": 57090
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_010.jpg",
+      "blob_sha1": "8416639fad464c492c817f3277003e0888a65ec6",
+      "sha256": "b4b3764f4146815d2a3b14188a756c3d5689ef7ffbd1b635f86215cd7f36aaf1",
+      "size": 93323
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_011.jpg",
+      "blob_sha1": "0e9ac0cc2da1b72244a3939674f057071288544b",
+      "sha256": "256d68e6b80e053bf865adc8fab5f525fb632ca338ba8adff8dfe9ae20ec8f1a",
+      "size": 142344
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_012.jpg",
+      "blob_sha1": "aa952d8cb13d0fd763aba453402f05d379a208c4",
+      "sha256": "4e744072d8f8151bd1b10daa419e334720a231b0c5d2d5ab66b07b7ae6d9480b",
+      "size": 56277
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_013.jpg",
+      "blob_sha1": "b3451adb8acf25d7bb6df16a2139843075b470bd",
+      "sha256": "1eeeb7964f2b2219ef8e251701bcaf883039d81d6d58f5f83611c004baabc17e",
+      "size": 107088
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_014.jpg",
+      "blob_sha1": "e9191b1c67a3311a5ef0dc9a90d515ea031c7772",
+      "sha256": "627c77287735632f52e283d2d6ac25bc327614b1bc6678ae9b2a575a70209c52",
+      "size": 59539
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_015.jpg",
+      "blob_sha1": "a6b450c6ce882b0f095ae3430db2705739fa0168",
+      "sha256": "cf56e03c863ce454c94e4d637c4fdb4f166bb2f453247b4f1cd692fbb9b6c47a",
+      "size": 100368
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_016.jpg",
+      "blob_sha1": "39e3f6929c7406da216073de0040c25688e9b021",
+      "sha256": "26dd8cc3f2292569948cd9964bb141d246596c88838959e3e80da8a7d8b7992e",
+      "size": 79860
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_017.jpg",
+      "blob_sha1": "9de465844a896e7f475c92c015d0e6418a948634",
+      "sha256": "439b04db323794f3cbb3135c7eac06157751eded336070af92e1af857441f817",
+      "size": 59689
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_018.jpg",
+      "blob_sha1": "ea9d16a48279bcc4f158a41919d37479f7bc7f8d",
+      "sha256": "93d9eba15d896a86a9a8240ac8c82bd06a0986b638cacae28966009d11fe7e45",
+      "size": 92447
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_019.jpg",
+      "blob_sha1": "141cc3047772b20f76dedc4295b63c9ded5d2b34",
+      "sha256": "d85cb10e4900c455bebf4510250f5b48c4d8533f11c5d8e6b121bc6b86e928f0",
+      "size": 66872
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_020.jpg",
+      "blob_sha1": "575c24fabcbb43d057e110e050b2d23fd07223bd",
+      "sha256": "8e25809ab747d2584d61b1baff591c77dd153daf0a6f82c32d3da8ba1b7a4f30",
+      "size": 111704
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_021.jpg",
+      "blob_sha1": "204ba32d578d5da1a294fbd1004f95ac6a105791",
+      "sha256": "11193cd5cd2458ed5a0686eb1f76f48fc60d7db42b79ef66c4555a47faa5d760",
+      "size": 58680
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_022.jpg",
+      "blob_sha1": "46ec5e0f764e878096c7d6de3689cf8e828bf9b3",
+      "sha256": "45ca7947fa4a62ca1aaf69ee3200a65f329613e1e82167f8bd1ae4a9560bebaf",
+      "size": 52666
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_023.jpg",
+      "blob_sha1": "cff76dd54cacb4928a77c52e725454d1a44c0e8c",
+      "sha256": "ced317071303bf803019771e404c51a0d7a20c5eaada380d00858d7da5cf47e2",
+      "size": 113197
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_024.jpg",
+      "blob_sha1": "77e017d3a91a9214ae81efc699eee4be67e6a1fd",
+      "sha256": "238cdd114c3aa1f97cbd15428efc08cf08476cb3695252f6058301b487beb2c3",
+      "size": 107598
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_025.jpg",
+      "blob_sha1": "fea94165bf3d1976738f33541cf5ba58712e7562",
+      "sha256": "9333ebb39bd0756449d9b7d76ec27a079f3392faf13a25b8884233fcc5022934",
+      "size": 68094
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_026.jpg",
+      "blob_sha1": "855ee1a0fcbe618874c52b299d1f9f371268bf5e",
+      "sha256": "5c365d70c2c6067d18c277cc6d19c9aaab908c794b9f01f28a53b1b9b12d4580",
+      "size": 110443
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_027.jpg",
+      "blob_sha1": "067548766b11270e26c52eda96aa3a37ea1277de",
+      "sha256": "d0b024e44d4221d07e3d1565cf0a0c0fc12e11958cba53786fd33bae9ceda4e0",
+      "size": 55035
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_028.jpg",
+      "blob_sha1": "4f3a82b79623f7245400c088380b19afd57a9d70",
+      "sha256": "bbbd102ea5320e1a9e44fc62199d6fb8de7a665cf95f2b2a7a66a4fddbad50f1",
+      "size": 84744
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_029.jpg",
+      "blob_sha1": "0862253fc0af6a18e33eda24e0d946b3003cda80",
+      "sha256": "927ce1fd968d2d4c883da724a93b47f4953501b6e12f09761417ffb230388e1f",
+      "size": 156885
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_030.jpg",
+      "blob_sha1": "ca69da8f916dff8c764366c5d7594184ae5ce896",
+      "sha256": "7f0ff1ac30945cb26be73b6cbb769cc5172889dc7826d29798d5a50c322f20b7",
+      "size": 109226
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_031.jpg",
+      "blob_sha1": "30f78ed9e8de51093777106c318881033405c12e",
+      "sha256": "309f6fe191517cf4474dfa5273d1ad21f799dba650ef288f0c4196652080d676",
+      "size": 70277
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_032.jpg",
+      "blob_sha1": "931f278d7ab61be94d390e7110325e001b506a33",
+      "sha256": "dd0cec2397aac493d99a1fbe8182693f158eb428d2cb0dec2cfb2141faa90b28",
+      "size": 68879
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_033.jpg",
+      "blob_sha1": "a1b8c1ad0e1947a659b0ae729040fc05bbf7ea98",
+      "sha256": "a8922cc6a94505a794c782ca6de812c2276bd683bae5d304f736da447dc63b45",
+      "size": 84929
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_034.jpg",
+      "blob_sha1": "4bfca19b6cea580a703a223c2c7f06437ade86e4",
+      "sha256": "9378d568d7751a505dfa0ab87c1d65ea3652066b95b560b01a225c57c6c116dd",
+      "size": 97973
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_035.jpg",
+      "blob_sha1": "b57d563d80a25374eba20758852cb388e81237e4",
+      "sha256": "0a499df729c47f7469a37c582c1330207c64d4cc3df769929dc2ad8cbaab76da",
+      "size": 103853
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_036.jpg",
+      "blob_sha1": "e286828561d2050b431e3bac9e9cdf57b9b172b2",
+      "sha256": "b5e63f1245e114730c6ae3b75617347aa6b9b3dd5d8b28faae8ad0607057015b",
+      "size": 71453
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_037.jpg",
+      "blob_sha1": "c9e017d3abd4f36081f5ea15d1baf0d7930467e5",
+      "sha256": "009ae5c34c8fc5e04dc5839f4cadacd4fc2d358eb09902245d1a8dc00a80dfd3",
+      "size": 70733
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_038.jpg",
+      "blob_sha1": "38f0190eaeb3405e4ba4f7e1d3a3800c177cb7f0",
+      "sha256": "b5bbff89f976a18f7bfbcdfc2889a305750a1228c99f9b16dd6c1c7c9bb34cee",
+      "size": 61070
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_039.webp",
+      "blob_sha1": "54b5d82500bb4e15c5f713272329c10888f439b5",
+      "sha256": "79b9a5a4f805724a1075aeeb22792736f97efcc23e9b8d79282799528756d083",
+      "size": 53036
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_040.jpg",
+      "blob_sha1": "fb95ece8853396317165e36a2a9f323623bc912b",
+      "sha256": "53cead49b92f115f6969ed8c69b71450b0a64788cf9fdb3106a1b8c659730df6",
+      "size": 58476
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_041.jpg",
+      "blob_sha1": "ed662d1b76ebec91d4c030ff81e9c472e33d1df2",
+      "sha256": "122d39f8ac591724410fcd6238df9263ef01ef3f0976d9f6246cc5568dd90756",
+      "size": 68801
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_042.jpg",
+      "blob_sha1": "30f9d0f73de6e122754a1ab39761c27c91ce328c",
+      "sha256": "55a985a83c582aa561f30448927982b540835c4dbdba183ca0654cf3c00baff9",
+      "size": 61149
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_043.jpg",
+      "blob_sha1": "d30ff1e3ff6a55fa5ba8fa15bfad22f5304ca96a",
+      "sha256": "08d165fec762480fa974fecfe8520f2830b8fbb6695506aed74bdff3416972ad",
+      "size": 64469
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_044.jpg",
+      "blob_sha1": "955e269b121559022c8c701cb673438d28c26dd4",
+      "sha256": "768079164c9679dbf008a53aade1a2bca62af0f5dd824c54463276c290b88dfd",
+      "size": 72354
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_045.jpg",
+      "blob_sha1": "9487d17722228f3e3b18ee60442a69f11902b70a",
+      "sha256": "490c7ac240d2f18e609e40dbf7a230df76c2d8cac02a373301419c2c8a478ff2",
+      "size": 86046
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_046.jpg",
+      "blob_sha1": "5bba30edf62af1dcc436e5573e1a23bd2cc43b69",
+      "sha256": "1624635f26f481f543b308be9dac355e32614eadcb7b3ef89850d2c3fe7fcb61",
+      "size": 73000
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_047.webp",
+      "blob_sha1": "717518f91eaa420560c0940b82c1a64c200e0e53",
+      "sha256": "3dce62f3649698e41665871abbd5a63558207ba8494a2e049022dda7cc11d1e8",
+      "size": 66002
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_048.jpg",
+      "blob_sha1": "45813e26038cf2818c4329caf364805a57fa5eca",
+      "sha256": "b4e83eb24c039c87069d0b8988e6db87444b321d95f3c525bce61221e6ac8a63",
+      "size": 62560
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_049.jpg",
+      "blob_sha1": "9a8f685c327b9f61aec07fa09b145d9d4e7fd11e",
+      "sha256": "e0f50ccefcd499ae2de9604ee0784b2b14296d260372a9e8748aaba5f17a61ad",
+      "size": 138983
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_050.jpg",
+      "blob_sha1": "004ae2b60357ee38372ba8702d007b95993cbc59",
+      "sha256": "e97d49b8684995b5b887b2aca33f24a5a50962052a8ac6d2a96dceafc88e1de5",
+      "size": 62108
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_051.jpg",
+      "blob_sha1": "6cced35abe772d97e5f4f986a74be65a35336fca",
+      "sha256": "80f1f70e7f2bdceebfde4a8ca08c48ebc7f8ccf1c3e444a91546a3013f7dabb0",
+      "size": 77285
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_052.jpg",
+      "blob_sha1": "53a72b3015188d58bb899cb02863674bac9b1d6c",
+      "sha256": "53c28c8324d5a01d0ad293af76e45b2326b1dfb08e613f369df2f6e8c8c69317",
+      "size": 63214
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_053.jpg",
+      "blob_sha1": "008b71fe205945927b7233662b80b7bdda23c121",
+      "sha256": "0fbf9623d4b307288b309e41c5eb07366018c8225110cc9ed95299768f47ec26",
+      "size": 63376
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_054.jpg",
+      "blob_sha1": "7759739b0d406d375fbb8c6573ace09b9183ea7f",
+      "sha256": "a36f9afba81e4801e35908d29c49fb02f12e3051efcc3076b1da70761d830193",
+      "size": 71629
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_055.jpg",
+      "blob_sha1": "f36e83ed40cd849dfd660282523abb15a2f806d7",
+      "sha256": "bbed382198070c78ddc29063f92de988cba39c4e895259b5135288235f37e990",
+      "size": 48109
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_056.jpg",
+      "blob_sha1": "86450b08b0bc07b3ab45834c54f2e5a8b331b654",
+      "sha256": "839a91ba27b79e45f275f669d6ab5d5b69d83dcf5eda7b691e998f4abf3215a0",
+      "size": 89001
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_057.jpg",
+      "blob_sha1": "77830edd6c2378d149ac1e96080846f514b3bc31",
+      "sha256": "00712f09c7a6067c8c257d1f59e926f5b78d6621074f178dce51292019c57227",
+      "size": 134257
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_058.jpg",
+      "blob_sha1": "bed115ea996893fa02d7742a7a4f2280e8ac4306",
+      "sha256": "25687f3e918c53d152542954821e8ef39da542ea65a9fceee1e73a59d3e301de",
+      "size": 71199
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_059.jpg",
+      "blob_sha1": "77875a6b439d2e2fc2f2ea58f16a6ca91af0e2ad",
+      "sha256": "49d5e4e213b604a27769f0ae5e220a00d53624792e7686f0568a6af6cf956fa3",
+      "size": 147817
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_060.jpg",
+      "blob_sha1": "a1ea4b204e193b2c97421295e46e2b49bd844f81",
+      "sha256": "5449d0c721d459959ee36b1643e0df2f7d7a47d15036e78d8bcad5a7364d8386",
+      "size": 48062
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_061.jpg",
+      "blob_sha1": "27d275860ae3e7e61af5394e6b12e80bf0609cf7",
+      "sha256": "7a33943dc5605a275b871bf59431234067b7a3f43a88db61acaee321b348e863",
+      "size": 57368
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_062.jpg",
+      "blob_sha1": "f5f759797c6b7a70b312cc9cf51acf1eba32fbfa",
+      "sha256": "b124ad300ec7f6b0fc2d29ff31e4fa40cc70a4dfb9d830db27864acd6cea857c",
+      "size": 109321
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_063.jpg",
+      "blob_sha1": "c7cedc265e86f1ab30fffd04520dcc4e42099095",
+      "sha256": "4c489c84413ad5520caf01263565f487f51ef5e0107a73c71964bb22d3f45e8c",
+      "size": 143654
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_064.jpg",
+      "blob_sha1": "03f8729ec74b8a9e4e0e0d0802e97cd6eac43702",
+      "sha256": "480397cc2fde59cab0ee8a1d6c5d10f11ea70b7aa5ddab455a2b16ea1e77f7cb",
+      "size": 63402
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_065.jpg",
+      "blob_sha1": "a3b95e02dd7ae8c7cba0b9155b439dddeb311331",
+      "sha256": "f3af7cd10d59ad9544802d103fd6208a5b5a9453e7fe23e4929b5dfb45a6e2e5",
+      "size": 50409
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_066.jpg",
+      "blob_sha1": "221b4fa7923944775dff30582a75397008b05aad",
+      "sha256": "112698b5b7773392377ad2848ef362c0febd1cab3032c22adda05963e2c03f70",
+      "size": 50091
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_067.jpg",
+      "blob_sha1": "422c3decafa67f2d0aeda8516ec8fb8ad5cf9313",
+      "sha256": "237df30b142873c57d58554c22b5641bdc258ff9a1b664b31db621d6663fe64d",
+      "size": 61091
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_068.jpg",
+      "blob_sha1": "19bdf8c4aba5823f9fe06f6bc634489f9e15a50f",
+      "sha256": "9b2a248d7360ea27d0e46bb18b92501df313c6ace2bb6b8d7d7f7e69165b7401",
+      "size": 44537
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_069.jpg",
+      "blob_sha1": "32dcc55021f636ac4f1edff2cd89b12e8916b3b3",
+      "sha256": "063664f5e99c8598a8ddaa80a2fcc00a2879b3ece437d1933ed52b0a7798de57",
+      "size": 77241
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_070.jpg",
+      "blob_sha1": "b8667c11e33a1e61e9e3b7a5aacf1f937f070b70",
+      "sha256": "4122236e4fa0ecb668ac822988dae0abcfb49a5f51d705f4436212d89f048779",
+      "size": 75198
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_071.jpg",
+      "blob_sha1": "35d04c6da57992082796b8afcd0e0552a6f6297a",
+      "sha256": "8d7ece0d4371af00f15ecfe5fd115bcb386f9ab5792bdd49e14d7b0962b45e2d",
+      "size": 66677
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_072.jpg",
+      "blob_sha1": "4963b1be532f22dd2c0449c54d03c987f91ce9b7",
+      "sha256": "4735f09f0261cdf447448cd06ddc733479977d8ec0e98ddf2967b7675b5ad41e",
+      "size": 56104
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_073.jpg",
+      "blob_sha1": "36e08f976b9c529df385b920f1f09714f89d4489",
+      "sha256": "d2599a92c26541dc81b94b20ce864a681aeda71cd54eb5e6c25beae309a19210",
+      "size": 61970
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_074.jpg",
+      "blob_sha1": "23b46726ea2c60621cc2efe1a3bfdaf2e37a0654",
+      "sha256": "14c492a0352c71ca8bb4cf232640458aeac21cf98678f691f595f78aa7a2fc58",
+      "size": 82196
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_075.jpg",
+      "blob_sha1": "18c3feb84b224f885c0ba3a229a6902af81ed180",
+      "sha256": "67820a1f6531255e4235f88ccda0c7e8168d730fac57f78e23ae219ce7de5ead",
+      "size": 80768
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_076.jpg",
+      "blob_sha1": "6630bfa380b3c5d9b13dc1d517008d05ae1cf5ea",
+      "sha256": "50dbfa53ffeda8a9eafe38c7bdc10f99694259806c6d1c6a75450c5e159a7c94",
+      "size": 62587
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_077.jpg",
+      "blob_sha1": "5c3d700ed9a6d5c4f821530937f1c6417a135aa5",
+      "sha256": "0cb7b39a9a31c0a37ae43b71b5e1185a60ea6ea15b4c7c71a9a698f6917f6209",
+      "size": 66198
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_078.jpg",
+      "blob_sha1": "ad1e798782bdd1a9e10b60ca03ddb1a7872987a7",
+      "sha256": "974734b7e50c1314d2e978ffb01c3a3b4a4c2759b6cdcc729b95240de5d6e049",
+      "size": 68041
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_079.jpg",
+      "blob_sha1": "882b8a1e7d4a4b26794b8f16c6b457a56886ddcc",
+      "sha256": "6f6707e63f99e351e8fe05daec11197a42e315cf42c15e306d5ec20aff8ed3bd",
+      "size": 62935
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_080.webp",
+      "blob_sha1": "84ee5894c82e772489cac16016b02054e08d807d",
+      "sha256": "9932ea61a056ef26cb0af6a140fb4ffc312607cab7029bd61fc18a19df141e4d",
+      "size": 39466
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_081.jpg",
+      "blob_sha1": "9d0001202675ae3b95f6d4b060edea493949bf53",
+      "sha256": "0cd3f36d60c523b390edaf76d8e49770d6f5663775026d852234959ca131b893",
+      "size": 68502
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_082.jpg",
+      "blob_sha1": "9c541cb35ebc55a6ff2fed8d37209922df6c7a95",
+      "sha256": "cc48bbb0c2735f5ccea9c65dc86f1d23a5083517b947edccb2bb2192325058db",
+      "size": 52456
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_083.jpg",
+      "blob_sha1": "0dd5b7081355df652171d1fb2bc45e09a6dca704",
+      "sha256": "029dc522d1fcfbdc2d014b111c25516ef2a343eb4448d6e1ed836a5bd76b23d1",
+      "size": 55541
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_084.jpg",
+      "blob_sha1": "6eacc1f1a1251a66e292f783b1f949cd9f35ba20",
+      "sha256": "0a303d7432e87f0548491d158dbc28847f74f6b0b39ab10286bd373969414af9",
+      "size": 64873
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_085.jpg",
+      "blob_sha1": "f717c4f021896705f2e25fa1caaf907a61e8f811",
+      "sha256": "2b484e5adae578d8ced99c0e523a3aebb6d563a6e212a83c329576f8615b6e37",
+      "size": 108623
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_086.jpg",
+      "blob_sha1": "d46f9de84ea80817d07489792d9bdd04454a36fe",
+      "sha256": "21215c0c44b10bd5a8ddd0cba1d6cdc3801bb81ce7505f20ef14e2f43cc988b1",
+      "size": 77075
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_087.jpg",
+      "blob_sha1": "a95b8fc446f0464daa9547086035714c12a67bab",
+      "sha256": "a7ed547ee4809bbf97b0ba4654423bd6b3559e2a5a0016fc32da758560696b2f",
+      "size": 68091
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_088.jpg",
+      "blob_sha1": "dbe4e28b2e9dab00addbe0cca2e85d9e9a14a97f",
+      "sha256": "4bed2b55b239390b208ea1873c5a4e5853cee86a6e713da4364fe1cd6afaea7b",
+      "size": 67238
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_089.jpg",
+      "blob_sha1": "28f9b086fcd892853b1ca68455e0d55e8e20754b",
+      "sha256": "247e992bf8abd8be6ed0a136d939758efc46bd739779960bd296a6e58abc6a3f",
+      "size": 46915
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_090.webp",
+      "blob_sha1": "f24e053434b97dacc0616a031c2d5b11cc7f091e",
+      "sha256": "c71973599dcc557dfa97aca2b9c9643d284031e40f2131e74c4a9e3c5f77ae7c",
+      "size": 57634
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_091.jpg",
+      "blob_sha1": "5812625f9747ee9ab9130ab4ede364ead085a02d",
+      "sha256": "57a9b42a1e72442f8d34019bad9e14ae2ab4a3d2dd3a114d90922c86c6bbe2df",
+      "size": 45872
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_092.jpg",
+      "blob_sha1": "898d69f20a6bd5e2652f6e8ab7d36050d960efb5",
+      "sha256": "232c02985c89c765e53ddb65f0f8f8937c681174777eaf75145ff350fb1ff7de",
+      "size": 54279
+    },
+    {
+      "path": "app/src/main/assets/images/photo_quotes/quote_093.jpg",
+      "blob_sha1": "3b5a68c17f6853ff90bcdac4760be3fbc5c5f410",
+      "sha256": "1e3ca45391c661f36913c5e276c87758d041ed6786ae9c9abdaecf795385bbe7",
+      "size": 123928
+    },
+    {
+      "path": "app/src/main/assets/images/pmm_v117_kaaba_logo.png",
+      "blob_sha1": "dfd5f20d3480130252ff7c1416108a63ebe07407",
+      "sha256": "e0db79bc5b049caa7d39ad28cc0568b9f73760ee4a071909d8d676c741252c68",
+      "size": 2143
+    },
+    {
+      "path": "app/src/main/assets/images/pmm_v117_tawhid_logo.png",
+      "blob_sha1": "7254c188558700d014b7bbf7dd271d9e24c26ddd",
+      "sha256": "b0dda6dbd4f20c20d575f6b2eed8a30566c6e611a4b92d0124a56090f47c0a19",
+      "size": 2336
+    },
+    {
+      "path": "app/src/main/assets/images/title_kafi.png",
+      "blob_sha1": "41048d6611627806983ce315d18bfb262a4eb21a",
+      "sha256": "955b3f11512a2e24e1d9089fccc2589c381978061208613d338ff694658613d4",
+      "size": 24929
+    },
+    {
+      "path": "app/src/main/assets/images/title_life.png",
+      "blob_sha1": "34d3eb55cb23e6aef14b4159d38ea091f012545d",
+      "sha256": "6a730262e23f9950318c3bc322bbc1cebbe6bafd293dbf8f060ef5df1bcae639",
+      "size": 22542
+    },
+    {
+      "path": "app/src/main/assets/images/title_nahj.png",
+      "blob_sha1": "2d219f14766c8e4863ae5afaabf0e729210c1df3",
+      "sha256": "506181b293e159846ff94adaf32f2b2888002dcb032e6c5db43151059b1060d9",
+      "size": 37262
+    },
+    {
+      "path": "app/src/main/assets/images/title_towhid.png",
+      "blob_sha1": "8a552f13e83040564ec8dafd4a66d81cb5ee3f16",
+      "sha256": "655e0a76e0d588a5f97b0f0b172b109e1c9e9042a915fbff6b80f664fab9e1c3",
+      "size": 37220
+    },
+    {
+      "path": "app/src/main/assets/images/v8/home_v9_iwan.webp",
+      "blob_sha1": "618b815d5f5bf005f6165177131b40bc5ef6df03",
+      "sha256": "909794531f1406693088d3d3fcf3384b7b0e9dbf64950b26a747adc92649c005",
+      "size": 474134
+    },
+    {
+      "path": "app/src/main/assets/images/v8/home_webp.webp",
+      "blob_sha1": "cfbdd772c0330fd948dcaefce56b6f5785f9a92b",
+      "sha256": "50dc7c4d76d4c5b0a8f52aad604efc8031925a47505dda01717c77f193d3ad03",
+      "size": 455052
+    },
+    {
+      "path": "app/src/main/assets/images/v8/list_other_webp.webp",
+      "blob_sha1": "ebc147ff720440c9d0f2be95da589a12528179ec",
+      "sha256": "19f83178d35309a4143ad11936d0d0c93f0a2e4df117978e86bdf797e61b4f22",
+      "size": 379466
+    },
+    {
+      "path": "app/src/main/assets/images/v8/list_surface_webp.webp",
+      "blob_sha1": "930e12e8891359b9edfd1d012a7016585764ed90",
+      "sha256": "f22f360b976391360147a9784fe088c28f4fa2fec34cce7a4f7299af308f9b74",
+      "size": 383778
+    },
+    {
+      "path": "app/src/main/assets/images/v8/row_blank_webp.webp",
+      "blob_sha1": "0e7d7b1b29a2f32c701206494ac1dd01acc4f879",
+      "sha256": "e4129ed8e4ebd309e772a0d12968703da3ecdb6d336426b81cc514181f8cecbd",
+      "size": 24016
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_about.png",
+      "blob_sha1": "f32e5d794fb0d2d8871520e1b6f9ca169357841b",
+      "sha256": "c708d581a636457c84417c96caf39d89511da5e098104130557410ecc2c0d46b",
+      "size": 2226
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_biography.png",
+      "blob_sha1": "e73b7fec9d00e647d469d7c735b67aa83577d7ee",
+      "sha256": "88a65cad29de2e470c409265cde24055adaa01080d1fcc96b368d39fa28267b8",
+      "size": 2748
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_kafi.png",
+      "blob_sha1": "b2df2adcd7c7a2fb2aca886ae2928fcfc535800d",
+      "sha256": "edf699c5fcb0254c57f759dd3c839699bd53d20012f533a6ec7585c4573b0a2e",
+      "size": 4911
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_life.png",
+      "blob_sha1": "04a6461f1578bb12ddef7161cac15a5187299189",
+      "sha256": "bbd7eac6221e2243f2ead31a94ad666b9fc887e9cf1af23e17b9b967aeee2778",
+      "size": 4075
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_nahj.png",
+      "blob_sha1": "11812a23cc45708f51f569561708bb336366cedb",
+      "sha256": "0c0f0574d92796defbc1ed8f94f8e36358991ca4645c385ea327986883fdf9b9",
+      "size": 5202
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_player.png",
+      "blob_sha1": "f376b8c6b4c30f3874aeeaa3fa5f3dc21ce66d48",
+      "sha256": "c0a62b2eec781d5704bb482302ef492cfa8061567dec6ae79cc406fc0c3807a4",
+      "size": 3071
+    },
+    {
+      "path": "app/src/main/assets/images/v8/title_towhid.png",
+      "blob_sha1": "e35af36d9541d1eefc7364c3214a419b302c81b5",
+      "sha256": "d7399728b8cd243564280402d56824e9c03b0d44a60da76d7e6e9515cf3229a3",
+      "size": 4061
+    },
+    {
+      "path": "app/src/main/assets/index.html",
+      "blob_sha1": "69054803d7356bf1ce65a65e69baa6ffe2c8b21f",
+      "sha256": "a589e594d53f1cc6a82f1819a5b67ee2324e4a97f7aa09c98e967105287884b6",
+      "size": 358693
+    },
+    {
+      "path": "app/src/main/assets/kafi.json",
+      "blob_sha1": "026fcb45f91dc6924a0b56816d4f7ca7eac21875",
+      "sha256": "8399ad93c5d7112eb02901995cabf2ad4d3229e2e800a13e4b4ba2286b61ddad",
+      "size": 5546
+    },
+    {
+      "path": "app/src/main/assets/lessons.json",
+      "blob_sha1": "cd1d82eedc363e5baee1a6fae468feba3bd94a4b",
+      "sha256": "fe8cbfe83c5b7caa4944e31c94d9619df59d70417e62fc46650d356e2303d550",
+      "size": 8947
+    },
+    {
+      "path": "app/src/main/assets/library.json",
+      "blob_sha1": "4c1215170649c0e8aadbdbe08e297a9d5f86e2f7",
+      "sha256": "8a71a6e76bd5ba705c192b881c923ac6b372067cd71cfdb1b32574f9308156b8",
+      "size": 304
+    },
+    {
+      "path": "app/src/main/assets/life.json",
+      "blob_sha1": "42eb16efaf66463d55e15df800b12ac91b398117",
+      "sha256": "188b09948bafc6f321c584206cdc6af48052d2c35031f8f120785753583ab330",
+      "size": 2628
+    },
+    {
+      "path": "app/src/main/assets/nahj_audio_links.js",
+      "blob_sha1": "0251bbfa3a2b6f8b9e47b9907ecbf4f60612ab58",
+      "sha256": "98b31f0456812e9e4da2f82ebed118ef464d6f1265933dc775db3e5786657a21",
+      "size": 3097
+    },
+    {
+      "path": "app/src/main/assets/photo_quotes_manifest.js",
+      "blob_sha1": "ed431db8fe31e2061622014dcd58ab23eb1c8a17",
+      "sha256": "2f7aab1103c4a339614255b6a4da57da82476a6f1012a8299755e39445a88748",
+      "size": 3894
+    },
+    {
+      "path": "app/src/main/assets/pmm_audio_stream_helper.js",
+      "blob_sha1": "9891293236047e222e2e4a25f242f358f5b71859",
+      "sha256": "45374290011c40167a23772164effe3f1ebc33ac8a1d0b90e766825a2d8fe885",
+      "size": 2219
+    },
+    {
+      "path": "app/src/main/assets/pmm_kafi_resume_screenoff.js",
+      "blob_sha1": "ad17dc78d251085e0b37deaedf7bb0cbf4392620",
+      "sha256": "ca70043f3c18836245884101af83c919141c949c0f26031d5facd774dbf98f92",
+      "size": 6947
+    },
+    {
+      "path": "app/src/main/assets/pmm_offline_course.js",
+      "blob_sha1": "fac6f123391d9023e42e3a953ae917e30825fe11",
+      "sha256": "521e8286cb9df0feddb65a1d0fec4c375ef4917cc920bfba2f6ca7bb98bef99e",
+      "size": 26359
+    },
+    {
+      "path": "app/src/main/assets/pmm_offline_course_logic.js",
+      "blob_sha1": "79033cf9cf1f7f913c888bb64e7f51c822b63727",
+      "sha256": "49a632fbe369d450a6b276d027569ab231eb37a4c7bad9f5ddfa229ae07965ef",
+      "size": 4940
+    },
+    {
+      "path": "app/src/main/assets/pmm_online_updates.css",
+      "blob_sha1": "d83f367be3a9d0c485c68566f9a11100dbe898b3",
+      "sha256": "b07a28c2a0dbd62810d0834c0824f44e7f5392a99e96b3788300ea4f696c60c2",
+      "size": 2910
+    },
+    {
+      "path": "app/src/main/assets/pmm_online_updates.js",
+      "blob_sha1": "b5c4d582366911622bb43a3c7c581cadf3285670",
+      "sha256": "ae305a004640f61a969c57e548e7cc7d946f9ff01c111ad6a97b990bf8641a45",
+      "size": 11063
+    },
+    {
+      "path": "app/src/main/assets/session_manifest_v8.json",
+      "blob_sha1": "4bcc9a4d0d859a60a6b680019abf5e5145769671",
+      "sha256": "269d289c2d14a6fd2160abe6d1205b8eb2029953e800c69171e5da649b2fa25d",
+      "size": 21849
+    },
+    {
+      "path": "app/src/main/assets/v16_info.json",
+      "blob_sha1": "5001f516cd280d01ef843ad4dc8a673ba7eff37e",
+      "sha256": "7be755a73df94ced58d511543b57f60aac7d941602f1617e546a2c239da69eeb",
+      "size": 666
+    },
+    {
+      "path": "app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java",
+      "blob_sha1": "5a5c71553233f530bfdb72d37eabf01e6448b917",
+      "sha256": "51d9add105e934589d9ee8118cd4667d0003810c175832963144270995720d51",
+      "size": 31891
+    },
+    {
+      "path": "app/src/main/java/ir/nahj/towhidkarbordi/PmmKafiAudioService.java",
+      "blob_sha1": "b1822bb698c47220f9bff4b46e5d4f1d489b21d8",
+      "sha256": "a805d4863ec9999207502e04d449082fe4ebf9e3dc2a52ec4d5b3f72ecd8ba54",
+      "size": 17674
+    },
+    {
+      "path": "app/src/main/java/ir/nahj/towhidkarbordi/PmmMediaSaver.java",
+      "blob_sha1": "27329b25ef3af32caf70bfa90cb57a0df52b2aba",
+      "sha256": "57d77deeb26e2d8dd553b6aa30adfdedd70f65d15b7a84cdc7a5ad89bbff82c9",
+      "size": 10373
+    },
+    {
+      "path": "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java",
+      "blob_sha1": "6d9b34515b6bb7bb24f6e718080d72a61f2bbc49",
+      "sha256": "7713f47241d6d9bc8d2b4defa06b6dddf0e2d9ed2b4cb5b01efb0cf9d42f12d9",
+      "size": 840
+    },
+    {
+      "path": "app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java",
+      "blob_sha1": "6a1f323814a4aa6eac7e5262d8b1454f966fd229",
+      "sha256": "3cdf0e32282aa795387b7dc0484e68f5af067f4b6996f1c25ffbbcb05aeafff8",
+      "size": 9612
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/app_icon.png",
+      "blob_sha1": "bf47159114d228913b92b704adf3e66f90c57104",
+      "sha256": "20471fedaa3cef1603da89772f521a19de1c6fc41dfcdea6d1cd8424c264d94b",
+      "size": 78789
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/app_logo.png",
+      "blob_sha1": "a63772c6df494055b9a2f03133cea8e6648c7128",
+      "sha256": "fb2a9e1175d84cc7d90a7df9d6fc1ebdb8018260b4f2291c7fe1ef5779e0f8d8",
+      "size": 57422
+    },
+    {
+      "path": "app/src/main/res/drawable/app_icon.png",
+      "blob_sha1": "22c100ce9ee385034059fc904cc68465e67137cb",
+      "sha256": "fe8df6986659554aebb99c7f5d90952dda0434044400943a90e0abc575e58060",
+      "size": 5868
+    },
+    {
+      "path": "app/src/main/res/drawable/app_logo.png",
+      "blob_sha1": "fbbde7f0c96223e6194664538686e65cbda9a854",
+      "sha256": "83f621cbfb80730e9b0ebb4958fa7e3d247bc39e3198d9556689d0c0f781a232",
+      "size": 19591
+    },
+    {
+      "path": "app/src/main/res/drawable/pmm_reminder_icon.xml",
+      "blob_sha1": "02c43724b1fcdaa4a4e690f8e88da4ee910d338c",
+      "sha256": "7b23d4093d6d300d7a238efe90249990556ec156e7867b110ec45e9ed4b3459c",
+      "size": 400
+    },
+    {
+      "path": "app/src/main/res/values/strings.xml",
+      "blob_sha1": "619b332108ed56eb1059978f66c859f447e785b9",
+      "sha256": "7db38a39e72069b82d21adf40261dda4cb7fe786f0efddb50429afa2d937aab6",
+      "size": 120
+    },
+    {
+      "path": "app/src/main/res/values/styles.xml",
+      "blob_sha1": "4b89b84f3ad54faae0796f633a29e369b1a6d4ab",
+      "sha256": "2562a205f274bac608fb410fc37085680627de9296454ecd534726ac6189402f",
+      "size": 427
+    }
+  ]
+}

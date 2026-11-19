@@ -289,8 +289,9 @@ public final class MainActivity extends Activity {
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
-        // Do not keep fetched online photo/media responses in persistent HTTP cache.
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        // Cache is used only for explicitly requested resources and obeys the server policy.
+        // No media file is prefetched before the Play button.
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setAllowFileAccess(true);
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
@@ -315,7 +316,8 @@ public final class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if ("file:///android_asset/index.html".equals(url)) {
                     view.evaluateJavascript("window.PMM_ANDROID=true", null);
-                    checkContentUpdates();
+                    // v113 strict zero-background-network trial: no automatic manifest fetch.
+                    // The updater remains in the code but is not polled at startup.
                     openWisdomIfPending();
                 }
             }

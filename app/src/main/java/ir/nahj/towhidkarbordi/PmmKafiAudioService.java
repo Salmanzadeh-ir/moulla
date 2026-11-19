@@ -68,6 +68,7 @@ public final class PmmKafiAudioService extends Service {
     private AudioManager.OnAudioFocusChangeListener focusListener;
     private boolean prepared=false;
     private boolean foreground=false;
+    private volatile boolean buffering=false;
     private int lastSaved=-1;
 
     private final Runnable pulse=new Runnable() {
@@ -134,6 +135,7 @@ public final class PmmKafiAudioService extends Service {
             answer.put("active",same);
             answer.put("playing",same&&service.playing);
             answer.put("preparing",same&&service.preparing);
+            answer.put("buffering",same&&service.buffering);
             answer.put("position",same?service.position:savedSecond(ctx,requestedUrl));
             answer.put("saved",savedSecond(ctx,requestedUrl));
             answer.put("duration",same?service.duration:0);
@@ -211,7 +213,7 @@ public final class PmmKafiAudioService extends Service {
     }
     private void updateSession() {
         if(mediaSession==null)return;
-        int state=preparing?PlaybackState.STATE_BUFFERING:
+        int state=(preparing||buffering)?PlaybackState.STATE_BUFFERING:
             playing?PlaybackState.STATE_PLAYING:
             active?PlaybackState.STATE_PAUSED:PlaybackState.STATE_STOPPED;
         mediaSession.setPlaybackState(new PlaybackState.Builder()
@@ -233,7 +235,7 @@ public final class PmmKafiAudioService extends Service {
             try{player.reset();player.release();}catch(Exception ignored){}
             player=null;
         }
-        prepared=false;preparing=false;playing=false;active=false;
+        prepared=false;preparing=false;playing=false;active=false;buffering=false;
     }
     private void error(String message) {
         errorSource=source;lastError=message;
@@ -257,7 +259,7 @@ public final class PmmKafiAudioService extends Service {
         duration=0;
         errorSource="";lastError="";
         lastSaved=position;
-        active=true;preparing=true;playing=false;
+        active=true;preparing=true;playing=false;buffering=false;
         showForeground();
         updateSession();
         try {
@@ -290,8 +292,16 @@ public final class PmmKafiAudioService extends Service {
                 stopSelf();
             });
             player.setOnErrorListener((mp,what,extra)->{
-                if(mp==player)error("این فایل صوتی اکنون پخش نمی‌شود.");
+                if(mp==player)error(what==MediaPlayer.MEDIA_ERROR_TIMED_OUT?
+                    "پاسخ سرور صوت بیش از حد طول کشید؛ دوباره پخش را بزنید.":
+                    "این فایل صوتی دریافت نشد؛ اتصال اینترنت را بررسی کنید.");
                 return true;
+            });
+            player.setOnInfoListener((mp,what,extra)->{
+                if(mp!=player)return false;
+                if(what==MediaPlayer.MEDIA_INFO_BUFFERING_START){buffering=true;updateSession();}
+                else if(what==MediaPlayer.MEDIA_INFO_BUFFERING_END){buffering=false;updateSession();}
+                return false;
             });
             player.prepareAsync();
         }catch(Exception e){error("ارتباط با فایل صوتی برقرار نشد.");}
@@ -300,7 +310,7 @@ public final class PmmKafiAudioService extends Service {
         if(player==null||!prepared)return;
         if(playing) {
             try{player.pause();}catch(Exception ignored){}
-            playing=false;
+            playing=false;buffering=false;
             try{position=Math.max(0,player.getCurrentPosition()/1000);}catch(Exception ignored){}
             saveSecond();
             updateSession();
