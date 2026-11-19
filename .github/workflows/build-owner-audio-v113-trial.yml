@@ -43,7 +43,7 @@ jobs:
           if actual!=expected:
               for path in paths:
                   if path.suffix in ('.java','.js','.html','.gradle'):
-                      print(f"CHECK_FILE {path.as_posix()} {hashlib.sha1(b'blob '+str(path.stat().st_size).encode()+b'\\0'+path.read_bytes()).hexdigest()}")
+                      print(f"CHECK_FILE {path.as_posix()} {hashlib.sha1(b'blob '+str(path.stat().st_size).encode()+b'\0'+path.read_bytes()).hexdigest()}")
               raise AssertionError(f"v113 source lock mismatch: {actual}")
           
           print("PASS: all 178 v113 app files exactly match uploaded source Git blob SHA-1 manifest")
