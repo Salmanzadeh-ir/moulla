@@ -40,7 +40,12 @@ jobs:
               rows.append(f'{path.as_posix()} {sha}\n')
           actual=hashlib.sha256(''.join(rows).encode()).hexdigest()
           expected='1567cf927c6a6f2cc5626f6c5bb14c8b31e1281ca3825fbb8cec207397177c50'
-          assert actual==expected, f"v113 source lock mismatch: {actual}"
+          if actual!=expected:
+              for path in paths:
+                  if path.suffix in ('.java','.js','.html','.gradle'):
+                      print(f"CHECK_FILE {path.as_posix()} {hashlib.sha1(b'blob '+str(path.stat().st_size).encode()+b'\\0'+path.read_bytes()).hexdigest()}")
+              raise AssertionError(f"v113 source lock mismatch: {actual}")
+          
           print("PASS: all 178 v113 app files exactly match uploaded source Git blob SHA-1 manifest")
           PY
       - name: Regression checks
