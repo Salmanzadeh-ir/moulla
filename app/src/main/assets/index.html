@@ -2351,12 +2351,23 @@ function nahjAudioTime(seconds){
  const n=Math.floor(seconds);
  return fa(Math.floor(n/60))+':'+fa(String(n%60).padStart(2,'0'));
 }
+// Save progress before aborting an already user-requested audio stream.
+const nahjAudioReleaseSavers=new WeakMap();
+function releaseNahjInlineStream(audio){
+ if(!audio)return;
+ if(audio.hasAttribute('src')){
+  const save=nahjAudioReleaseSavers.get(audio);
+  if(save)save();
+ }
+ audio.pause();
+ if(audio.hasAttribute('src')){
+  audio.removeAttribute('src');
+  audio.load(); // Release any previous WebView buffer; never start a new URL.
+ }
+}
 function stopNahjInlineAudio(){
  if(!contents)return;
- contents.querySelectorAll('audio.nahj-part-media').forEach(audio=>{
-   audio.pause();
-   audio.removeAttribute('src');
- });
+ contents.querySelectorAll('audio.nahj-part-media').forEach(releaseNahjInlineStream);
 }
 function attachNahjInlineAudio(groupId,entryId){
  const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
@@ -2402,13 +2413,14 @@ function attachNahjInlineAudio(groupId,entryId){
      lastSavedSecond=seconds;
      PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index,seconds,finished);
    };
+   nahjAudioReleaseSavers.set(audio,()=>persist(false,true));
    const toggle=card.querySelector('[data-nahj-toggle]');
    const seek=card.querySelector('[data-nahj-seek]');
    const status=card.querySelector('[data-nahj-status]');
    const stream=window.PMM_STREAM_HELPER.attach(audio,status);
    toggle.addEventListener('click',()=>{
      if(!audio.paused){audio.pause();return;}
-     players.forEach(other=>{if(other!==audio)other.pause()});
+     players.forEach(other=>{if(other!==audio)releaseNahjInlineStream(other)});
      // Only assign the requested, whitelisted MP3 when the owner explicitly presses Play.
      if(!audio.getAttribute('src')){
        const old=PMM_LEARNING_PROGRESS.getNahj(groupId);
@@ -2432,7 +2444,7 @@ function attachNahjInlineAudio(groupId,entryId){
      }
    });
    audio.addEventListener('play',()=>{
-     players.forEach(other=>{if(other!==audio)other.pause()});
+     players.forEach(other=>{if(other!==audio)releaseNahjInlineStream(other)});
      refresh(card,audio);
    });
    audio.addEventListener('pause',()=>{persist(audio.ended,true);refresh(card,audio)});
