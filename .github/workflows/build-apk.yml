@@ -1,9 +1,8 @@
+# Manual test builds only; frozen active source has no automatic APK publication.
 name: Build Android APK
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   build:
