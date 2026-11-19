@@ -90,6 +90,8 @@ jobs:
                   buf=Path(name).read_bytes().splitlines(keepends=True)
                   print("BLOCK_SUMMARY",name,len(buf),len(b''.join(buf)))
                   print("BLOCK_HASH",name,[(i//200,hashlib.sha256(b''.join(buf[i:i+200])).hexdigest()[:16]) for i in range(0,len(buf),200)])
+                  for start,end in ([(1400,2200),(2800,3000)] if name.endswith('index.html') else [(200,400)]):
+                      print("BLOCK20",name,start,[(i+1,hashlib.sha256(b''.join(buf[i:i+20])).hexdigest()[:12]) for i in range(start,min(end,len(buf)),20)])
                   start,end=(860,935) if name.endswith('index.html') else (310,335)
                   for i in range(start,end): print("SOURCE_CONTEXT",name,i+1,repr(buf[i].decode('utf-8').rstrip('\\n')))
 
