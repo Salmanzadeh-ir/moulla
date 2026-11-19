@@ -1,3 +1,11 @@
+# Active freeze: OWNER-AUTHORIZED v117 source registered 2026-11-19
+
+The owner explicitly instructed registering all tested v117 changes into the repository, locking ALL app sections and forbidding any future change without another **new, specific, explicit owner approval**. The active `main` now uses v117 app behavior and assets; source snapshot: `snapshot/owner-v117-frozen-source-20261119`. Full 180-file lock: `design/owner-v117-main-app-lock.json`; check with `python3 scripts/verify_owner_v117_lock.py`. The pre-v117 main is preserved at `snapshot/owner-main-before-v117-20261119`. Official Bazaar release APKs, signatures, release branches and historical tags remain unchanged. `app/build.gradle` in main intentionally retains its previous identity/signing metadata; v117 trial metadata is applied in the dedicated workflow only.
+
+**Do not alter UI, media, code, dependencies, server URLs, fonts, audio policy, app IDs, files, tests, workflows, documentation, hashes or branch/tag history without express, separate owner authorization.** CI + CODEOWNERS detect/flag changes; GitHub branch protection ruleset still must be enabled by repository owner in Settings for server-side blocking. See `OWNER_LOCK.md`.
+
+---
+
 # Active development baseline: owner-authorized V16 (2026-11-14)
 
 The owner explicitly authorized updating the active source in this repository with the latest combined preview (V15 photo gallery plus V16 wisdom typography/tools). **No official release is authorized.** The historical signed V10.4.9 and tag `v10.4.9` stay unchanged.

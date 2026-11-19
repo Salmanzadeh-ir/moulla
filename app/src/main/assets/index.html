@@ -112,6 +112,31 @@ button:not(:disabled){cursor:pointer}
 #hit-towhid{left:18.4%;top:49.0%;width:28.9%;height:18.9%}#hit-life{left:51.4%;top:49.0%;width:28.9%;height:18.9%}#hit-kafi{left:18.4%;top:68.8%;width:28.9%;height:19.2%}#hit-nahj{left:51.4%;top:68.8%;width:28.9%;height:19.2%}
 .top-action{position:absolute;top:35.6%;height:3.8%;width:20%;background:transparent;border:0;z-index:5;border-radius:40%;touch-action:manipulation}.top-action:active{background:#60401933;box-shadow:inset 0 4px 9px #613f1a55;transform:translateY(1px)}.top-action:focus-visible{outline:3px solid white}
 #back-button{right:10.7%}
+/* Owner trial: numeric Nahj finder mirrors the legacy Back control without changing its art. */
+/* Mirror the ACTUAL visible top back button, not the intentionally hidden top-action. */
+#stage #nahj-find-button{
+ position:absolute;left:9.6%;top:33.54%;width:11.75%;height:5.1%;z-index:56;
+ display:flex;align-items:center;justify-content:center;gap:2px;
+ border:3px solid #edbe58;border-radius:999px;
+ background:linear-gradient(155deg,#0863a5,#06356f,#061d4a);color:#fff4cb;
+ box-shadow:0 0 0 3px #a86e14,0 5px 9px #6c431440;
+ padding:0 3px;cursor:pointer;touch-action:manipulation;
+}
+#stage #nahj-find-button svg{width:clamp(15px,3.6cqw,22px);height:clamp(15px,3.6cqw,22px);flex:none}
+#stage #nahj-find-button[hidden],#stage #nahj-find-panel[hidden]{display:none!important}
+#stage #nahj-find-panel{position:absolute;z-index:20;top:47%;left:13%;width:74%;box-sizing:border-box;
+ padding:10px;border:2px solid #c38b36;border-radius:15px;direction:rtl;text-align:right;
+ background:linear-gradient(155deg,#fff8da,#f2d491);color:#073965;
+ box-shadow:0 6px 20px #34200c88;font-family:'PMM Estedad',Tahoma,Arial,sans-serif}
+#stage #nahj-find-panel label{display:block;font-size:clamp(12px,2.7cqw,18px);font-weight:900;margin-bottom:6px}
+#stage #nahj-find-row{display:flex;align-items:center;gap:5px}
+#stage #nahj-find-input{width:100%;min-width:0;flex:1;padding:7px;border:1.5px solid #a9792d;
+ border-radius:9px;background:#fffdf5;direction:ltr;text-align:center;color:#09345b;
+ font-family:'PMM Estedad',Tahoma,Arial,sans-serif;font-size:16px}
+#stage .nahj-find-action{flex:none;min-height:37px;padding:5px 9px;border:1px solid #a87722;border-radius:9px;
+ background:linear-gradient(#0e5d94,#042b5c);color:#fff1ca;font-weight:900;cursor:pointer}
+#stage #nahj-find-status{font-size:clamp(11px,2.4cqw,15px);color:#8b320c;min-height:0;margin-top:4px}
+#stage #nahj-find-status:empty{display:none}
 .list-title{position:absolute;left:30.5%;width:39%;top:42.5%;height:4.9%;object-fit:contain;z-index:4;pointer-events:none}
 .content-view{position:absolute;top:48.5%;left:15.55%;width:67.3%;height:38.8%;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#a96b20 transparent;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:3;direction:ltr;mask-image:linear-gradient(to bottom,transparent 0,black 1.5%,black 97%,transparent 100%)}
 .content-view::-webkit-scrollbar{width:4px}.content-view::-webkit-scrollbar-thumb{background:#c48a36aa;border-radius:2px}
@@ -834,6 +859,113 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  padding:6px 0!important}
 #stage .gallery-tile{width:80px!important;height:80px!important}
 #stage .gallery-group{align-items:center!important}
+
+/* Nahj audio: inside the existing scroll aperture, preserving the golden iwan. */
+#stage .nahj-audio-groups{display:grid;gap:clamp(9px,2.4cqw,15px);padding:clamp(8px,2cqw,14px) 2px 12px;direction:rtl}
+#stage .nahj-audio-group{display:flex;align-items:center;justify-content:flex-start;gap:clamp(10px,3cqw,18px);width:100%;
+ min-height:clamp(62px,15cqw,92px);padding:9px 5%;border:2px solid #a46a1d;border-radius:17px;
+ background:linear-gradient(155deg,#fff6d4,#efcd78 48%,#dca243);
+ box-shadow:inset 0 2px 0 #fffbea,inset 0 -3px 0 #ac7022,0 3px 6px #65401c55;
+ color:#063866;cursor:pointer;font-family:var(--pmm-text-font);text-align:right}
+#stage .nahj-audio-group:active{transform:translateY(2px);filter:brightness(.96)}
+#stage .nahj-audio-group:focus-visible,#stage .nahj-audio-entry:focus-visible{outline:3px solid #14649a;outline-offset:2px}
+#stage .nahj-audio-symbol{flex:0 0 auto;width:clamp(42px,11cqw,58px);height:clamp(42px,11cqw,58px);
+ display:grid;place-items:center;background:linear-gradient(#0c5687,#07294f);border:2px solid #f1ce77;border-radius:50%;
+ color:#ffe5a3;font-size:clamp(23px,5.5cqw,31px)}
+#stage .nahj-audio-group-copy{display:grid;gap:4px}
+#stage .nahj-audio-group-title{font-size:clamp(15px,3.6cqw,22px);font-weight:900}
+#stage .nahj-audio-caption{margin:5px 2px 12px;padding:8px 5px;text-align:center;border-bottom:2px solid #bd8634;
+ color:#063866;font:800 clamp(14px,3.3cqw,20px)/1.7 var(--pmm-text-font)}
+#stage .nahj-audio-empty{margin:12px 2%;padding:18px 12px;text-align:center;direction:rtl;
+ background:#fff2c9;border:1px solid #c79b4f;border-radius:13px;
+ color:#574528;font:600 clamp(12px,2.6cqw,17px)/2 var(--pmm-text-font)}
+#stage .nahj-audio-entry .session-label{font-family:var(--pmm-text-font)}
+#stage .nahj-audio-player{display:block;width:100%;max-width:100%;min-height:58px;
+ margin:15px auto;border:2px solid #bf8a38;border-radius:30px;
+ background:#fff2c8;box-shadow:0 3px 8px #61441633}
+#stage .nahj-audio-player:focus-visible{outline:3px solid #0b5b8e;outline-offset:2px}
+#stage .nahj-audio-player[hidden]{display:none!important}
+#stage .nahj-stream-status{min-height:1.3em;margin:7px 5px;color:#8a481e;
+ font:600 clamp(11px,2.3cqw,14px)/1.6 var(--pmm-text-font);text-align:center}
+#stage #nahj-direct-start{display:block;margin:10px auto}
+#stage #aparat-user-play{display:block;margin:16% auto}
+
+/* Owner-authorized inline Nahj audio — compact navy/gold controls inside the existing iwan. */
+#stage .nahj-part-cards{display:grid;gap:clamp(10px,2.6cqw,16px);padding:4px 1% 18px;direction:rtl}
+#stage .nahj-part-card{padding:clamp(9px,2.4cqw,14px);border:2px solid #b57c28;border-radius:17px;
+ background:linear-gradient(150deg,#fff8dc 0%,#fff0bb 55%,#efd393 100%);
+ box-shadow:inset 0 2px 0 #fffefa,0 3px 6px #67451640;min-width:0}
+#stage .nahj-part-card.is-playing{border-color:#0c5883;box-shadow:0 0 0 1px #f1cb7b,inset 0 2px 0 #fffae8,0 3px 7px #12466e45}
+#stage .nahj-part-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;
+ color:#083a68;font-size:clamp(14px,3.3cqw,20px);font-weight:900}
+#stage .nahj-part-headphones{display:grid;place-items:center;width:30px;height:30px;flex:none;
+ background:#063766;border:1.5px solid #d8a446;border-radius:50%;color:#ffe6a5}
+#stage .nahj-part-headphones svg{width:19px;height:19px;display:block}
+#stage .nahj-part-controls{display:flex;align-items:center;gap:clamp(8px,2cqw,12px)}
+#stage .nahj-part-play{width:clamp(42px,10.5cqw,54px);height:clamp(42px,10.5cqw,54px);flex:none;
+ padding:0;border:2px solid #eec56b;border-radius:50%;background:linear-gradient(155deg,#126b9c,#063c72 65%,#021d45);
+ color:#fff0bd;box-shadow:0 2px 5px #50350b70,inset 0 2px 0 #ffffff30;display:grid;place-items:center;cursor:pointer}
+#stage .nahj-part-play svg{width:25px;height:25px;display:block}
+#stage .nahj-part-play:active{transform:scale(.96)}
+#stage .nahj-part-progress{display:grid;gap:2px;min-width:0;flex:1}
+#stage .nahj-part-seek{width:100%;height:22px;margin:0;accent-color:#075b8f;direction:ltr;cursor:pointer}
+#stage .nahj-part-times{display:flex;justify-content:space-between;gap:5px;direction:ltr;
+ color:#36536e;font-size:clamp(10px,2.15cqw,13px);font-weight:700;font-variant-numeric:tabular-nums}
+#stage .nahj-part-speed{display:flex;align-items:center;justify-content:space-between;gap:3px;margin-top:9px;direction:rtl}
+#stage .nahj-part-speed-label{color:#59421f;white-space:nowrap;font-weight:750;font-size:clamp(10px,2.2cqw,13px)}
+#stage .nahj-part-rates{display:flex;direction:ltr;flex:1;justify-content:flex-end;gap:3px;min-width:0}
+#stage .nahj-part-rate{flex:1;min-width:0;max-width:61px;padding:5px 1px;border:1px solid #b78b4f;
+ border-radius:8px;background:#fff9e7;color:#153e62;font-size:clamp(10px,2.2cqw,13px);
+ font-family:Tahoma,Arial,sans-serif!important;font-weight:700;cursor:pointer;white-space:nowrap}
+#stage .nahj-part-rate.is-active{color:#fff1b9;background:linear-gradient(#0d6091,#03386d);border-color:#d3a45d;
+ box-shadow:inset 0 1px 0 #a4d5f280}
+#stage .nahj-part-status{min-height:0;margin-top:3px;color:#8a481e;font-size:clamp(10px,2.1cqw,13px)}
+#stage .nahj-part-play:focus-visible,#stage .nahj-part-rate:focus-visible,#stage .nahj-part-seek:focus-visible{
+ outline:3px solid #1683bf;outline-offset:2px}
+
+
+
+/* Resumption controls live only inside existing text panes; all home art stays unchanged. */
+#stage .pmm-resume-card{margin:8px 3px 13px;padding:10px 9px;border:1.7px solid #ab7628;border-radius:13px;background:linear-gradient(155deg,#fff7dc,#eecb80);color:#093c67;box-shadow:inset 0 1px 0 #fffefa,0 2px 5px #61452138;direction:rtl;text-align:right;font-size:clamp(11px,2.6cqw,15px)}
+#stage .pmm-resume-title{display:block;font-weight:900;margin-bottom:5px}
+#stage .pmm-resume-details{display:block;line-height:1.65;font-weight:700}
+#stage .pmm-resume-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#stage .pmm-resume-action{border:1.5px solid #d3a14b;border-radius:9px;background:linear-gradient(#145a8b,#073765);color:#fff0be;padding:7px 10px;min-height:35px;font-size:clamp(11px,2.5cqw,14px);font-weight:800;cursor:pointer}
+#stage .pmm-resume-action.pmm-outline{background:#fff6d6;color:#083e69;border-color:#a87930}
+#stage .session.pmm-last-lesson{outline:2px solid #0c6a97;outline-offset:-3px}
+#stage .nahj-part-card.pmm-last-part{border-color:#0e6795}
+#stage .pmm-resume-action:focus-visible{outline:3px solid #1d7fc2;outline-offset:3px}
+#wisdom-scroll .pmm-resume-wisdom{display:block;width:min(100%,340px);margin:12px auto 5px;padding:9px 11px;min-height:45px;border:2px solid #b9852e;border-radius:14px;background:linear-gradient(#fff7de,#ebca84);color:#0b4268;line-height:1.65;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important;font-size:clamp(11px,2.7cqw,16px);font-weight:600;text-align:center;cursor:pointer}
+#wisdom-scroll .pmm-resume-wisdom:focus-visible{outline:3px solid #1c78b6;outline-offset:2px}
+
+
+/* Reminder preference panel: only inside the existing About content scroll. */
+#stage .pmm-reminder-settings{background:linear-gradient(#fff8df,#f3d89a);color:#153f63;
+ border:2px solid #a87835;border-radius:16px;padding:16px 12px;margin:8px 3px 16px;direction:rtl;line-height:1.85}
+#stage .pmm-reminder-settings h2{font-weight:900;margin:0 0 10px;font-size:clamp(15px,3.8cqw,22px)}
+#stage .pmm-reminder-settings label{font-weight:900;display:block;margin:10px 0 4px}
+#stage .pmm-reminder-settings select{width:100%;min-height:47px;border:2px solid #ba8a3f;border-radius:10px;
+ padding:7px;color:#093b68;background:#fff9eb;direction:rtl}
+#stage .pmm-reminder-settings .pmm-reminder-note{font-weight:600;margin:9px 0}
+#stage .pmm-reminder-settings .pmm-reminder-actions{display:grid;gap:8px;margin-top:11px}
+#stage .pmm-reminder-settings button{border:2px solid #be954e;border-radius:10px;min-height:43px;padding:7px 9px;
+ background:#0a4577;color:#ffedc3;font-weight:800;cursor:pointer}
+#stage .pmm-reminder-settings button:focus-visible,#stage .pmm-reminder-settings select:focus-visible{outline:3px solid #1384b9}
+#wisdom-scroll .wisdom-audio-parts{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 9px;direction:rtl}
+#wisdom-scroll .wisdom-audio-part{border:1px solid #a97925;background:#fff7e4;color:#063966;border-radius:9px;
+ padding:6px 10px;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important;font-size:14px;min-height:40px;cursor:pointer}
+#wisdom-scroll .wisdom-audio-part[aria-pressed="true"]{background:#083f73;color:#fff4c6;border-color:#e2b665}
+
+/* Dismissible history button is hidden for the current visit only. */
+#stage .pmm-resume-card{position:relative;padding-left:44px}
+#stage .pmm-resume-dismiss{position:absolute;top:7px;left:7px;width:34px;height:34px;padding:0;
+ display:grid;place-items:center;border:1.5px solid #b78940;border-radius:50%;
+ background:#fff6da;color:#073d67;font-size:23px;font-weight:bold;cursor:pointer}
+#stage .pmm-resume-dismiss:focus-visible{outline:3px solid #1981b7;outline-offset:2px}
+/* Version footer is the final item in About's existing scroll area. */
+#stage .about-version{margin:clamp(12px,3cqw,20px) 4px 0;padding:9px 2px 5px;text-align:center;
+ direction:rtl;color:#07365f;font:700 clamp(11px,2.5cqw,16px)/1.8 var(--pmm-text-font)}
+#stage .about-version span{display:inline-block;direction:ltr;unicode-bidi:isolate}
 @media(prefers-reduced-motion:reduce){.pmm-wheel-board{transition:none!important}}
 
 
@@ -897,6 +1029,23 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 #wisdom-scroll .control-stack button{min-height:43px;padding:1.3% 2%;line-height:1.4;font-size:clamp(17px,3.55cqw,27px)!important}
 #wisdom-scroll .draw-item{font-size:clamp(17px,3.4cqw,25px)!important;line-height:1.6}
 #wisdom-scroll .drawing-caption{font-size:clamp(21px,4.2cqw,31px)!important}
+
+/* Owner-requested opt-in gallery export. No media is saved until an icon is pressed. */
+#scene #pmm-photo-save,#scene #pmm-photo-wheel-save,#stage #pmm-clip-save{
+ display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;
+ min-width:70px;min-height:42px;padding:7px 11px;border:2px solid #f4ca77;
+ border-radius:999px;background:linear-gradient(150deg,#0b639f,#06366d,#05244e);
+ color:#ffebbd;box-shadow:0 0 0 2px #a87320,0 4px 11px #16100a77;
+ font-family:'PMM Estedad',Tahoma,Arial,sans-serif;font-size:clamp(11px,2.4cqw,17px);
+ font-weight:900;line-height:1.2;touch-action:manipulation;cursor:pointer;
+}
+#scene #pmm-photo-save{position:absolute;left:6%;top:6%;z-index:1002}
+#scene #pmm-photo-wheel-save{position:absolute;left:3%;bottom:2%;z-index:25}
+#stage #pmm-clip-save{position:absolute;left:3%;bottom:12%;z-index:25}
+#scene #pmm-photo-save svg,#scene #pmm-photo-wheel-save svg,#stage #pmm-clip-save svg{width:21px;height:21px;display:block}
+#scene #pmm-photo-save:focus-visible,#scene #pmm-photo-wheel-save:focus-visible,#stage #pmm-clip-save:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#scene #pmm-photo-save:active,#scene #pmm-photo-wheel-save:active,#stage #pmm-clip-save:active{filter:brightness(1.2)}
+
 /* NEW PHOTO-QUOTES: overlay fills only the fixed golden-iwan stage.
    9:16 photos retain their aspect ratio; no destructive crop or quality loss. */
 #scene #photo-fullscreen[hidden]{display:none!important}
@@ -935,32 +1084,429 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 #wisdom-scroll .wisdom-a-plus{display:inline-flex;gap:1px;font-family:Tahoma,sans-serif!important;font-size:22px;font-weight:700;line-height:1;white-space:nowrap}
 #wisdom-scroll .wisdom-a-plus small{font-size:17px;align-self:flex-start}
 @media (max-width:355px){#wisdom-scroll .wisdom-heading-actions{gap:3px}#wisdom-scroll .wisdom-utility-button{flex-basis:40px;width:40px;min-width:40px;height:40px;min-height:40px}#wisdom-scroll .wisdom-heading-actions .numberplate{padding:3px 4px;font-size:13px!important}}
+
+/* Owner-approved Estedad for the inner navigation and lesson/part labels ONLY.
+   Keep V16 home image, guest/gallery and the dedicated Amiri/Sahel wisdom-reading design unchanged. */
+@font-face{
+ font-family:'PMM Estedad';
+ src:url('fonts/Estedad-VF.woff2') format('woff2');
+ font-weight:100 900;font-style:normal;font-display:swap;
+}
+#stage #legacy-heading,
+#stage .content-view,
+#stage .content-view button,
+#stage .content-view a,
+#stage .content-view input,
+#stage .content-view textarea,
+#stage .content-view h1,
+#stage .content-view h2,
+#stage .content-view h3,
+#stage .content-view p,
+#stage .content-view span,
+#stage .content-view .session-label{
+ font-family:'PMM Estedad',Tahoma,Arial,sans-serif!important;
+}
+
+/* Owner-approved 1.0.10 trial: six-item home hierarchy; existing pages and assets stay intact. */
+.main-scroll{direction:rtl}
+.home-menu-content{height:100%;min-height:100%;direction:rtl}
+.home-menu-grid{width:100%;height:100%;min-height:100%;display:grid;
+ grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(6,minmax(0,1fr));
+ gap:1.25%;direction:rtl}
+.home-menu-card{position:relative;isolation:isolate;width:100%;height:100%;min-width:0;min-height:0;
+ display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:3.1%;
+ padding:1% 3.1%;border:2px solid #bd8423;border-radius:clamp(9px,1.55cqw,16px);
+ background:linear-gradient(105deg,#fff8dc 0%,#ffe9ac 48%,#f5ca70 100%);
+ box-shadow:inset 0 0 0 2px rgba(255,255,225,.8),inset 0 -3px 7px rgba(173,111,19,.14),0 3px 7px rgba(91,55,10,.2);
+ color:#062f68;font-family:'PMM Estedad',Tahoma,Arial,sans-serif;text-align:right;direction:rtl;
+ overflow:hidden;touch-action:manipulation;transition:transform .12s ease,filter .12s ease}
+.home-menu-card::before{content:"";position:absolute;inset:3px;border:1px solid rgba(187,129,29,.44);
+ border-radius:calc(clamp(9px,1.55cqw,16px) - 3px);pointer-events:none;z-index:-1}
+.home-menu-card:active{transform:translateY(1px) scale(.992);filter:brightness(.98)}
+.home-menu-card:focus-visible,.home-submenu-back:focus-visible{outline:3px solid #0874b8;outline-offset:2px}
+.home-menu-icon-wrap{flex:0 0 clamp(28px,4.4cqw,44px);width:clamp(28px,4.4cqw,44px);
+ height:clamp(28px,4.4cqw,44px);display:grid;place-items:center;border-radius:50%;
+ border:1.5px solid #c18a27;background:radial-gradient(circle at 32% 25%,#fffdf0 0%,#ffdf8d 72%,#eab44d 100%);
+ box-shadow:inset 0 1px 3px #fff,0 1px 4px rgba(96,59,9,.2)}
+.home-menu-icon{display:block;width:72%;height:72%;fill:none;stroke:#073b78;stroke-width:2.35;
+ stroke-linecap:round;stroke-linejoin:round}
+.home-menu-title{flex:1 1 auto;min-width:0;font-size:clamp(12px,2.2cqw,21px);
+ line-height:1.38;font-weight:850;text-align:right;overflow-wrap:anywhere}
+.home-menu-arrow{flex:0 0 auto;margin-inline-start:auto;color:#a66b12;font-family:Tahoma,sans-serif;
+ font-size:clamp(20px,3.4cqw,32px);font-weight:900;line-height:1;text-shadow:0 1px #fff6d7}
+.home-menu-card.is-category{border-color:#a9751c;background:linear-gradient(105deg,#fff5d1 0%,#ffdf91 50%,#efbd59 100%)}
+.home-menu-card.is-category .home-menu-icon-wrap{background:radial-gradient(circle at 30% 25%,#fff 0%,#ffedb4 58%,#edc05c 100%)}
+.home-menu-card.is-pending{background:linear-gradient(105deg,#fff8e4 0%,#f9e8bf 55%,#ecd6a6 100%)}
+.home-submenu{width:100%;height:100%;min-height:100%;display:flex;flex-direction:column;gap:2.2%;direction:rtl}
+.home-submenu-header{flex:0 0 15%;min-height:42px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+ align-items:center;gap:2%;direction:rtl}
+.home-submenu-title{margin:0;color:#07366e;text-align:center;font-family:'PMM Estedad',Tahoma,Arial,sans-serif;
+ font-size:clamp(14px,2.55cqw,24px);font-weight:900;line-height:1.4;text-shadow:0 1px #fff7d8}
+.home-submenu-back{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:34px;
+ padding:4px 9px;border:1.5px solid #b47a1b;border-radius:999px;
+ background:linear-gradient(#fff6d5,#f1c66d);color:#07376f;font-family:'PMM Estedad',Tahoma,sans-serif;
+ font-size:clamp(11px,1.65cqw,16px);font-weight:800;white-space:nowrap;box-shadow:0 2px 5px #6f4b1833}
+.home-submenu-back span{font-size:1.25em;line-height:1}
+.home-submenu-grid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:3%;align-items:center;direction:rtl}
+.home-submenu-card{height:78%;flex-direction:column;justify-content:center;align-items:center;
+ gap:7%;padding:5% 3%;text-align:center}
+.home-submenu-card .home-menu-icon-wrap{flex:0 0 clamp(54px,8.8cqw,88px);width:clamp(54px,8.8cqw,88px);
+ height:clamp(54px,8.8cqw,88px)}
+.home-submenu-card .home-menu-icon{width:67%;height:67%;stroke-width:2.15}
+.home-submenu-card .home-menu-title{flex:0 0 auto;width:100%;font-size:clamp(13px,2.35cqw,22px);
+ line-height:1.55;text-align:center}
+.home-submenu-card .home-menu-arrow{display:none}
+@media(max-width:380px){
+ .home-menu-grid{gap:1.1%}
+ .home-menu-card{gap:2.6%;padding-inline:2.5%;border-width:1.5px}
+ .home-menu-icon-wrap{flex-basis:27px;width:27px;height:27px}
+ .home-menu-title{font-size:12px;line-height:1.3}
+ .home-menu-arrow{font-size:19px}
+ .home-submenu-header{flex-basis:16%}
+ .home-submenu-back{padding:3px 7px;font-size:11px}
+ .home-submenu-title{font-size:14px}
+ .home-submenu-card{height:76%}
+ .home-submenu-card .home-menu-icon-wrap{flex-basis:52px;width:52px;height:52px}
+ .home-submenu-card .home-menu-title{font-size:13px}
+}
+
+
+/* Owner-approved v111: quiet gold/navy offline Nahj course, matching the new home hierarchy. */
+.offline-course-scroll{position:absolute;left:11.9979%;top:41.0885%;width:73.0074%;height:43.7201%;z-index:3;
+ overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+ scrollbar-width:none;direction:rtl;background:rgba(255,238,189,.62);scroll-padding-block:10px}
+.offline-course-scroll::-webkit-scrollbar{display:none}
+.course-body{padding:2.8% 3.2% 13%;color:#062f68;text-align:center;direction:rtl;font-family:'PMM Estedad',Tahoma,Arial,sans-serif}
+.course-panel{margin:0 0 3.2%;padding:3.7% 4%;border:1.6px solid #c28a2c;border-radius:17px;
+ background:linear-gradient(145deg,#fff9e5 0%,#fff0c7 82%,#f9e3ad 100%);
+ box-shadow:inset 0 0 0 2px #fff9e7,0 3px 8px rgba(102,69,19,.15)}
+.course-emblem{width:34px;height:34px;margin:0 auto 1.5%;display:grid;place-items:center;border-radius:50%;
+ border:1.5px solid #c28a2c;background:radial-gradient(circle at 30% 25%,#fffdf2,#f3cc76);color:#a66a12;font-size:21px;font-weight:900}
+.course-heading{margin:0 0 2%;font-size:clamp(15px,2.65cqw,25px);line-height:1.5;font-weight:900;color:#07366e}
+.course-welcome-message{margin:2% 0;color:#07366e;font-size:clamp(12px,2.1cqw,20px);font-weight:800;line-height:2.05}
+.course-welcome-sub{margin:2% 0 3%;color:#765019;font-size:clamp(11px,1.8cqw,17px);font-weight:700;line-height:1.95}
+.course-accept-row{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:3% auto 0;padding:3% 2%;
+ border:1.5px solid #9c752b;border-radius:13px;background:linear-gradient(#fff9df,#f6dfaa);font-size:clamp(12px,2cqw,19px);font-weight:900;line-height:1.7;color:#073b78}
+.course-accept-row input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.course-check-mark{width:26px;height:26px;flex:0 0 26px;border:2px solid #7c9c80;border-radius:7px;background:#fff;color:transparent;
+ display:grid;place-items:center;font:900 19px/1 Tahoma,sans-serif;transition:background .15s,border-color .15s}
+.course-accept-row input:checked+.course-check-mark{background:#15934e;border-color:#15934e;color:#fff}
+.course-accept-row input:focus-visible+.course-check-mark{outline:3px solid #0874b8;outline-offset:3px}
+.course-welcome-error{margin:2% 0 0;color:#9c2828;font-size:12px;line-height:1.7}
+.course-setup-question{margin:1% 0 3%;font-size:clamp(12px,2.1cqw,20px);font-weight:800;line-height:1.8}
+.course-plan-options{display:grid;grid-template-columns:1fr;gap:7px;margin:2% 0}
+.course-plan-choice,.course-weekday-grid button{min-height:38px;border:1.5px solid #b78329;border-radius:11px;
+ background:linear-gradient(#fff9e6,#f4d99e);color:#073b78;font-family:inherit;font-size:clamp(12px,1.85cqw,17px);font-weight:850;box-shadow:0 2px 4px #76501c22}
+.course-plan-choice.is-selected,.course-weekday-grid button.is-selected{border-color:#13874a;background:linear-gradient(#e7f7e9,#bfe6c5);color:#07572c;box-shadow:inset 0 0 0 1px #fff}
+.course-weekdays{margin:3% 0;padding:3%;border-radius:13px;background:#fff7df;border:1px solid #d7b66f}
+.course-weekdays p{margin:0 0 2%;font-size:clamp(11px,1.8cqw,16px);font-weight:800}
+.course-weekday-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.course-weekday-grid button{min-height:34px;font-size:clamp(10px,1.5cqw,14px)}
+.course-setup-actions{display:grid;gap:7px;margin-top:3%}
+.course-primary-button,.course-secondary-button,.course-text-button,.course-heard-button{font-family:inherit;font-weight:850;line-height:1.5}
+.course-primary-button{min-height:42px;padding:2.5% 4%;border:2px solid #9b6818;border-radius:999px;
+ background:linear-gradient(#fff2bf,#f1bd54,#d99527);color:#07376f;box-shadow:0 3px 6px #69440d33;font-size:clamp(12px,1.9cqw,18px)}
+.course-secondary-button{min-height:34px;padding:1.7% 3%;border:1.3px solid #b68a3d;border-radius:999px;
+ background:linear-gradient(#fff9e9,#f4e2b9);color:#07376f;font-size:clamp(10px,1.55cqw,15px)}
+.course-text-button{border:0;background:transparent;color:#80571b;text-decoration:underline;font-size:clamp(10px,1.55cqw,15px);padding:2%}
+.course-progress-panel{padding:3.4% 4%}
+.course-progress-top,.course-track-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:clamp(11px,1.7cqw,16px);font-weight:900}
+.course-progress-track{height:11px;margin:3% 0 2%;overflow:hidden;border:1px solid #b8a071;border-radius:999px;background:#e6d8b8;direction:ltr}
+.course-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#08783c,#29b45c);border-radius:999px;transition:width .3s ease}
+.course-progress-count,.course-plan-summary{font-size:clamp(10px,1.5cqw,14px);color:#6b4d1c;line-height:1.8}
+.course-plan-summary{margin-top:1%;font-weight:800}
+.course-track-meta{color:#936319;font-size:clamp(10px,1.5cqw,14px)}
+.course-track-title{margin:2% 0 3%;font-size:clamp(14px,2.3cqw,22px);font-weight:900;line-height:1.6;color:#07376f}
+.course-player{display:flex;align-items:center;gap:12px;padding:3%;border:1px solid #d1a24c;border-radius:15px;background:linear-gradient(145deg,#fff9e7,#f5e1b4)}
+.course-play-button{width:48px;height:48px;flex:0 0 48px;border:2px solid #9e6d1e;border-radius:50%;display:grid;place-items:center;
+ background:linear-gradient(#fff1be,#e8ad45);color:#073b78;box-shadow:inset 0 1px 2px #fff,0 2px 4px #76501d33}
+.course-play-button svg{width:25px;height:25px}
+.course-player-main{flex:1;min-width:0}
+.course-player-main input[type=range]{display:block;width:100%;accent-color:#15884a;direction:ltr}
+.course-player-times{display:flex;justify-content:space-between;direction:ltr;color:#5d4a2c;font:700 11px Tahoma,sans-serif;margin-top:2%}
+.course-speed-row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;margin:3% 0 1%;font-size:clamp(9px,1.3cqw,12px);color:#79551e}
+.course-speed-row button{min-width:36px;padding:4px 5px;border:1px solid #c5a05d;border-radius:999px;background:#fff7e1;color:#073b78;font:700 10px Tahoma,sans-serif}
+.course-speed-row button.is-selected{background:#d9edda;border-color:#25824a;color:#07572c}
+.course-audio-status,.course-listened-status{min-height:1.5em;margin:1.5% 0;color:#72511d;font-size:clamp(9px,1.35cqw,13px);line-height:1.7}
+.course-notebook{margin:3% 0 2%;padding:3%;border:1px solid #c49a4b;border-radius:13px;background:#fff9e8;text-align:right}
+.course-notebook-heading{display:flex;align-items:center;gap:7px;margin-bottom:2%;color:#073b78;font-size:clamp(11px,1.7cqw,16px)}
+.course-notebook-heading span{font-size:20px;color:#a76e15}
+.course-notebook textarea{display:block;width:100%;min-height:70px;resize:vertical;border:1px solid #d1b77f;border-radius:9px;background:#fffdf5;
+ padding:8px;color:#263b55;font:500 clamp(11px,1.6cqw,15px)/1.9 'PMM Estedad',Tahoma,sans-serif;direction:rtl;outline-color:#15884a}
+.course-note-actions{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:2%;font-size:clamp(9px,1.25cqw,12px);color:#55714f}
+.course-threshold{margin:2% 0;color:#78551c;font-size:clamp(9px,1.4cqw,13px);line-height:1.8}
+.course-heard-button{width:100%;min-height:42px;border:2px solid #168347;border-radius:999px;background:linear-gradient(#d9f1dd,#a9dfb3);color:#07572c;font-size:clamp(12px,1.85cqw,17px)}
+.course-heard-button:disabled{opacity:.48;filter:grayscale(.55)}
+.course-revisit-back{display:block;width:100%;margin-top:2%}
+.course-dashboard-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:2% 0}
+.course-dashboard-actions .course-text-button{grid-column:1/-1}
+.course-offline-note{margin:2% 2% 0;color:#715523;font-size:clamp(9px,1.25cqw,12px);line-height:1.7}
+.course-after-mark h3,.course-no-due h3,.course-complete h3{margin:1% 0 2%;font-size:clamp(13px,2cqw,19px);line-height:1.7}
+.course-after-mark p,.course-no-due p,.course-complete p{margin:1% 0 3%;font-size:clamp(11px,1.6cqw,15px);line-height:1.9}
+.course-success-emblem{background:linear-gradient(#e0f6e4,#9fdaa9);border-color:#168347;color:#087a3e}
+.course-after-mark .course-primary-button,.course-complete .course-primary-button{width:100%}
+.course-next-date{display:block;color:#0b7840;font-size:clamp(12px,1.8cqw,17px)}
+.course-note-list-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.course-note-list-heading h3{margin:0;font-size:clamp(13px,2cqw,19px)}
+.course-note-list-hint{margin:3% 0;color:#72511d;font-size:clamp(10px,1.5cqw,14px);line-height:1.8}
+.course-saved-note{display:flex;width:100%;flex-direction:column;gap:4px;margin:2% 0;padding:3%;border:1px solid #c49a4b;border-radius:12px;background:#fff9e8;color:#07376f;text-align:right;font-family:inherit}
+.course-saved-note strong{font-size:clamp(10px,1.5cqw,14px)}
+.course-saved-note span{font-size:clamp(10px,1.35cqw,13px);line-height:1.7;color:#4f4a3c}
+.course-saved-note small{font-size:10px;color:#8a692d}
+.course-note-empty{padding:6%;color:#77551f;font-size:12px}
+#course-audio{display:none}
+@media(max-width:380px){
+ .course-panel{padding:3.5%}
+ .course-emblem{width:29px;height:29px;font-size:18px}
+ .course-weekday-grid{gap:4px}
+ .course-weekday-grid button{min-height:31px}
+ .course-play-button{width:42px;height:42px;flex-basis:42px}
+ .course-dashboard-actions{grid-template-columns:1fr}
+ .course-dashboard-actions .course-text-button{grid-column:auto}
+}
+
+
+/* v112 trial: accessible bolder home text and compact course controls. */
+.home-menu-title{font-weight:950!important;-webkit-text-stroke:.35px currentColor;text-shadow:0 .5px 0 currentColor}
+.home-menu-icon{stroke-width:3.1}
+.home-submenu-card .home-menu-icon{stroke-width:3}
+.course-floral-icon{width:76%!important;height:76%!important}
+.course-mini-toolbar{display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;gap:clamp(5px,2%,10px);margin:2% 0;direction:ltr}
+.course-mini-button{display:grid;place-items:center;min-width:42px;min-height:42px;padding:4px 9px;border:1.8px solid #ae7a23;border-radius:12px;background:linear-gradient(#fff7d8,#eac27b);color:#073b78;font:900 18px Tahoma,sans-serif;box-shadow:0 2px 4px #73521f26}
+.course-mini-button:disabled{opacity:.45;filter:grayscale(.6)}
+.course-mini-button:focus-visible{outline:3px solid #0874b8;outline-offset:2px}
+.course-speed-wrap{position:relative}
+.course-speed-row[hidden],.course-notebook[hidden],.course-heard-button[hidden]{display:none!important}
+.course-speed-row{position:absolute;bottom:calc(100% + 6px);right:0;z-index:6;width:max-content;max-width:min(260px,75vw);margin:0;padding:7px;background:#fff6d9;border:1.5px solid #bb8b35;border-radius:12px;box-shadow:0 4px 12px #52380f38}
+.course-speed-row button{min-height:34px}
+.course-notebook{margin:2% 0;padding:3%}
+.course-dashboard-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:1.5% 0}
+.course-dashboard-actions button,.course-dashboard-actions .course-text-button{grid-column:auto!important;width:auto!important;min-height:36px!important;padding:5px 9px!important;font-size:clamp(10px,1.45cqw,13px)!important}
+@media(max-width:380px){.course-dashboard-actions{display:flex}.course-mini-toolbar{gap:5px}.course-mini-button{min-width:40px}}
+
+/* v115 trial — five owner-requested offline-course refinements, no changes outside course. */
+.course-progress-panel{padding:1.8% 3.5%!important;margin-bottom:2%!important}
+.course-progress-panel .course-progress-track{margin:1% 0 .5%!important;height:9px}
+.course-progress-panel .course-progress-top,.course-progress-panel .course-progress-count{line-height:1.35}
+.course-mini-toolbar{gap:clamp(5px,2%,10px)!important;margin-bottom:0!important}
+.course-mini-button{box-sizing:border-box;flex:0 0 44px;width:44px;height:44px;min-width:44px!important;min-height:44px!important;padding:0!important;font-size:23px!important;line-height:1!important}
+.course-speed-wrap{flex:0 0 44px;display:flex;align-items:center}
+.course-speedometer{display:block;width:26px;height:26px;stroke-width:2.4}
+.course-speed-row{direction:ltr;bottom:calc(100% + 8px);right:auto;left:50%;transform:translateX(-18%);max-width:min(260px,74vw)}
+.course-speed-row button{font-size:12px;min-width:45px}
+.course-track-card{position:relative;padding-bottom:3%!important}
+.course-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.course-notebook:not([hidden]){position:absolute!important;top:50%;left:3%;right:3%;transform:translateY(-50%);z-index:20;margin:0!important;padding:3.5%!important;box-shadow:0 10px 30px rgba(52,36,6,.40);background:#fff8de}
+.course-notebook-heading{justify-content:space-between}
+.course-note-close{width:34px;height:34px;border:1px solid #b88836;background:#fff0c9;border-radius:9px;color:#07376f;font-size:24px;font-weight:900}
+.course-note-actions{flex-wrap:wrap}
+.course-dashboard-actions{margin:2% 0 0!important;padding:0!important;display:block!important}
+.course-dashboard-actions #course-extra.course-extra-green{display:block;width:100%!important;min-height:45px!important;padding:7px 12px!important;border:2px solid #16783c;border-radius:15px;background:linear-gradient(160deg,#e2f8df,#8fd7a4);color:#07522d;box-shadow:0 2px 5px rgba(8,76,38,.19);font:900 clamp(13px,2.1cqw,18px)/1.5 'PMM Estedad',Tahoma,sans-serif!important}
+#course-settings-open[hidden]{display:none!important}
+@media(max-width:380px){.course-mini-button{flex-basis:40px!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}.course-speed-wrap{flex-basis:40px}}
+
+/* v116 trial — richer devotional plaque-style submenu icons for توحید کاربردی and دیدن خدا در زندگی. */
+.home-menu-icon-wrap.is-devotional{border:none;background:transparent;box-shadow:none;width:clamp(62px,10cqw,96px)!important;height:clamp(62px,10cqw,96px)!important;flex-basis:clamp(62px,10cqw,96px)!important}
+.home-menu-icon.devotional-plaque{width:100%!important;height:100%!important;stroke:none!important;overflow:visible}
+.home-menu-icon.devotional-plaque .plaque-outer{fill:url(#goldBody);stroke:#a96f17;stroke-width:1.8}
+.home-menu-icon.devotional-plaque .plaque-inner{fill:url(#creamInset);stroke:#d6b062;stroke-width:1.1}
+.home-menu-icon.devotional-plaque .arm-band{fill:url(#armBand);stroke:#a96f17;stroke-width:1}
+.home-menu-icon.devotional-plaque .tiny-flower{fill:#f7de74;stroke:#fff7d2;stroke-width:.45}
+.home-menu-icon.devotional-plaque .tiny-dot{fill:#f7de74}
+.home-menu-icon.devotional-plaque .center-mark{fill:#0b2457}
+.home-menu-icon.devotional-plaque .center-mark-outline{fill:none;stroke:#0b2457;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.home-menu-icon.devotional-plaque .kaaba-side{fill:#1a1a1a;stroke:#343434;stroke-width:.7}
+.home-menu-icon.devotional-plaque .kaaba-face{fill:#0b0b0d;stroke:#343434;stroke-width:.7}
+.home-menu-icon.devotional-plaque .kaaba-top{fill:#4a4a4a;stroke:#3a3a3a;stroke-width:.6}
+.home-menu-icon.devotional-plaque .kaaba-gold{fill:#d8b24f}
+.home-submenu-card .home-menu-icon-wrap.is-devotional + .home-menu-title{margin-top:2px}
+@media (max-width:380px){.home-menu-icon-wrap.is-devotional{width:58px!important;height:58px!important;flex-basis:58px!important}}
+
+/* v114 trial — owner-requested six equal-size, heavier single-line main labels. */
+#home-main-menu > .home-menu-card{
+  gap:1.5%; padding-inline:1.6%;
+}
+#home-main-menu > .home-menu-card .home-menu-icon-wrap{
+  flex-basis:clamp(25px,4cqw,40px);
+  width:clamp(25px,4cqw,40px);height:clamp(25px,4cqw,40px);
+}
+#home-main-menu > .home-menu-card .home-menu-arrow{
+  margin-inline-start:0;font-size:clamp(17px,2.7cqw,27px);
+}
+#home-main-menu > .home-menu-card .home-menu-title{
+  font-size:var(--pmm-home-six-title-size,clamp(13px,2.5cqw,23px))!important;
+  font-weight:900!important;
+  -webkit-text-stroke:.6px currentColor!important;
+  text-shadow:0 .7px 0 currentColor!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  word-break:keep-all!important;
+  line-height:1.3!important;
+  letter-spacing:0!important;
+}
+/* Both category submenus have exactly one Back control: replace Home Exit in-place. */
+#scene .home-submenu-header{display:flex;justify-content:center;align-items:center}
+#scene #exit.is-submenu-back{
+  z-index:10;
+  border:2px solid #efc67c;
+  border-radius:46% / 49%;
+  background:linear-gradient(180deg,#10639c 0%,#094575 50%,#06335b 100%);
+  box-shadow:0 0 0 2px #9b672b,inset 0 1px 3px #fff4c340,0 3px 7px #39241170;
+  color:transparent;
+  touch-action:manipulation;
+}
+#scene #exit.is-submenu-back::after{
+  content:"";position:absolute;inset:4% 19%;
+  display:block;background:transparent url('images/back_v1043_approved.png') center / contain no-repeat;
+  pointer-events:none;
+}
+#scene #exit.is-submenu-back:active{filter:brightness(1.08);transform:scale(.96)}
+/* v117: unified Back appearance, hit area, location and native navigation target.
+   Exact approved Nahj image is used; page-specific routing stays in goBack(). */
+#scene #back-top, #stage #legacy-back-top, #scene #exit.is-submenu-back {
+  position:absolute!important;left:78.65%!important;right:auto!important;
+  top:33.54%!important;width:11.75%!important;height:auto!important;
+  aspect-ratio:1/1!important;min-height:0!important;max-height:none!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:transparent url("images/back_v1043_approved.png") center/contain no-repeat!important;
+  color:transparent!important;font-size:0!important;text-shadow:none!important;
+  padding:0!important;display:block!important;z-index:100!important;
+  cursor:pointer;pointer-events:auto!important;touch-action:manipulation!important;
+}
+#scene #back-top[hidden],#stage #legacy-back-top[hidden]{display:none!important}
+#scene #back-top::before,#scene #back-top::after,
+#stage #legacy-back-top::before,#stage #legacy-back-top::after,
+#scene #exit.is-submenu-back::before,#scene #exit.is-submenu-back::after{
+  display:none!important;content:none!important;background:none!important;
+}
+#scene #back-top:active,#stage #legacy-back-top:active,#scene #exit.is-submenu-back:active{
+  transform:scale(.94)!important;filter:brightness(1.08)!important;
+}
+#scene #back-top:focus-visible,#stage #legacy-back-top:focus-visible,#scene #exit.is-submenu-back:focus-visible{
+  outline:3px solid #f8d16c!important;outline-offset:3px!important;
+}
+/* No second Back action under course toolbar; the standard top Back handles nested route. */
+#offline-course-scroll .course-note-list-heading #course-notes-back{display:none!important}
+/* Two high-resolution owner-requested logos, integrated into the existing gold-blue cards. */
+#scene .home-submenu-card .home-menu-icon-wrap.is-devotional{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  width:clamp(70px,11cqw,100px)!important;height:clamp(70px,11cqw,100px)!important;
+  flex-basis:clamp(70px,11cqw,100px)!important;
+}
+#scene .home-submenu-card .home-menu-icon.devotional-logo{
+  display:block;width:100%!important;height:100%!important;object-fit:contain;
+  filter:drop-shadow(0 2px 2px rgba(95,64,19,.19));
+}
+/* Gear lives in Tafal view, not About. Preserve the existing native permission and frequency functions. */
+#wisdom-scroll .wisdom-settings-entry{display:flex;justify-content:flex-start;direction:rtl;margin:0 1% 2%;min-height:43px}
+#wisdom-scroll .wisdom-settings-gear{
+  width:43px;height:43px;min-width:43px;display:grid;place-items:center;
+  background:linear-gradient(140deg,#fff8db,#eac671);border:2px solid #b7862b;
+  border-radius:12px;color:#073e78;box-shadow:0 2px 5px #79603940;cursor:pointer;
+}
+#wisdom-scroll .wisdom-settings-gear svg{width:26px;height:26px;display:block}
+#wisdom-scroll .wisdom-settings-gear:focus-visible{outline:3px solid #094f8f;outline-offset:2px}
+#wisdom-scroll.reminder-open #wisdom-intro,
+#wisdom-scroll.reminder-open #wisdom-drawing,
+#wisdom-scroll.reminder-open #wisdom-result{display:none!important}
+#wisdom-scroll .pmm-wisdom-reminder-panel[hidden]{display:none!important}
+#wisdom-scroll .pmm-reminder-settings{background:linear-gradient(#fff8df,#f3d89a);color:#153f63;
+ border:2px solid #a87835;border-radius:16px;padding:14px 12px;margin:5px 1% 16px;
+ direction:rtl;line-height:1.8;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important}
+#wisdom-scroll .pmm-reminder-settings h2{font-size:clamp(16px,3.2cqw,22px);font-weight:900;margin:0 0 8px}
+#wisdom-scroll .pmm-reminder-settings label{display:block;font-weight:900;margin:10px 0 5px}
+#wisdom-scroll .pmm-reminder-settings select{display:block;width:100%;min-height:46px;border:2px solid #b88936;
+ border-radius:10px;padding:7px;background:#fff9ec;color:#073e78;direction:rtl}
+#wisdom-scroll .pmm-reminder-settings .pmm-reminder-note{margin:8px 0;font-size:clamp(12px,2.45cqw,16px);line-height:1.8}
+#wisdom-scroll .pmm-reminder-settings .pmm-reminder-actions{display:grid;gap:8px;margin-top:12px}
+#wisdom-scroll .pmm-reminder-settings button{min-height:43px;border-radius:10px;border:2px solid #bd954e;
+ background:#0a4577;color:#ffedc3;font-weight:800;font-family:'PMM Sahel SemiBold',Tahoma,sans-serif!important}
+#wisdom-scroll .pmm-reminder-settings select:focus-visible,#wisdom-scroll .pmm-reminder-settings button:focus-visible{
+ outline:3px solid #0c79b6;outline-offset:2px}
 </style>
+<link rel="stylesheet" href="pmm_online_updates.css">
 </head>
 <body>
 <main class="scene" id="scene" data-screen="home" aria-label="صفحه جدید پای منبر مولا">
   <img class="scene-bg" src="images/new_ui_bg.png" alt="" aria-hidden="true">
-  <section class="main-scroll" id="main-scroll" aria-label="فهرست هفت‌گانه؛ برای دیدن موارد پایانی اسکرول کنید" tabindex="0">
-    <div class="menu-content">
-      <img class="menu-image" src="images/new_ui_menu.png" alt="" aria-hidden="true">
-      <div class="menu-buttons">
-        <button type="button" class="menu-button" style="top:1.64%;height:13.27%" data-menu="nahj_audio" aria-label="شرح جامع صوتی نهج‌البلاغه"></button>
-        <button type="button" class="menu-button" style="top:16.42%;height:12.59%" data-menu="tawhid" aria-label="توحید کاربردی"></button>
-        <button type="button" class="menu-button" style="top:30.10%;height:12.59%" data-menu="see_god" aria-label="دیدن خدا در زندگی"></button>
-        <button type="button" class="menu-button" style="top:43.91%;height:12.86%" data-menu="kafi" aria-label="شرح اصول کافی"></button>
-        <button type="button" class="menu-button" style="top:57.73%;height:12.86%" data-menu="videos" aria-label="کلیپ‌های تصویری"></button>
-        <button type="button" class="menu-button" style="top:71.55%;height:13%" data-menu="photo_quotes" aria-label="عکس نوشته؛ گالری چرخشی تصاویر"></button>
-        <button type="button" class="menu-button" style="top:85.77%;height:13.54%" data-menu="guest_sentence_new" aria-label="یک جمله مهمان مولا؛ صفحه جدید حکمت تصادفی"></button>
+  <section class="main-scroll" id="main-scroll" aria-label="منوی اصلی شش‌بخشی" tabindex="0">
+    <div class="menu-content home-menu-content">
+      <div class="home-menu-grid" id="home-main-menu" role="group" aria-label="بخش‌های اصلی برنامه">
+        <button type="button" class="home-menu-card" data-menu="nahj_audio" aria-label="شرح جامع صوتی نهج‌البلاغه">
+          <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><path d="M12 35v-6a20 20 0 0 1 40 0v6"/><rect x="8" y="32" width="12" height="19" rx="5"/><rect x="44" y="32" width="12" height="19" rx="5"/><path d="M20 49c3 5 8 8 15 8h5"/><path d="M27 12v-5m10 7 3-5M17 17l-4-4"/></svg></span>
+          <span class="home-menu-title">شرح جامع صوتی نهج‌البلاغه</span>
+          <span class="home-menu-arrow" aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="home-menu-card is-category" data-home-submenu="learning" aria-haspopup="true" aria-expanded="false" aria-label="نهج‌البلاغه کاربردی؛ مشاهده دو بخش">
+          <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><path d="M8 15c9-4 17-3 24 3v34c-7-6-15-7-24-3z"/><path d="M56 15c-9-4-17-3-24 3v34c7-6 15-7 24-3z"/><path d="M32 18v34"/><path d="m45 7 2.2 4.8L52 14l-4.8 2.2L45 21l-2.2-4.8L38 14l4.8-2.2z"/></svg></span>
+          <span class="home-menu-title">نهج‌البلاغه کاربردی</span>
+          <span class="home-menu-arrow" aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="home-menu-card is-category" data-home-submenu="media" aria-haspopup="true" aria-expanded="false" aria-label="رسانه پای منبر مولا؛ مشاهده دو بخش">
+          <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><rect x="7" y="13" width="50" height="38" rx="7"/><path d="M7 23h50"/><circle cx="17" cy="18" r="1.5" fill="currentColor" stroke="none"/><circle cx="23" cy="18" r="1.5" fill="currentColor" stroke="none"/><path d="m27 31 13 7-13 7z"/><path d="M45 30h6m-6 6h6"/></svg></span>
+          <span class="home-menu-title">رسانه پای منبر مولا</span>
+          <span class="home-menu-arrow" aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="home-menu-card" data-menu="guest_sentence_new" aria-label="تفال به نهج‌البلاغه">
+          <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><path d="M9 18c8-4 16-3 23 3v31c-7-6-15-7-23-3z"/><path d="M55 18c-8-4-16-3-23 3v31c7-6 15-7 23-3z"/><path d="M32 21v31"/><path d="m45 7 2 4 4 2-4 2-2 4-2-4-4-2 4-2z"/></svg></span>
+          <span class="home-menu-title">تفال به نهج‌البلاغه</span>
+          <span class="home-menu-arrow" aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="home-menu-card is-category" data-open-course="offline-course" aria-label="ورود به دوره آفلاین نهج‌البلاغه‌خوانی">
+          <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><rect x="9" y="12" width="46" height="43" rx="6"/><path d="M9 24h46M20 7v10m24-10v10"/><path d="M19 33h10m-10 8h10m8-8h8m-8 8h8"/><path d="m22 49 5 4 9-10"/></svg></span>
+          <span class="home-menu-title">دوره آفلاین نهج‌البلاغه‌خوانی</span>
+          <span class="home-menu-arrow" aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="home-menu-card" data-menu="kafi" aria-label="شرح اصول کافی">
+          <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><path d="M8 17c9-4 17-3 24 3v34c-7-6-15-7-24-3z"/><path d="M56 17c-9-4-17-3-24 3v34c7-6 15-7 24-3z"/><path d="M32 20v34"/><path d="M14 25c4-1 8-1 12 1m-12 7c4-1 8-1 12 1m22-9c-4-1-8-1-12 1m12 7c-4-1-8-1-12 1"/></svg></span>
+          <span class="home-menu-title">شرح اصول کافی</span>
+          <span class="home-menu-arrow" aria-hidden="true">‹</span>
+        </button>
       </div>
+
+      <section class="home-submenu" id="home-submenu-learning" aria-label="زیرمجموعه نهج‌البلاغه کاربردی" hidden>
+        <header class="home-submenu-header">
+          <h2 class="home-submenu-title">نهج‌البلاغه کاربردی</h2>
+        </header>
+        <div class="home-submenu-grid">
+          <button type="button" class="home-menu-card home-submenu-card" data-menu="tawhid" aria-label="توحید کاربردی">
+            <span class="home-menu-icon-wrap is-devotional" aria-hidden="true"><img class="home-menu-icon devotional-logo" src="images/pmm_v117_tawhid_logo.png" alt="" loading="eager" decoding="sync"></span>
+            <span class="home-menu-title">توحید کاربردی</span>
+          </button>
+          <button type="button" class="home-menu-card home-submenu-card" data-menu="see_god" aria-label="دیدن خدا در زندگی">
+            <span class="home-menu-icon-wrap is-devotional" aria-hidden="true"><img class="home-menu-icon devotional-logo" src="images/pmm_v117_kaaba_logo.png" alt="" loading="eager" decoding="sync"></span>
+            <span class="home-menu-title">دیدن خدا در زندگی</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="home-submenu" id="home-submenu-media" aria-label="زیرمجموعه رسانه پای منبر مولا" hidden>
+        <header class="home-submenu-header">
+          <h2 class="home-submenu-title">رسانه پای منبر مولا</h2>
+        </header>
+        <div class="home-submenu-grid">
+          <button type="button" class="home-menu-card home-submenu-card" data-menu="videos" aria-label="کلیپ‌های تصویری">
+            <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><rect x="7" y="13" width="50" height="38" rx="6"/><path d="m27 23 15 9-15 9z"/><path d="M14 7v6m12-6v6m12-6v6m12-6v6"/></svg></span>
+            <span class="home-menu-title">کلیپ‌های تصویری</span>
+          </button>
+          <button type="button" class="home-menu-card home-submenu-card" data-menu="photo_quotes" aria-label="عکس‌نوشته">
+            <span class="home-menu-icon-wrap" aria-hidden="true"><svg class="home-menu-icon" viewBox="0 0 64 64"><rect x="7" y="10" width="50" height="44" rx="6"/><circle cx="22" cy="24" r="5"/><path d="m11 47 14-14 9 9 7-7 12 12"/></svg></span>
+            <span class="home-menu-title">عکس‌نوشته</span>
+          </button>
+        </div>
+      </section>
     </div>
   </section>
   <section class="wisdom-scroll" id="wisdom-scroll" aria-label="یک جمله مهمان مولا" hidden tabindex="0">
     <div class="wisdom-body">
-      
+      <div class="wisdom-settings-entry"><button type="button" id="wisdom-reminder-gear" class="wisdom-settings-gear" title="تنظیمات یادآوری" aria-label="تنظیم یادآور مهمانی مولا" aria-controls="wisdom-reminder-panel" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4l.6 2.4c.5.2 1 .4 1.4.7l2.3-1.1 2.8 2.8-1.1 2.3c.3.4.5.9.7 1.4L23 11v4l-2.4.6c-.2.5-.4 1-.7 1.4l1.1 2.3-2.8 2.8-2.3-1.1c-.4.3-.9.5-1.4.7L14 23h-4l-.6-2.4c-.5-.2-1-.4-1.4-.7l-2.3 1.1-2.8-2.8 1.1-2.3c-.3-.4-.5-.9-.7-1.4L1 14v-4l2.4-.6c.2-.5.4-1 .7-1.4L3 5.7l2.8-2.8 2.3 1.1c.4-.3.9-.5 1.4-.7L10 2Z" transform="translate(1 0) scale(.91)"/><circle cx="12" cy="12" r="3.2"/></svg></button></div>
+      <section id="wisdom-reminder-panel" class="pmm-wisdom-reminder-panel" aria-label="تنظیمات یادآوری تفال به نهج‌البلاغه" hidden></section>
       <section id="wisdom-intro" class="wisdom-intro" aria-label="نیت و آغاز قرعه حکمت">
         <div class="intention-emblem" aria-hidden="true">✦</div>
         <p class="intention-message">نیت کنید و یک جمله مهمان کلام امیرالمؤمنین باشید</p>
         <button type="button" id="wisdom-draw-action" class="gold-button wisdom-start-button">اینجا کلیک کنید.</button>
+        <button type="button" id="wisdom-resume-action" class="pmm-resume-wisdom" hidden>ادامه از آخرین حکمت</button>
         
       </section>
       <section id="wisdom-drawing" class="wisdom-drawing" hidden aria-label="در حال انتخاب تصادفی">
@@ -995,9 +1541,127 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
         <button type="button" id="audio-action" class="navy-button"><span aria-hidden="true">🎧</span> شرح این جمله را بشنوید</button>
         <button type="button" id="other-action" class="gold-button"><span aria-hidden="true">✦</span> یک جمله‌ی دیگر مهمان حضرت باشید</button>
       </div>
-      <div id="audio-box" class="audio-box" hidden><audio id="audio-player" controls preload="none"></audio></div>
+      <div id="audio-box" class="audio-box" hidden><div class="wisdom-audio-parts" id="wisdom-audio-parts"></div><audio id="audio-player" controls preload="none"></audio><div id="wisdom-audio-status" role="status" aria-live="polite"></div></div>
       
       </section>
+    </div>
+  </section>
+  <section class="offline-course-scroll" id="offline-course-scroll" aria-label="دوره آفلاین نهج‌البلاغه‌خوانی" hidden tabindex="0">
+    <div class="course-body">
+      <section class="course-panel course-welcome" id="course-welcome" aria-label="دعوت به همراهی">
+        <div class="course-emblem" aria-hidden="true">✦</div>
+        <h2 class="course-heading">دوره آفلاین نهج‌البلاغه‌خوانی</h2>
+        <p class="course-welcome-message">شما می‌توانید با روزی چهل دقیقه وقت گذاشتن، شرح کل نهج‌البلاغه را شنیده و با معارف علوی آشنا شوید.</p>
+        <p class="course-welcome-sub">این یک انتخاب نیست، یک توفیق الهی است برای انس شما با کلمات امیرالمؤمنین علیه‌السلام.</p>
+        <label class="course-accept-row" for="course-accept-check">
+          <input id="course-accept-check" type="checkbox" aria-label="اگر آماده همراهی هستید، یا علی بگویید">
+          <span class="course-check-mark" aria-hidden="true">✓</span>
+          <span>اگر آماده همراهی هستید، یا علی بگویید</span>
+        </label>
+        <p class="course-welcome-error" id="course-welcome-error" hidden>فهرست صوت‌های اصلی در دسترس نیست؛ لطفاً برنامه را به‌روزرسانی کنید.</p>
+      </section>
+
+      <section class="course-panel course-setup" id="course-setup" aria-label="تنظیم برنامه شنیدن" hidden>
+        <div class="course-emblem" aria-hidden="true">✦</div>
+        <h2 class="course-heading">من دستیار هوشمند شما هستم</h2>
+        <p class="course-setup-question">مایلید روزی چند صوت بشنوید؟</p>
+        <div class="course-plan-options" role="group" aria-label="انتخاب برنامه شنیدن">
+          <button type="button" class="course-plan-choice" data-course-plan="daily1" aria-pressed="false">روزی ۱ صوت</button>
+          <button type="button" class="course-plan-choice" data-course-plan="daily2" aria-pressed="false">روزی ۲ صوت</button>
+          <button type="button" class="course-plan-choice" data-course-plan="weekly" aria-pressed="false">هفته‌ای ۱ صوت</button>
+        </div>
+        <div class="course-weekdays" id="course-weekdays" hidden>
+          <p>کدام روز هفته برای همراهی شما مناسب‌تر است؟</p>
+          <div class="course-weekday-grid" role="group" aria-label="انتخاب روز هفتگی">
+            <button type="button" data-course-weekday="6" aria-pressed="false">شنبه</button>
+            <button type="button" data-course-weekday="0" aria-pressed="false">یکشنبه</button>
+            <button type="button" data-course-weekday="1" aria-pressed="false">دوشنبه</button>
+            <button type="button" data-course-weekday="2" aria-pressed="false">سه‌شنبه</button>
+            <button type="button" data-course-weekday="3" aria-pressed="false">چهارشنبه</button>
+            <button type="button" data-course-weekday="4" aria-pressed="false">پنجشنبه</button>
+            <button type="button" data-course-weekday="5" aria-pressed="false">جمعه</button>
+          </div>
+        </div>
+        <div class="course-setup-actions">
+          <button type="button" class="course-primary-button" id="course-save-plan">ثبت برنامه همراهی</button>
+          <button type="button" class="course-secondary-button" id="course-setup-back" hidden>بازگشت به برنامه</button>
+        </div>
+      </section>
+
+      <section class="course-dashboard" id="course-dashboard" aria-label="برنامه روزانه شما" hidden>
+        <section class="course-panel course-progress-panel" aria-label="پیشرفت دوره">
+          <div class="course-progress-top"><strong>مسیر همراهی شما</strong><span id="course-progress-percent">۰٪</span></div>
+          <div class="course-progress-track" role="progressbar" aria-label="پیشرفت شنیدن کل شرح نهج‌البلاغه" aria-valuemin="0" aria-valuemax="1019" aria-valuenow="0">
+            <div class="course-progress-fill" id="course-progress-fill"></div>
+          </div>
+          <div class="course-progress-count" id="course-progress-count">شنیده‌شده: ۰ از ۱۰۱۹ صوت</div>
+        </section>
+
+        <section class="course-panel course-after-mark" id="course-after-mark" hidden>
+          <div class="course-emblem course-success-emblem" aria-hidden="true">✓</div>
+          <h3>خدا قوت؛ این صوت ثبت شد</h3>
+          <p id="course-after-mark-text">با خروج و ورود دوباره، صوت بعدی برنامه نمایش داده می‌شود.</p>
+          <button type="button" class="course-primary-button" id="course-after-mark-home">بازگشت به صفحه اصلی</button>
+        </section>
+
+        <section class="course-panel course-no-due" id="course-no-due" hidden>
+          <div class="course-emblem" aria-hidden="true">✦</div>
+          <h3>برای امروز کافی است</h3>
+          <p id="course-no-due-text">صوت بعدی در نوبت بعدی آماده خواهد بود.</p>
+          <strong class="course-next-date" id="course-next-date"></strong>
+        </section>
+
+        <section class="course-panel course-complete" id="course-complete" hidden>
+          <div class="course-emblem course-success-emblem" aria-hidden="true">✦</div>
+          <h3>الحمدلله؛ یک دور شرح نهج‌البلاغه را به پایان رساندید.</h3>
+          <p>امیدواریم این همراهی، مقدمه انس بیشتر با کلمات امیرالمؤمنین علیه‌السلام باشد.</p>
+          <button type="button" class="course-primary-button" id="course-complete-home">بازگشت به صفحه اصلی</button>
+        </section>
+
+        <section class="course-panel course-track-card" id="course-track-card" hidden>
+          <button type="button" class="course-secondary-button course-revisit-back" id="course-revisit-back" hidden>بازگشت به صوت برنامه روزانه</button>
+          <div class="course-track-meta"><span id="course-track-group">خطبه‌ها</span><span id="course-track-sequence"></span></div>
+          <h3 class="course-track-title" id="course-track-title">خطبه ۱</h3>
+          <div class="course-player" aria-label="پخش صوت امروز">
+            <button type="button" class="course-play-button" id="course-audio-toggle" aria-label="پخش صوت امروز">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5a1 1 0 0 1 1.53-.85l10 6.5a1 1 0 0 1 0 1.7l-10 6.5A1 1 0 0 1 8 18.5z" fill="currentColor"/></svg>
+            </button>
+            <div class="course-player-main">
+              <input type="range" id="course-seek" min="0" max="100" step="0.1" value="0" disabled aria-label="موقعیت پخش صوت">
+              <div class="course-player-times"><span id="course-current-time">۰۰:۰۰</span><span id="course-duration-time">--:--</span></div>
+            </div>
+          </div>
+          <div class="course-mini-toolbar" role="toolbar" aria-label="ابزارهای پخش و دوره">
+            <div class="course-speed-wrap"><button type="button" class="course-mini-button" id="course-speed-toggle" aria-expanded="false" aria-controls="course-speed-options" aria-label="انتخاب سرعت پخش، سرعت فعلی ۱ برابر" title="سرعت پخش"><svg class="course-speedometer" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 25a12 12 0 1 1 22 0"/><path d="M9 21l-2-1m5-7-1-2m5-1V7m6 6 1-2m2 10 2-1"/><path d="M16 24l6-10"/><circle cx="16" cy="24" r="2" fill="currentColor" stroke="none"/></svg></button>
+              <div class="course-speed-row" id="course-speed-options" role="group" aria-label="سرعت پخش صوت" hidden>
+                <button type="button" data-course-speed="0.75" aria-pressed="false">۰٫۷۵×</button><button type="button" data-course-speed="1" aria-pressed="false">۱×</button><button type="button" data-course-speed="1.25" aria-pressed="false">۱٫۲۵×</button><button type="button" data-course-speed="1.5" aria-pressed="false">۱٫۵×</button><button type="button" data-course-speed="2" aria-pressed="false">۲×</button>
+              </div></div>
+            <button type="button" class="course-mini-button" id="course-note-toggle" aria-expanded="false" aria-controls="course-notebook" aria-label="نوشتن یادداشت">✎</button>
+            <button type="button" class="course-mini-button" id="course-mini-settings" aria-label="تغییر تنظیمات برنامه">⚙</button>
+            <button type="button" class="course-mini-button" id="course-mini-heard" disabled aria-label="تأیید شنیدن صوت">✓</button>
+          </div>
+          <p class="course-audio-status course-visually-hidden" id="course-audio-status" role="status" aria-live="polite">برای شروع، دکمه پخش را لمس کنید.</p>
+          <p class="course-listened-status course-visually-hidden" id="course-listened-status"></p>
+          <div class="course-notebook" id="course-notebook" role="dialog" aria-label="دفترچه این صوت" hidden>
+            <div class="course-notebook-heading"><strong>دفترچه این صوت</strong><button type="button" class="course-note-close" id="course-note-close" aria-label="بستن یادداشت">×</button></div>
+            <textarea id="course-note-text" rows="3" maxlength="12000" placeholder="خلاصه بحث، نکته‌ها یا برداشت شخصی خود را اینجا بنویسید..."></textarea>
+            <div class="course-note-actions"><button type="button" class="course-secondary-button" id="course-note-save">ذخیره یادداشت</button><button type="button" class="course-secondary-button" id="course-notes-open" aria-label="دفترچه یادداشت‌های من">یادداشت‌های من</button><span id="course-note-status" aria-live="polite">یادداشت این صوت را اینجا بنویسید.</span></div>
+          </div>
+          <p class="course-threshold course-visually-hidden" id="course-threshold">پس از شنیدن دست‌کم دو سوم صوت، دکمه ثبت شنیدن فعال می‌شود.</p>
+          <button type="button" class="course-heard-button" id="course-heard" disabled hidden>✓ شنیدم؛ ثبت این صوت</button>
+        </section>
+        <div class="course-dashboard-actions" aria-label="صوت بیشتر">
+          <button type="button" class="course-extra-green" id="course-extra" aria-label="امروز یک صوت بیشتر بشنوم">＋ صوت بیشتر</button>
+        </div>
+        <button type="button" id="course-settings-open" hidden aria-label="تغییر تنظیمات برنامه"></button>
+      </section>
+
+      <section class="course-panel course-note-list" id="course-note-list" hidden aria-label="یادداشت‌های ذخیره‌شده">
+        <div class="course-note-list-heading"><h3>دفترچه یادداشت‌های من</h3><button type="button" class="course-secondary-button" id="course-notes-back">بازگشت</button></div>
+        <p class="course-note-list-hint">با بازکردن هر یادداشت، صوت مربوط به همان بخش نیز در دسترس قرار می‌گیرد.</p>
+        <div id="course-notes-items"></div>
+      </section>
+      <audio id="course-audio" preload="none" playsinline></audio>
     </div>
   </section>
   <div class="scroll-rail" aria-hidden="true"><div class="scroll-thumb" id="scroll-thumb"></div></div>
@@ -1008,6 +1672,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  <div id="pmm-wheel-gallery" class="pmm-wheel-page" role="region" aria-label="آلبوم چرخشی عکس نوشته با امکان کشیدن به چپ و راست">
    <div class="pmm-wheel-canvas" id="photo-wheel-canvas"><div class="pmm-wheel-rotor" id="photo-wheel-rotor"></div></div>
     <div class="pmm-wheel-position" id="photo-wheel-position" aria-live="polite"></div>
+    <button type="button" id="pmm-photo-wheel-save" title="دریافت عکس انتخاب‌شده" aria-label="دریافت عکس انتخاب‌شده در گالری" hidden><span class="pmm-save-illustration" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg></span><span>دریافت</span></button>
     <div id="photo-empty" class="photo-empty" role="status" hidden>تصاویر جدید هنوز دریافت نشده‌اند.</div>
  </div>
  <div class="gallery-grid" id="gallery-grid" hidden></div>
@@ -1025,6 +1690,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   <section id="photo-fullscreen" class="photo-fullscreen" role="dialog" aria-modal="true"
            aria-label="نمای بزرگ عکس نوشته؛ برای بستن لمس کنید" tabindex="0" hidden>
     <img id="photo-full-image" alt="عکس نوشته انتخاب‌شده" draggable="false">
+    <button type="button" id="pmm-photo-save" title="ذخیره عکس در گالری گوشی" aria-label="دریافت این عکس و ذخیره در گالری"><span class="pmm-save-illustration" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg></span><span>دریافت</span></button>
   </section>
   <button type="button" id="about" class="about" aria-label="درباره ما"></button>
   <div class="wisdom-floor-cover" id="wisdom-floor-cover" aria-hidden="true" hidden></div>
@@ -1034,6 +1700,46 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 <!-- Fully offline data file, packed inside the APK. No web request is necessary. -->
 <script src="hikam_bank.js"></script>
 <script src="photo_quotes_manifest.js"></script>
+<script src="pmm_audio_stream_helper.js"></script>
+<script>
+/* Offline-only learning history. No media or listening data is sent to a server. */
+const PMM_LEARNING_PROGRESS=Object.freeze((function(){
+'use strict';
+const KEY='pmm_learning_progress_v1';
+const LESSONS=['towhid','life','kafi'],GROUPS=['sermons','letters','wisdoms'];
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(_){return {}}}
+function save(change){try{const s=load();change(s);localStorage.setItem(KEY,JSON.stringify(s));return true}catch(_){return false}}
+function getWisdom(){const x=load().wisdom;return x&&typeof x.id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(x.id)?x.id:null}
+function setWisdom(id){return typeof id==='string'&&/^(?:h\d{3}|g\d{3})$/.test(id)&&save(s=>{s.wisdom={id,at:Date.now()}})}
+// Preserve the last-opened session; the manual listened/finished flag is retired for every lesson section.
+function getLesson(which){if(!LESSONS.includes(which))return null;const x=load().lessons?.[which];return x&&Number.isInteger(x.number)&&x.number>0&&x.number<=500?{number:x.number}:null}
+function openLesson(which,number){if(!LESSONS.includes(which)||!Number.isInteger(number)||number<1||number>500)return false;return save(s=>{if(!s.lessons||typeof s.lessons!=='object')s.lessons={};s.lessons[which]={number,at:Date.now()}})}
+function getNahj(group){if(!GROUPS.includes(group))return null;const x=load().nahj?.[group];if(!x||typeof x.entryId!=='string'||x.entryId.length>80||!Number.isInteger(x.part)||x.part<0||x.part>100||!Number.isFinite(x.seconds)||x.seconds<0||x.seconds>86400)return null;return {entryId:x.entryId,part:x.part,seconds:x.seconds,finished:x.finished===true}}
+function setNahj(group,entryId,part,seconds,finished=false){
+ if(!GROUPS.includes(group)||typeof entryId!=='string'||entryId.length>80||
+   !Number.isInteger(part)||part<0||part>100||!Number.isFinite(seconds))return false;
+ return save(state=>{
+   if(!state.nahj||typeof state.nahj!=='object')state.nahj={};
+   const value={entryId,part,seconds:Math.max(0,Math.min(86400,Math.floor(seconds))),
+     finished:finished===true,at:Date.now()};
+   state.nahj[group]=value;
+   state.nahjLatest={group,...value};
+ });
+}
+function getLastNahj(){
+ const state=load();
+ let value=state.nahjLatest;
+ if(!value||!GROUPS.includes(value.group))
+   value=GROUPS.map(group=>({group,...(state.nahj?.[group]||{})}))
+     .filter(x=>Number.isFinite(x.at)).sort((a,b)=>b.at-a.at)[0];
+ if(!value||!GROUPS.includes(value.group))return null;
+ const record=getNahj(value.group);
+ if(!record||record.entryId!==value.entryId)return null;
+ return {group:value.group,...record};
+}
+return {getWisdom,setWisdom,getLesson,openLesson,getNahj,setNahj,getLastNahj};
+})());
+</script>
 <script>
 (()=>{
 'use strict';
@@ -1071,6 +1777,7 @@ const thumb=document.getElementById('scroll-thumb');
 const toast=document.getElementById('new-toast');
 const audioPlayer=document.getElementById('audio-player');
 const audioBox=document.getElementById('audio-box');
+const wisdomStream=window.PMM_STREAM_HELPER.attach(audioPlayer,document.getElementById('wisdom-audio-status'));
 let lastId=null,bag=[],current=null,noticeTimer=null,originalFocus=null;
 let drawTimer=null,drawRun=0,isDrawing=false;
 const wisdomIntro=document.getElementById('wisdom-intro');
@@ -1085,6 +1792,45 @@ function randInt(max){
   }
   return Math.floor(Math.random()*max);
 }
+// Only short wisdoms are eligible for «یک جمله مهمان مولا».
+// Measure BOTH complete texts in their real Amiri/Sahel reading panels at NORMAL font size.
+// Never remove, truncate or modify an entry in the owner-provided 489-item offline bank.
+let shortWisdoms=[],shortWisdomWidth=-1;
+function threeLineWisdomCandidates(){
+ const width=wisdomScroll.getBoundingClientRect().width;
+ if(width>0&&shortWisdomWidth===width&&shortWisdoms.length)return shortWisdoms;
+ const arabic=document.getElementById('wisdom-arabic');
+ const persian=document.getElementById('wisdom-persian');
+ const prev={intro:wisdomIntro.hidden,drawing:wisdomDrawing.hidden,result:wisdomResult.hidden,
+   visibility:wisdomResult.style.visibility,arabic:arabic.textContent,persian:persian.textContent,
+   arSize:wisdomScroll.style.getPropertyValue('--pmm-wisdom-ar-size'),
+   faSize:wisdomScroll.style.getPropertyValue('--pmm-wisdom-fa-size')};
+ try{
+   wisdomIntro.hidden=true;wisdomDrawing.hidden=true;wisdomResult.hidden=false;
+   wisdomResult.style.visibility='hidden';
+   const sceneWidth=Math.max(290,Math.min(800,scene.getBoundingClientRect().width||390));
+   wisdomScroll.style.setProperty('--pmm-wisdom-ar-size',
+     Math.max(22,Math.min(35,sceneWidth*.0425)).toFixed(2)+'px');
+   wisdomScroll.style.setProperty('--pmm-wisdom-fa-size',
+     Math.max(19,Math.min(31,sceneWidth*.0365)).toFixed(2)+'px');
+   const fits=(element,value)=>{
+     element.textContent=value;
+     const height=element.getBoundingClientRect().height;
+     const lineHeight=parseFloat(getComputedStyle(element).lineHeight);
+     return height>0&&Number.isFinite(lineHeight)&&lineHeight>0&&height<=3*lineHeight+1;
+   };
+   const candidates=wisdoms.filter(w=>fits(arabic,w.arabic)&&fits(persian,w.persian));
+   if(width>0&&candidates.length){shortWisdoms=candidates;shortWisdomWidth=width}
+   return candidates;
+ }finally{
+   arabic.textContent=prev.arabic;persian.textContent=prev.persian;
+   for(const [key,value] of [['--pmm-wisdom-ar-size',prev.arSize],['--pmm-wisdom-fa-size',prev.faSize]]){
+     if(value)wisdomScroll.style.setProperty(key,value);else wisdomScroll.style.removeProperty(key);
+   }
+   wisdomResult.style.visibility=prev.visibility;
+   wisdomResult.hidden=prev.result;wisdomDrawing.hidden=prev.drawing;wisdomIntro.hidden=prev.intro;
+ }
+}
 function saveBag(){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify({bag,lastId}))}catch(_){}
 }
@@ -1096,14 +1842,19 @@ function recoverBag(){
     bag=data.bag;lastId=wisdomLookup.has(data.lastId)?data.lastId:null;
   }catch(_){}
 }
-function refillBag(){
-  bag=wisdoms.map(w=>w.id);
+function refillBag(candidates){
+  bag=candidates.map(w=>w.id);
   for(let i=bag.length-1;i>0;i--){const j=randInt(i+1);[bag[i],bag[j]]=[bag[j],bag[i]]}
   if(bag.length>1&&bag[bag.length-1]===lastId){[bag[bag.length-1],bag[0]]=[bag[0],bag[bag.length-1]]}
   saveBag();
 }
-function pickWisdom(){
-  if(!bag.length)refillBag();
+function pickWisdom(candidates){
+  // Filter legacy saved draws too, so long wisdoms cannot reappear after an upgrade.
+  const eligibleIds=new Set(candidates.map(w=>w.id));
+  const previousCount=bag.length;
+  bag=bag.filter(id=>eligibleIds.has(id));
+  if(bag.length!==previousCount)saveBag();
+  if(!bag.length)refillBag(candidates);
   const id=bag.pop();lastId=id;saveBag();
   return wisdomLookup.get(id);
 }
@@ -1122,16 +1873,34 @@ function renderDrawFrame(w){
 }
 function showInvitation(){
   stopDraw();stopSound();current=null;
+  const last=wisdomLookup.get(PMM_LEARNING_PROGRESS.getWisdom());
+  const resume=document.getElementById('wisdom-resume-action');
+  resume.hidden=!last;
+  if(last)resume.textContent='مشاهده دوباره آخرین مورد: '+wisdomLabel(last);
   wisdomIntro.hidden=false;wisdomDrawing.hidden=true;wisdomResult.hidden=true;
   wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
 }
-function startWisdomDraw(){
+async function startWisdomDraw(){
   if(isDrawing)return;
   if(!bankReport.valid||wisdoms.length!==489){showToast('خطا در بانک آفلاین حکمت‌ها؛ انتخاب متوقف شد.');return}
   stopDraw();const token=++drawRun;isDrawing=true;
-  const finalWisdom=pickWisdom();
   wisdomIntro.hidden=true;wisdomResult.hidden=true;wisdomDrawing.hidden=false;
   wisdomScroll.scrollTop=0;requestAnimationFrame(updateScrollbar);
+  // Wait for the bundled Amiri and Sahel font faces before measuring real line breaks.
+  try{
+    if(document.fonts&&document.fonts.load)await Promise.all([
+      document.fonts.load('400 24px "PMM Amiri"'),
+      document.fonts.load('600 20px "PMM Sahel SemiBold"')
+    ]);
+  }catch(_){}
+  if(token!==drawRun||scene.dataset.screen!=='wisdom')return;
+  const candidates=threeLineWisdomCandidates();
+  if(!candidates.length){
+    showInvitation();
+    showToast('در این اندازه صفحه، جمله کوتاه قابل نمایش یافت نشد.');
+    return;
+  }
+  const finalWisdom=pickWisdom(candidates);
   // The draw target is chosen ONCE with shuffled, no-repeat offline selection;
   // rapid snippets are visual animation only and do not consume future draws.
   const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1144,8 +1913,8 @@ function startWisdomDraw(){
       showSelectedWisdom(finalWisdom);
       return;
     }
-    let preview=wisdoms[randInt(wisdoms.length)];
-    if(preview.id===lastPreview&&wisdoms.length>1)preview=wisdoms[(wisdoms.indexOf(preview)+1)%wisdoms.length];
+    let preview=candidates[randInt(candidates.length)];
+    if(preview.id===lastPreview&&candidates.length>1)preview=candidates[(candidates.indexOf(preview)+1)%candidates.length];
     lastPreview=preview.id;renderDrawFrame(preview);
     drawTimer=setTimeout(tick,delays[step++]);
   };
@@ -1213,7 +1982,83 @@ function updateScrollbar(){
   thumb.style.height=`${thumbHeight}%`;
   thumb.style.top=`${5+fraction*(90-thumbHeight)}%`;
 }
-function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true}
+const homeMenuRoot=document.getElementById('home-main-menu');
+const homeSubmenus=Array.from(document.querySelectorAll('.home-submenu'));
+const homeSubmenuTriggers=Array.from(document.querySelectorAll('[data-home-submenu]'));
+let activeHomeSubmenu='',homeSubmenuTrigger=null;
+function syncHomeSubmenuReturn(){
+  const button=document.getElementById('exit');
+  const isBack=Boolean(activeHomeSubmenu);
+  button.classList.toggle('is-submenu-back',isBack);
+  button.setAttribute('aria-label',isBack?'بازگشت به منوی اصلی':'خروج از برنامه');
+  button.title=isBack?'بازگشت به منوی اصلی':'خروج از برنامه';
+}
+// Measure the actual loaded Estedad text at the available title width. All six
+// labels share ONE maximized size, bounded by the longest label (no wrapping).
+function fitHomeMainMenuTitles(){
+  if(!homeMenuRoot||homeMenuRoot.hidden||!homeMenuRoot.clientWidth)return;
+  const titles=Array.from(homeMenuRoot.querySelectorAll(':scope > .home-menu-card > .home-menu-title'));
+  if(titles.length!==6)return;
+  const canvas=document.createElement('canvas');
+  const context=canvas.getContext('2d');
+  if(!context)return;
+  const reference=30;
+  context.font=`900 ${reference}px "PMM Estedad",Tahoma,Arial,sans-serif`;
+  let size=reference;
+  for(const title of titles){
+    const width=title.getBoundingClientRect().width;
+    const textWidth=context.measureText(title.textContent.trim()).width;
+    if(width>0&&textWidth>0)size=Math.min(size,(width-7)*reference/textWidth);
+  }
+  // Canvas can slightly underestimate Arabic shaping/stroke; verify against
+  // the actual rendered, single-line widths and shrink every label together.
+  size=Math.max(9,Math.floor(Math.min(reference,size)*10)/10);
+  for(let attempt=0;attempt<4;attempt++){
+    homeMenuRoot.style.setProperty('--pmm-home-six-title-size',`${size}px`);
+    const overflowRatio=Math.max(1,...titles.map(t=>t.scrollWidth/Math.max(1,t.clientWidth-3)));
+    if(overflowRatio<=1.001)break;
+    size=Math.max(9,Math.floor((size/overflowRatio)*9.7)/10);
+  }
+}
+function queueHomeTitleFit(){requestAnimationFrame(fitHomeMainMenuTitles)}
+if(document.fonts?.ready)document.fonts.ready.then(queueHomeTitleFit);
+window.addEventListener('resize',queueHomeTitleFit);
+window.addEventListener('load',queueHomeTitleFit);
+queueHomeTitleFit();
+function resetHomeMenu(restoreFocus=false){
+  const previous=homeSubmenuTrigger;
+  activeHomeSubmenu='';
+  homeSubmenuTrigger=null;
+  if(homeMenuRoot)homeMenuRoot.hidden=false;
+  homeSubmenus.forEach(panel=>panel.hidden=true);
+  homeSubmenuTriggers.forEach(button=>button.setAttribute('aria-expanded','false'));
+  syncHomeSubmenuReturn();
+  mainScroll.scrollTop=0;
+  if(restoreFocus&&previous&&previous.isConnected)previous.focus({preventScroll:true});
+  queueHomeTitleFit();
+  requestAnimationFrame(updateScrollbar);
+}
+function openHomeSubmenu(key,trigger){
+  const panel=document.getElementById('home-submenu-'+key);
+  if(!panel||!homeMenuRoot)return;
+  activeHomeSubmenu=key;
+  homeSubmenuTrigger=trigger||null;
+  homeMenuRoot.hidden=true;
+  homeSubmenus.forEach(value=>value.hidden=value!==panel);
+  homeSubmenuTriggers.forEach(button=>button.setAttribute('aria-expanded',String(button===trigger)));
+  syncHomeSubmenuReturn();
+  mainScroll.scrollTop=0;
+  requestAnimationFrame(updateScrollbar);
+}
+function closeHomeSubmenu(){
+  if(!activeHomeSubmenu)return false;
+  resetHomeMenu(true);
+  return true;
+}
+homeSubmenuTriggers.forEach(button=>button.addEventListener('click',()=>{
+  openHomeSubmenu(button.dataset.homeSubmenu,button);
+}));
+function stopSound(){audioPlayer.pause();audioPlayer.removeAttribute('src');audioPlayer.load();audioBox.hidden=true;document.getElementById('wisdom-audio-parts').replaceChildren();document.getElementById('wisdom-audio-status').textContent='';selectedExplanation=null}
 function showSelectedWisdom(w){
   if(!w)return;
   stopSound();current=w;
@@ -1221,6 +2066,7 @@ function showSelectedWisdom(w){
   document.getElementById('wisdom-number').textContent=wisdomLabel(current);
   document.getElementById('wisdom-arabic').textContent=current.arabic;
   document.getElementById('wisdom-persian').textContent=current.persian;
+  PMM_LEARNING_PROGRESS.setWisdom(current.id);
   
   
   
@@ -1229,6 +2075,7 @@ function showSelectedWisdom(w){
 }
 function showRandomWisdom(){startWisdomDraw()}
 function enterWisdom(){
+   closeWisdomReminderSettings();
   originalFocus=document.activeElement;
   mainScroll.hidden=true;wisdomScroll.hidden=false;
   document.getElementById('exit').hidden=true;document.getElementById('about').hidden=true;
@@ -1239,32 +2086,83 @@ function enterWisdom(){
   document.getElementById('back-top').focus({preventScroll:true});
 }
 function leaveWisdom(){
-  stopDraw();stopSound();wisdomScroll.hidden=true;mainScroll.hidden=false;
+  stopDraw();stopSound();wisdomScroll.hidden=true;mainScroll.hidden=false;resetHomeMenu(false);resetHomeMenu(false);
   document.getElementById('exit').hidden=false;document.getElementById('about').hidden=false;
   document.getElementById('back-top').hidden=true;document.getElementById('wisdom-floor-cover').hidden=true;
   scene.dataset.screen='home';window.PMM_V7&&window.PMM_V7.markHome();toast.hidden=true;requestAnimationFrame(updateScrollbar);
   if(originalFocus&&originalFocus.isConnected)originalFocus.focus({preventScroll:true});
 }
+// Select the exact owner-supplied MP3 for the displayed wisdom. Two wisdom
+// pairs (40/41, 111/112) share files; multi-part entries preserve every track.
+function wisdomExplanationTracks(w){
+ const catalog=window.PMM_NAHJ_AUDIO_DATA;
+ if(!w||!catalog||!catalog.items||!catalog.parts)return {record:null,urls:[]};
+ const records=catalog.items.wisdoms||[];
+ let id='';
+ if(w.kind==='gharaib')id='gharaib-'+w.number;
+ else if(w.kind==='hikmat'&&Number.isInteger(w.number)&&w.number>=1&&w.number<=480){
+   const found=records.find(record=>record.kind==='wisdom'&&
+     record.id.split('-').slice(1).some(num=>Number(num)===w.number));
+   id=found?found.id:'';
+ }
+ const record=records.find(value=>value.id===id)||null;
+ const links=record?catalog.parts[record.id]:null;
+ const valid=/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/hekmat\/hekmat [A-Za-z0-9. &]+\.mp3$/i;
+ return {record,urls:Array.isArray(links)?links.filter(url=>typeof url==='string'&&valid.test(url)):[]};
+}
+let selectedExplanation=null;
+function explanationSave(finished=false){
+ if(!selectedExplanation||audioPlayer.readyState<1)return;
+ const {record,index}=selectedExplanation;
+ PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,
+   finished?0:Math.floor(audioPlayer.currentTime||0),finished);
+}
+audioPlayer.addEventListener('timeupdate',()=>explanationSave(false));
+audioPlayer.addEventListener('pause',()=>explanationSave(audioPlayer.ended));
+audioPlayer.addEventListener('ended',()=>explanationSave(true));
 function playExplanation(){
-  if(!current)return;
-  const media=current.audio;
-  if(!media||typeof media.url!=='string'||!media.url.trim()){
-    showToast('شرح صوتی این حکمت هنوز به لینک معتبر وصل نشده است. متن و ترجمه آفلاین کار می‌کنند.');return;
-  }
-  let url;try{url=new URL(media.url)}catch{showToast('آدرس صوت معتبر نیست.');return}
-  if(url.protocol!=='https:'){showToast('برای امنیت، فقط پیوند HTTPS مجاز است.');return}
-  if(media.type==='audio'){
-    audioPlayer.src=url.href;audioBox.hidden=false;
-    if(Number.isFinite(media.startSeconds)&&media.startSeconds>=0){
-      audioPlayer.addEventListener('loadedmetadata',()=>{audioPlayer.currentTime=Math.min(media.startSeconds,Math.max(0,audioPlayer.duration||0))},{once:true});
-    }
-    audioPlayer.play().catch(()=>showToast('برای شروع پخش، دکمه پخش‌کننده را لمس کنید.'));
-    audioBox.scrollIntoView({block:'nearest',behavior:'smooth'});
-  }else{
-    window.dispatchEvent(new CustomEvent('pmm:wisdom-online-explanation',{detail:{number:current.number,url:url.href}}));
-    const tab=window.open(url.href,'_blank','noopener,noreferrer');
-    if(!tab)showToast('پیوند شرح آماده است؛ بازکردن پنجره در این پیش‌نمایش محدود شده است.');
-  }
+ if(!current)return;
+ const {record,urls}=wisdomExplanationTracks(current);
+ if(!record||!urls.length){
+   showToast('برای این مورد هنوز شرح صوتی در فهرست اصلی ثبت نشده است.');
+   return;
+ }
+ const selector=document.getElementById('wisdom-audio-parts');
+ selector.replaceChildren();
+ function choosePart(index){
+   if(index<0||index>=urls.length)return;
+   explanationSave(false);
+   audioPlayer.pause();
+   const last=PMM_LEARNING_PROGRESS.getNahj('wisdoms');
+   const seconds=last&&last.entryId===record.id&&last.part===index&&!last.finished?last.seconds:0;
+   selectedExplanation={record,index};
+   PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,seconds,false);
+   audioPlayer.src=encodeURI(urls[index]);audioPlayer.load();
+   if(seconds>0)audioPlayer.addEventListener('loadedmetadata',function restore(){
+      if(selectedExplanation?.record.id===record.id&&selectedExplanation.index===index&&
+         Number.isFinite(audioPlayer.duration)&&audioPlayer.duration>0)
+        audioPlayer.currentTime=Math.min(seconds,Math.max(0,audioPlayer.duration-1));
+   },{once:true});
+   selector.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+   audioBox.hidden=false;
+   wisdomStream.started();
+   audioPlayer.play().catch(()=>showToast('پخش آغاز نشد؛ اتصال اینترنت را بررسی کنید یا دوباره پخش را بزنید.'));
+ }
+ const ordinal=['اول','دوم','سوم','چهارم','پنجم','ششم','هفتم','هشتم','نهم','دهم'];
+ if(urls.length>1)urls.forEach((unused,index)=>{
+   const button=document.createElement('button');
+   button.type='button';button.className='wisdom-audio-part';
+   button.textContent='بخش '+(ordinal[index]||String(index+1));
+   button.setAttribute('aria-label','پخش '+button.textContent+' شرح این حکمت');
+   button.setAttribute('aria-pressed','false');
+   button.addEventListener('click',()=>choosePart(index));
+   selector.appendChild(button);
+ });
+ const previous=PMM_LEARNING_PROGRESS.getNahj('wisdoms');
+ const index=previous&&previous.entryId===record.id&&!previous.finished&&previous.part<urls.length?
+   previous.part:0;
+ choosePart(index);
+ audioBox.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 document.querySelectorAll('[data-menu]').forEach(button=>button.addEventListener('click',()=>{
   if(button.dataset.menu==='guest_sentence_new'){enterWisdom();return}
@@ -1272,6 +2170,10 @@ document.querySelectorAll('[data-menu]').forEach(button=>button.addEventListener
 }));
 document.getElementById('other-action').addEventListener('click',startWisdomDraw);
 document.getElementById('wisdom-draw-action').addEventListener('click',startWisdomDraw);
+document.getElementById('wisdom-resume-action').addEventListener('click',()=>{
+  const previous=wisdomLookup.get(PMM_LEARNING_PROGRESS.getWisdom());
+  if(previous){stopDraw();showSelectedWisdom(previous)}
+});
 document.getElementById('audio-action').addEventListener('click',playExplanation);
 document.getElementById('wisdom-copy-action').addEventListener('click',copyWisdomText);
 document.getElementById('wisdom-textsize-action').addEventListener('click',adjustWisdomFontSize);
@@ -1295,11 +2197,12 @@ Object.defineProperty(window,'PMM_WISDOM_PROTOTYPE',{value:Object.freeze({
 }),writable:false});
 
 window.PMM_NEW_UI=Object.freeze({
- enterWisdom, leaveWisdom,
+ enterWisdom, leaveWisdom, openSubmenu:key=>openHomeSubmenu(key,document.querySelector(`[data-home-submenu="${key}"]`)),
  showHome:()=>{
    stopSound();wisdomScroll.hidden=true;
    document.getElementById('gallery-scroll').hidden=true;
    mainScroll.hidden=false;
+   resetHomeMenu(false);
    document.getElementById('exit').hidden=false;
    document.getElementById('about').hidden=false;
    document.getElementById('back-top').hidden=true;
@@ -1323,6 +2226,7 @@ window.PMM_NEW_UI=Object.freeze({
  closeGallery:()=>{
    document.getElementById('gallery-scroll').hidden=true;
    mainScroll.hidden=false;
+   resetHomeMenu(false);
    document.getElementById('exit').hidden=false;
    document.getElementById('about').hidden=false;
    document.getElementById('back-top').hidden=true;
@@ -1331,6 +2235,7 @@ window.PMM_NEW_UI=Object.freeze({
    requestAnimationFrame(updateScrollbar);
  },
  updateScrollbar,
+ closeSubmenu:closeHomeSubmenu,
  showToast
 });
 })();
@@ -1361,15 +2266,23 @@ window.PMM_NEW_UI=Object.freeze({
 <div class="pane gone" id="list-pane">
 <div class="inner-gold-panel" aria-hidden="true"></div>
 <button type="button" class="top-action" id="back-button" title="بازگشت" aria-label="بازگشت"></button>
+<form id="nahj-find-panel" role="search" aria-label="جستجوی عددی در شرح نهج‌البلاغه" hidden>
+  <label id="nahj-find-label" for="nahj-find-input">شماره مورد</label>
+  <div id="nahj-find-row"><input id="nahj-find-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="شماره فارسی یا انگلیسی" aria-describedby="nahj-find-status"><button type="submit" class="nahj-find-action">برو</button><button type="button" id="nahj-find-close" class="nahj-find-action" aria-label="بستن جستجو">×</button></div>
+  <div id="nahj-find-status" role="status" aria-live="polite"></div>
+</form>
 <img class="list-title gone" id="dynamic-title" alt="عنوان بخش"><div class="clip-title gone" id="clips-page-title">کلیپ‌های تصویری</div>
 <div class="content-view" id="content-view"><h2 id="legacy-heading" aria-live="polite"></h2><div class="row-list" id="contents"></div></div>
 </div>
 <div class="toast gone" id="toast"></div>
-<div class="wisdom-floor-cover" aria-hidden="true"></div><button type="button" id="legacy-back-top" class="legacy-back" aria-label="بازگشت به صفحه جدید">بازگشت</button></main>
+<div class="wisdom-floor-cover" aria-hidden="true"></div><button type="button" id="legacy-back-top" class="legacy-back" aria-label="بازگشت به صفحه جدید">بازگشت</button>
+<button type="button" id="nahj-find-button" class="legacy-back" title="جستجوی شماره" aria-label="جستجوی شماره خطبه، نامه یا حکمت" aria-controls="nahj-find-panel" aria-expanded="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button></main>
 
+<script src="nahj_audio_links.js"></script>
+<script src="pmm_kafi_resume_screenoff.js"></script>
 <script>
 
-const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"شرح اصول کافی 1","url":"https://eitaa.com/hadis_kafi/393","source":"ایتا"},{"number":2,"title":"شرح اصول کافی 2","url":"https://eitaa.com/hadis_kafi/450","source":"ایتا"},{"number":3,"title":"شرح اصول کافی 3","url":"https://eitaa.com/hadis_kafi/462","source":"ایتا"},{"number":4,"title":"شرح اصول کافی 4","url":"https://eitaa.com/hadis_kafi/474","source":"ایتا"},{"number":5,"title":"شرح اصول کافی 5","url":"https://eitaa.com/hadis_kafi/486","source":"ایتا"},{"number":6,"title":"شرح اصول کافی 6","url":"https://eitaa.com/hadis_kafi/498","source":"ایتا"},{"number":7,"title":"شرح اصول کافی 7","url":"https://eitaa.com/hadis_kafi/509","source":"ایتا"},{"number":8,"title":"شرح اصول کافی 8","url":"https://eitaa.com/hadis_kafi/521","source":"ایتا"},{"number":9,"title":"شرح اصول کافی 9","url":"https://eitaa.com/hadis_kafi/532","source":"ایتا"},{"number":10,"title":"شرح اصول کافی 10","url":"https://eitaa.com/hadis_kafi/544","source":"ایتا"},{"number":11,"title":"شرح اصول کافی 11","url":"https://eitaa.com/hadis_kafi/556","source":"ایتا"},{"number":12,"title":"شرح اصول کافی 12","url":"https://eitaa.com/hadis_kafi/568","source":"ایتا"},{"number":13,"title":"شرح اصول کافی 13","url":"https://eitaa.com/hadis_kafi/581","source":"ایتا"},{"number":14,"title":"شرح اصول کافی 14","url":"https://eitaa.com/hadis_kafi/594","source":"ایتا"},{"number":15,"title":"شرح اصول کافی 15","url":"https://eitaa.com/hadis_kafi/607","source":"ایتا"},{"number":16,"title":"شرح اصول کافی 16","url":"https://eitaa.com/hadis_kafi/620","source":"ایتا"},{"number":17,"title":"شرح اصول کافی 17","url":"https://eitaa.com/hadis_kafi/632","source":"ایتا"},{"number":18,"title":"شرح اصول کافی 18","url":"https://eitaa.com/hadis_kafi/639","source":"ایتا"},{"number":19,"title":"شرح اصول کافی 19","url":"https://eitaa.com/hadis_kafi/647","source":"ایتا"},{"number":20,"title":"شرح اصول کافی 20","url":"https://eitaa.com/hadis_kafi/657","source":"ایتا"},{"number":21,"title":"شرح اصول کافی 21","url":"https://eitaa.com/hadis_kafi/669","source":"ایتا"},{"number":22,"title":"شرح اصول کافی 22","url":"https://eitaa.com/hadis_kafi/680","source":"ایتا"},{"number":23,"title":"شرح اصول کافی 23","url":"https://eitaa.com/hadis_kafi/687","source":"ایتا"},{"number":24,"title":"شرح اصول کافی 24","url":"https://eitaa.com/hadis_kafi/693","source":"ایتا"},{"number":25,"title":"شرح اصول کافی 25","url":"https://eitaa.com/hadis_kafi/704","source":"ایتا"},{"number":26,"title":"شرح اصول کافی 26","url":"https://eitaa.com/hadis_kafi/712","source":"ایتا"},{"number":27,"title":"شرح اصول کافی 27","url":"https://eitaa.com/hadis_kafi/724","source":"ایتا"},{"number":28,"title":"شرح اصول کافی 28","url":"https://eitaa.com/hadis_kafi/737","source":"ایتا"},{"number":29,"title":"شرح اصول کافی 29","url":"https://eitaa.com/hadis_kafi/746","source":"ایتا"},{"number":30,"title":"شرح اصول کافی 30","url":"https://eitaa.com/hadis_kafi/755","source":"ایتا"},{"number":31,"title":"شرح اصول کافی 31","url":"https://eitaa.com/hadis_kafi/775","source":"ایتا"},{"number":32,"title":"شرح اصول کافی 32","url":"https://eitaa.com/hadis_kafi/793","source":"ایتا"},{"number":33,"title":"شرح اصول کافی 33","url":"https://eitaa.com/hadis_kafi/809","source":"ایتا"},{"number":34,"title":"شرح اصول کافی 34","url":"https://eitaa.com/hadis_kafi/823","source":"ایتا"},{"number":35,"title":"شرح اصول کافی 35","url":"https://eitaa.com/hadis_kafi/836","source":"ایتا"},{"number":36,"title":"شرح اصول کافی 36","url":"https://eitaa.com/hadis_kafi/851","source":"ایتا"},{"number":37,"title":"شرح اصول کافی 37","url":"https://eitaa.com/hadis_kafi/864","source":"ایتا"},{"number":38,"title":"شرح اصول کافی 38","url":"https://eitaa.com/hadis_kafi/881","source":"ایتا"},{"number":39,"title":"شرح اصول کافی 39","url":"https://eitaa.com/hadis_kafi/909","source":"ایتا"},{"number":40,"title":"شرح اصول کافی 40","url":"https://eitaa.com/hadis_kafi/923","source":"ایتا"},{"number":41,"title":"شرح اصول کافی 41","url":"https://eitaa.com/hadis_kafi/941","source":"ایتا"},{"number":42,"title":"شرح اصول کافی 42","url":"https://eitaa.com/hadis_kafi/958","source":"ایتا"},{"number":43,"title":"شرح اصول کافی 43","url":"https://eitaa.com/hadis_kafi/981","source":"ایتا"},{"number":44,"title":"شرح اصول کافی 44","url":"https://eitaa.com/hadis_kafi/993","source":"ایتا"},{"number":45,"title":"شرح اصول کافی 45","url":"https://eitaa.com/hadis_kafi/1017","source":"ایتا"},{"number":46,"title":"شرح اصول کافی 46","url":"https://eitaa.com/hadis_kafi/1037","source":"ایتا"},{"number":47,"title":"شرح اصول کافی 47","url":"https://eitaa.com/hadis_kafi/1048","source":"ایتا"},{"number":48,"title":"شرح اصول کافی 48","url":"https://eitaa.com/hadis_kafi/1060","source":"ایتا"},{"number":49,"title":"شرح اصول کافی 49","url":"https://eitaa.com/hadis_kafi/1107","source":"ایتا"},{"number":50,"title":"شرح اصول کافی 50","url":"https://eitaa.com/hadis_kafi/1119","source":"ایتا"},{"number":51,"title":"شرح اصول کافی 51","url":"https://eitaa.com/hadis_kafi/1141","source":"ایتا"},{"number":52,"title":"شرح اصول کافی 52","url":"https://eitaa.com/hadis_kafi/1153","source":"ایتا"},{"number":53,"title":"شرح اصول کافی 53","url":"https://eitaa.com/hadis_kafi/1190","source":"ایتا"},{"number":54,"title":"شرح اصول کافی 54","url":"https://eitaa.com/hadis_kafi/1202","source":"ایتا"},{"number":55,"title":"شرح اصول کافی 55","url":"https://eitaa.com/hadis_kafi/1223","source":"ایتا"},{"number":56,"title":"شرح اصول کافی 56","url":"https://eitaa.com/hadis_kafi/1429","source":"ایتا"},{"number":57,"title":"شرح اصول کافی 57","url":"https://eitaa.com/hadis_kafi/1441","source":"ایتا"},{"number":58,"title":"شرح اصول کافی 58","url":"https://eitaa.com/hadis_kafi/1454","source":"ایتا"},{"number":59,"title":"شرح اصول کافی 59","url":"","source":""}],"nahj":{"url":"https://kazeminia110.ir/","description":"تا تکمیل صفحه اختصاصی ۱۱۰۰ جلسه، مخاطب می‌تواند از صفحه اصلی سایت یا فهرست موجود در ایتا استفاده کند.","eitaa_url":"https://eitaa.com/nahjolbalagheh_media/8"}}
+const DATA = {"towhid":[{"number":1,"title":"توحید کاربردی در نهج‌البلاغه ۱","url":"https://eitaa.com/nahjolbalagheh_media/4602","source":"ایتا"},{"number":2,"title":"توحید کاربردی در نهج‌البلاغه ۲","url":"https://eitaa.com/nahjolbalagheh_media/4609","source":"ایتا"},{"number":3,"title":"توحید کاربردی در نهج‌البلاغه ۳","url":"https://www.aparat.com/v/lde8cr7","source":"آپارات"},{"number":4,"title":"توحید کاربردی در نهج‌البلاغه ۴","url":"https://www.aparat.com/v/dhj2vk6","source":"آپارات"},{"number":5,"title":"توحید کاربردی در نهج‌البلاغه ۵","url":"https://www.aparat.com/v/dgavxpl","source":"آپارات"},{"number":6,"title":"توحید کاربردی در نهج‌البلاغه ۶","url":"https://www.aparat.com/v/cyvrj6g","source":"آپارات"},{"number":7,"title":"توحید کاربردی در نهج‌البلاغه ۷","url":"https://eitaa.com/nahjolbalagheh_media/4681","source":"ایتا"},{"number":8,"title":"توحید کاربردی در نهج‌البلاغه ۸","url":"https://www.aparat.com/v/rvv3y97","source":"آپارات"},{"number":9,"title":"توحید کاربردی در نهج‌البلاغه ۹","url":"https://www.aparat.com/v/xqpg9le","source":"آپارات"},{"number":10,"title":"توحید کاربردی در نهج‌البلاغه ۱۰","url":"https://www.aparat.com/v/tet88rl","source":"آپارات"},{"number":11,"title":"توحید کاربردی در نهج‌البلاغه ۱۱","url":"https://www.aparat.com/v/tsj98ob","source":"آپارات"},{"number":12,"title":"توحید کاربردی در نهج‌البلاغه ۱۲","url":"https://www.aparat.com/v/xrmtood","source":"آپارات"},{"number":13,"title":"توحید کاربردی در نهج‌البلاغه ۱۳","url":"https://www.aparat.com/v/fnf3033","source":"آپارات"},{"number":14,"title":"توحید کاربردی در نهج‌البلاغه ۱۴","url":"https://www.aparat.com/v/ozt3j72","source":"آپارات"},{"number":15,"title":"توحید کاربردی در نهج‌البلاغه ۱۵","url":"https://www.aparat.com/v/litsd8t","source":"آپارات"},{"number":16,"title":"توحید کاربردی در نهج‌البلاغه ۱۶","url":"https://www.aparat.com/v/ooz9i8m","source":"آپارات"},{"number":17,"title":"توحید کاربردی در نهج‌البلاغه ۱۷","url":"https://www.aparat.com/v/sno4qbx","source":"آپارات"},{"number":18,"title":"توحید کاربردی در نهج‌البلاغه ۱۸","url":"https://www.aparat.com/v/hme3qb3","source":"آپارات"},{"number":19,"title":"توحید کاربردی در نهج‌البلاغه ۱۹","url":"https://www.aparat.com/v/wsyzyb1","source":"آپارات"},{"number":20,"title":"توحید کاربردی در نهج‌البلاغه ۲۰","url":"https://www.aparat.com/v/ljhw260","source":"آپارات"},{"number":21,"title":"توحید کاربردی در نهج‌البلاغه ۲۱","url":"https://www.aparat.com/v/mbi907l","source":"آپارات"},{"number":22,"title":"توحید کاربردی در نهج‌البلاغه ۲۲","url":"https://www.aparat.com/v/qdnzr0e","source":"آپارات"},{"number":23,"title":"توحید کاربردی در نهج‌البلاغه ۲۳","url":"https://www.aparat.com/v/rhj3qp7","source":"آپارات"},{"number":24,"title":"توحید کاربردی در نهج‌البلاغه ۲۴","url":"https://www.aparat.com/v/wwe1xku","source":"آپارات"},{"number":25,"title":"توحید کاربردی در نهج‌البلاغه ۲۵","url":"https://www.aparat.com/v/flc0a6b","source":"آپارات"},{"number":26,"title":"توحید کاربردی در نهج‌البلاغه ۲۶","url":"https://www.aparat.com/v/wiv842h","source":"آپارات"},{"number":27,"title":"توحید کاربردی در نهج‌البلاغه ۲۷","url":"https://www.aparat.com/v/anpt70b","source":"آپارات"},{"number":28,"title":"توحید کاربردی در نهج‌البلاغه ۲۸","url":"https://www.aparat.com/v/okx6487","source":"آپارات"},{"number":29,"title":"توحید کاربردی در نهج‌البلاغه ۲۹","url":"https://www.aparat.com/v/pfqj1k7","source":"آپارات"},{"number":30,"title":"توحید کاربردی در نهج‌البلاغه ۳۰","url":"https://www.aparat.com/v/hnowm04","source":"آپارات"},{"number":31,"title":"توحید کاربردی در نهج‌البلاغه ۳۱","url":"https://www.aparat.com/v/grh3mb8","source":"آپارات"},{"number":32,"title":"توحید کاربردی در نهج‌البلاغه ۳۲","url":"https://www.aparat.com/v/acofp2h","source":"آپارات"},{"number":33,"title":"توحید کاربردی در نهج‌البلاغه ۳۳","url":"https://www.aparat.com/v/qei4s9b","source":"آپارات"},{"number":34,"title":"توحید کاربردی در نهج‌البلاغه ۳۴","url":"https://www.aparat.com/v/irm8ox9","source":"آپارات"},{"number":35,"title":"توحید کاربردی در نهج‌البلاغه ۳۵","url":"https://www.aparat.com/v/nen9ak7","source":"آپارات"},{"number":36,"title":"توحید کاربردی در نهج‌البلاغه ۳۶","url":"https://www.aparat.com/v/nqauun3","source":"آپارات"},{"number":37,"title":"توحید کاربردی در نهج‌البلاغه ۳۷","url":"https://www.aparat.com/v/iwa6oo5","source":"آپارات"},{"number":38,"title":"توحید کاربردی در نهج‌البلاغه ۳۸","url":"https://www.aparat.com/v/xok68s4","source":"آپارات"},{"number":39,"title":"توحید کاربردی در نهج‌البلاغه ۳۹","url":"https://www.aparat.com/v/jao10y9","source":"آپارات"},{"number":40,"title":"توحید کاربردی در نهج‌البلاغه ۴۰","url":"https://www.aparat.com/v/sxsnqv5","source":"آپارات"},{"number":41,"title":"توحید کاربردی در نهج‌البلاغه ۴۱","url":"https://www.aparat.com/v/gzd04a2","source":"آپارات"},{"number":42,"title":"توحید کاربردی در نهج‌البلاغه ۴۲","url":"https://www.aparat.com/v/gwhziu9","source":"آپارات"},{"number":43,"title":"توحید کاربردی در نهج‌البلاغه ۴۳","url":"https://www.aparat.com/v/tkj9k08","source":"آپارات"},{"number":44,"title":"توحید کاربردی در نهج‌البلاغه ۴۴","url":"https://www.aparat.com/v/suhx841","source":"آپارات"},{"number":45,"title":"توحید کاربردی در نهج‌البلاغه ۴۵","url":"https://www.aparat.com/v/jgy378d","source":"آپارات"},{"number":46,"title":"توحید کاربردی در نهج‌البلاغه ۴۶","url":"https://www.aparat.com/v/uucfl15","source":"آپارات"},{"number":47,"title":"توحید کاربردی در نهج‌البلاغه ۴۷","url":"https://www.aparat.com/v/rmk2h54","source":"آپارات"},{"number":48,"title":"توحید کاربردی در نهج‌البلاغه ۴۸","url":"https://www.aparat.com/v/jgb8bc9","source":"آپارات"},{"number":49,"title":"توحید کاربردی در نهج‌البلاغه ۴۹","url":"https://www.aparat.com/v/tez0f4v","source":"آپارات"},{"number":50,"title":"توحید کاربردی در نهج‌البلاغه ۵۰","url":"https://www.aparat.com/v/wdw01s9","source":"آپارات"}],"life":[{"number":1,"title":"دیدن خدا در زندگی ۱","url":"https://www.aparat.com/v/zfg8mh9","source":"آپارات"},{"number":2,"title":"دیدن خدا در زندگی ۲","url":"https://www.aparat.com/v/fwkk38g","source":"آپارات"},{"number":3,"title":"دیدن خدا در زندگی ۳","url":"https://www.aparat.com/v/lfi2s72","source":"آپارات"},{"number":4,"title":"دیدن خدا در زندگی ۴","url":"https://www.aparat.com/v/urx321e","source":"آپارات"},{"number":5,"title":"دیدن خدا در زندگی ۵","url":"https://www.aparat.com/v/ubopr12","source":"آپارات"},{"number":6,"title":"دیدن خدا در زندگی ۶","url":"https://www.aparat.com/v/urll125","source":"آپارات"},{"number":7,"title":"دیدن خدا در زندگی ۷","url":"https://www.aparat.com/v/gsxn7a6","source":"آپارات"},{"number":8,"title":"دیدن خدا در زندگی ۸","url":"https://www.aparat.com/v/aqg14e0","source":"آپارات"},{"number":9,"title":"دیدن خدا در زندگی ۹","url":"https://www.aparat.com/v/afy62fc","source":"آپارات"},{"number":10,"title":"دیدن خدا در زندگی ۱۰","url":"https://www.aparat.com/v/pco3ldg","source":"آپارات"},{"number":11,"title":"دیدن خدا در زندگی ۱۱","url":"https://www.aparat.com/v/cri9001","source":"آپارات"},{"number":12,"title":"دیدن خدا در زندگی ۱۲","url":"https://www.aparat.com/v/wuntf17","source":"آپارات"},{"number":13,"title":"دیدن خدا در زندگی ۱۳","url":"https://www.aparat.com/v/mtvqwd3","source":"آپارات"},{"number":14,"title":"دیدن خدا در زندگی ۱۴","url":"https://www.aparat.com/v/ndf65pt","source":"آپارات"},{"number":15,"title":"دیدن خدا در زندگی ۱۵","url":"https://www.aparat.com/v/eiib41x","source":"آپارات"},{"number":16,"title":"دیدن خدا در زندگی ۱۶","url":"https://www.aparat.com/v/sffor89","source":"آپارات"},{"number":17,"title":"دیدن خدا در زندگی ۱۷","url":"https://www.aparat.com/v/micdf91","source":"آپارات"}],"kafi":[{"number":1,"title":"کافی شناسی","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi kotobe arbae.mp3","source":"فایل صوتی"},{"number":2,"title":"جلسه ۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 1.mp3","source":"فایل صوتی"},{"number":3,"title":"جلسه ۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 2.mp3","source":"فایل صوتی"},{"number":4,"title":"جلسه ۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 3.mp3","source":"فایل صوتی"},{"number":5,"title":"جلسه ۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 4.mp3","source":"فایل صوتی"},{"number":6,"title":"جلسه ۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 5.mp3","source":"فایل صوتی"},{"number":7,"title":"جلسه ۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 6.mp3","source":"فایل صوتی"},{"number":8,"title":"جلسه ۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 7.mp3","source":"فایل صوتی"},{"number":9,"title":"جلسه ۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 8.mp3","source":"فایل صوتی"},{"number":10,"title":"جلسه ۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 9.mp3","source":"فایل صوتی"},{"number":11,"title":"جلسه ۱۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 10.mp3","source":"فایل صوتی"},{"number":12,"title":"جلسه ۱۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 11.mp3","source":"فایل صوتی"},{"number":13,"title":"جلسه ۱۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 12.mp3","source":"فایل صوتی"},{"number":14,"title":"جلسه ۱۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 13.mp3","source":"فایل صوتی"},{"number":15,"title":"جلسه ۱۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 14.mp3","source":"فایل صوتی"},{"number":16,"title":"جلسه ۱۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 15.mp3","source":"فایل صوتی"},{"number":17,"title":"جلسه ۱۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 16.mp3","source":"فایل صوتی"},{"number":18,"title":"جلسه ۱۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 17.mp3","source":"فایل صوتی"},{"number":19,"title":"جلسه ۱۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 18.mp3","source":"فایل صوتی"},{"number":20,"title":"جلسه ۱۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 19.mp3","source":"فایل صوتی"},{"number":21,"title":"جلسه ۲۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 20.mp3","source":"فایل صوتی"},{"number":22,"title":"جلسه ۲۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 21.mp3","source":"فایل صوتی"},{"number":23,"title":"جلسه ۲۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 22.mp3","source":"فایل صوتی"},{"number":24,"title":"جلسه ۲۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 23.mp3","source":"فایل صوتی"},{"number":25,"title":"جلسه ۲۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 24.mp3","source":"فایل صوتی"},{"number":26,"title":"جلسه ۲۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 25.mp3","source":"فایل صوتی"},{"number":27,"title":"جلسه ۲۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 26.mp3","source":"فایل صوتی"},{"number":28,"title":"جلسه ۲۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 27.mp3","source":"فایل صوتی"},{"number":29,"title":"جلسه ۲۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 28.mp3","source":"فایل صوتی"},{"number":30,"title":"جلسه ۲۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 29.mp3","source":"فایل صوتی"},{"number":31,"title":"جلسه ۳۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 30.mp3","source":"فایل صوتی"},{"number":32,"title":"جلسه ۳۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 31.mp3","source":"فایل صوتی"},{"number":33,"title":"جلسه ۳۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 32.mp3","source":"فایل صوتی"},{"number":34,"title":"جلسه ۳۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 33.mp3","source":"فایل صوتی"},{"number":35,"title":"جلسه ۳۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 34.mp3","source":"فایل صوتی"},{"number":36,"title":"جلسه ۳۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 35.mp3","source":"فایل صوتی"},{"number":37,"title":"جلسه ۳۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 36.mp3","source":"فایل صوتی"},{"number":38,"title":"جلسه ۳۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 37.mp3","source":"فایل صوتی"},{"number":39,"title":"جلسه ۳۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 38.mp3","source":"فایل صوتی"},{"number":40,"title":"جلسه ۳۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 39.mp3","source":"فایل صوتی"},{"number":41,"title":"جلسه ۴۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 40.mp3","source":"فایل صوتی"},{"number":42,"title":"جلسه ۴۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 41.mp3","source":"فایل صوتی"},{"number":43,"title":"جلسه ۴۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 42.mp3","source":"فایل صوتی"},{"number":44,"title":"جلسه ۴۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 43.mp3","source":"فایل صوتی"},{"number":45,"title":"جلسه ۴۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 44.mp3","source":"فایل صوتی"},{"number":46,"title":"جلسه ۴۵","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 45.mp3","source":"فایل صوتی"},{"number":47,"title":"جلسه ۴۶","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 46.mp3","source":"فایل صوتی"},{"number":48,"title":"جلسه ۴۷","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 47.mp3","source":"فایل صوتی"},{"number":49,"title":"جلسه ۴۸","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 48.mp3","source":"فایل صوتی"},{"number":50,"title":"جلسه ۴۹","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 49.mp3","source":"فایل صوتی"},{"number":51,"title":"جلسه ۵۰","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 50.mp3","source":"فایل صوتی"},{"number":52,"title":"جلسه ۵۱","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 51.mp3","source":"فایل صوتی"},{"number":53,"title":"جلسه ۵۲","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 52.mp3","source":"فایل صوتی"},{"number":54,"title":"جلسه ۵۳","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 53.mp3","source":"فایل صوتی"},{"number":55,"title":"جلسه ۵۴","url":"https://dl.kazeminia110.ir/Audio/kafi/kafi 54.mp3","source":"فایل صوتی"}],"nahj":{}}
 const APPROVED_IMAGE_01 = "images/IMAGE_01_APPROVED_ORIGINAL.png";
 const NEW_HOME_IMAGE = "images/home_bg_separated.png";
 const IMG = {"home.webp":APPROVED_IMAGE_01,"list_surface.webp":"images/v8/list_surface_webp.webp","list_other.webp":APPROVED_IMAGE_01,"row_blank.webp":"images/v8/row_blank_webp.webp","title_towhid":"images/v8/title_towhid.png","title_life":"images/v8/title_life.png","title_kafi":"images/v8/title_kafi.png","title_nahj":"images/v8/title_nahj.png","title_player":"images/v8/title_player.png","title_about":"images/v8/title_about.png","title_biography":"images/v8/title_biography.png"}
@@ -1392,8 +2305,279 @@ const stage=document.getElementById('stage'), backdrop=document.getElementById('
 let screen='home',section='',item=null,beforePlayerScroll=0;
 const fa=n=>String(n).replace(/[0-9]/g,x=>'۰۱۲۳۴۵۶۷۸۹'[Number(x)]);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Owner trial: exact catalog-number lookup; Persian/Arabic/English numerals are equivalent.
+function pmmParseNahjNumber(raw){
+ const digits=String(raw??'').trim().replace(/[۰-۹٠-٩]/g,char=>{
+  const code=char.charCodeAt(0);
+  return String(code-(code>=0x6f0?0x6f0:0x660));
+ });
+ if(!/^[0-9]{1,4}$/.test(digits))return null;
+ const number=Number(digits);
+ return number>0?number:null;
+}
+function pmmFindNahjRecord(groupId,raw){
+ const number=pmmParseNahjNumber(raw);
+ if(number===null)return null;
+ const records=NAHJ_AUDIO_ITEMS[groupId];
+ if(!Array.isArray(records))return null;
+ return records.find(record=>record.kind!=='gharaib'&&
+   (record.number===number||record.id.split('-').slice(1).some(part=>Number(part)===number)))||null;
+}
+// Stable per-entry IDs for the owner's forthcoming Word-based part counts and exact audio links.
+const NAHJ_AUDIO_GROUPS=Object.freeze([
+  Object.freeze({id:'sermons',title:'خطبه‌ها',singular:'خطبه',icon:'✦',count:241}),
+  Object.freeze({id:'letters',title:'نامه‌ها',singular:'نامه',icon:'✉',count:79}),
+  Object.freeze({id:'wisdoms',title:'حکمت‌ها',singular:'حکمت',icon:'❖',count:489})
+]);
+const NAHJ_AUDIO_ITEMS=window.PMM_NAHJ_AUDIO_DATA?
+ window.PMM_NAHJ_AUDIO_DATA.items:Object.freeze({sermons:[],letters:[],wisdoms:[]});
+const NAHJ_AUDIO_PARTS=window.PMM_NAHJ_AUDIO_DATA?
+ window.PMM_NAHJ_AUDIO_DATA.parts:Object.freeze({});
+const NAHJ_AUDIO_ORDINALS=["","اول","دوم","سوم","چهارم","پنجم","ششم","هفتم","هشتم","نهم","دهم","یازدهم","دوازدهم","سیزدهم","چهاردهم","پانزدهم","شانزدهم","هفدهم","هجدهم","نوزدهم","بیستم","بیست‌ویکم","بیست‌ودوم","بیست‌وسوم","بیست‌وچهارم","بیست‌وپنجم","بیست‌وششم","بیست‌وهفتم","بیست‌وهشتم","بیست‌ونهم","سی‌ام","سی‌ویکم"];
+const nahjPartName=n=>'بخش '+(NAHJ_AUDIO_ORDINALS[n]||fa(n));
+const NAHJ_AUDIO_SPEEDS=Object.freeze([0.75,1,1.25,1.5,2]);
+const NAHJ_AUDIO_SPEED_KEY='pmm_nahj_audio_speed_v1';
+let nahjAudioSpeed=1;
+try{
+ const previous=Number(localStorage.getItem(NAHJ_AUDIO_SPEED_KEY));
+ if(NAHJ_AUDIO_SPEEDS.includes(previous))nahjAudioSpeed=previous;
+}catch(_){}
+const NAHJ_SVG_PLAY='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5a1 1 0 0 1 1.53-.85l10 6.5a1 1 0 0 1 0 1.7l-10 6.5A1 1 0 0 1 8 18.5z"/></svg>';
+const NAHJ_SVG_PAUSE='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/><rect x="13.5" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/></svg>';
+const NAHJ_SVG_HEADPHONES='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 13v-2a7.5 7.5 0 0 1 15 0v2M4.5 13H6a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 1.5-2zm15 0H18a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-1.5-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const nahjAudioIsOwnerURL=url=>/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/(?:khotbe\/khotbe|name\/name|hekmat\/hekmat) [A-Za-z0-9. &]+\.mp3$/i.test(url);
+function nahjAudioTime(seconds){
+ if(!Number.isFinite(seconds)||seconds<0)return '۰۰:۰۰';
+ const n=Math.floor(seconds);
+ return fa(Math.floor(n/60))+':'+fa(String(n%60).padStart(2,'0'));
+}
+function stopNahjInlineAudio(){
+ if(!contents)return;
+ contents.querySelectorAll('audio.nahj-part-media').forEach(audio=>{
+   audio.pause();
+   audio.removeAttribute('src');
+ });
+}
+function attachNahjInlineAudio(groupId,entryId){
+ const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
+ const players=cards.map(card=>card.querySelector('audio.nahj-part-media'));
+ function updateRateButtons(){
+   contents.querySelectorAll('[data-nahj-speed]').forEach(button=>{
+     const selected=Number(button.dataset.nahjSpeed)===nahjAudioSpeed;
+     button.classList.toggle('is-active',selected);
+     button.setAttribute('aria-pressed',String(selected));
+   });
+   players.forEach(audio=>{audio.playbackRate=nahjAudioSpeed});
+ }
+ function refresh(card,audio){
+   const playing=!audio.paused;
+   const toggle=card.querySelector('[data-nahj-toggle]');
+   toggle.innerHTML=playing?NAHJ_SVG_PAUSE:NAHJ_SVG_PLAY;
+   toggle.setAttribute('aria-label',(playing?'توقف ':'پخش ')+card.dataset.partTitle);
+   card.classList.toggle('is-playing',playing);
+   const current=card.querySelector('[data-nahj-current]');
+   const duration=card.querySelector('[data-nahj-duration]');
+   const seek=card.querySelector('[data-nahj-seek]');
+   const length=audio.duration;
+   current.textContent=nahjAudioTime(audio.currentTime);
+   duration.textContent=Number.isFinite(length)?nahjAudioTime(length):'--:--';
+   seek.value=Number.isFinite(length)&&length>0?String(Math.min(100,100*audio.currentTime/length)):'0';
+   seek.disabled=!(Number.isFinite(length)&&length>0);
+ }
+ cards.forEach((card,index)=>{
+   const audio=players[index];
+   const previous=PMM_LEARNING_PROGRESS.getNahj(groupId);
+   if(previous&&previous.entryId===entryId&&previous.part===index){
+     card.classList.add('pmm-last-part');
+     if(!previous.finished)card.querySelector('[data-nahj-status]').textContent=
+       'آخرین توقف: '+nahjAudioTime(previous.seconds);
+   }
+   let lastSavedSecond=-1;
+   const persist=(finished=false,force=false)=>{
+     if(audio.readyState<1&&!finished)return;
+     const stored=PMM_LEARNING_PROGRESS.getNahj(groupId);
+     if(!stored||stored.entryId!==entryId||stored.part!==index)return;
+     const seconds=finished?0:Math.max(0,Math.floor(audio.currentTime||0));
+     if(!force&&!finished&&Math.abs(seconds-lastSavedSecond)<4)return;
+     lastSavedSecond=seconds;
+     PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index,seconds,finished);
+   };
+   const toggle=card.querySelector('[data-nahj-toggle]');
+   const seek=card.querySelector('[data-nahj-seek]');
+   const status=card.querySelector('[data-nahj-status]');
+   const stream=window.PMM_STREAM_HELPER.attach(audio,status);
+   toggle.addEventListener('click',()=>{
+     if(!audio.paused){audio.pause();return;}
+     players.forEach(other=>{if(other!==audio)other.pause()});
+     // Only assign the requested, whitelisted MP3 when the owner explicitly presses Play.
+     if(!audio.getAttribute('src')){
+       const old=PMM_LEARNING_PROGRESS.getNahj(groupId);
+       const seconds=old&&old.entryId===entryId&&old.part===index&&!old.finished?old.seconds:0;
+       audio.dataset.resumeAt=String(seconds);
+       PMM_LEARNING_PROGRESS.setNahj(groupId,entryId,index,seconds,false);
+       audio.src=audio.dataset.src;
+     }else persist(false,true);
+     audio.playbackRate=nahjAudioSpeed;
+     stream.started();
+     const requested=audio.play();
+     if(requested&&typeof requested.catch==='function')requested.catch(()=>{
+       status.textContent='پخش صوت برقرار نشد؛ اتصال اینترنت را بررسی کنید.';
+       refresh(card,audio);
+     });
+   });
+   seek.addEventListener('input',()=>{
+     if(Number.isFinite(audio.duration)&&audio.duration>0){
+       audio.currentTime=audio.duration*Number(seek.value)/100;
+       persist(false,true);
+     }
+   });
+   audio.addEventListener('play',()=>{
+     players.forEach(other=>{if(other!==audio)other.pause()});
+     refresh(card,audio);
+   });
+   audio.addEventListener('pause',()=>{persist(audio.ended,true);refresh(card,audio)});
+   audio.addEventListener('ended',()=>{persist(true,true);refresh(card,audio)});
+   audio.addEventListener('timeupdate',()=>{persist();refresh(card,audio)});
+   audio.addEventListener('loadedmetadata',()=>{
+     const seconds=Number(audio.dataset.resumeAt||0);
+     if(seconds>0&&Number.isFinite(audio.duration)&&audio.duration>0)
+       audio.currentTime=Math.min(seconds,Math.max(0,audio.duration-1));
+     delete audio.dataset.resumeAt;
+     refresh(card,audio);
+   });
+   audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==nahjAudioSpeed)audio.playbackRate=nahjAudioSpeed});
+   audio.addEventListener('error',()=>{refresh(card,audio)});
+   refresh(card,audio);
+ });
+ contents.querySelectorAll('[data-nahj-speed]').forEach(button=>button.addEventListener('click',()=>{
+   const selected=Number(button.dataset.nahjSpeed);
+   if(!NAHJ_AUDIO_SPEEDS.includes(selected))return;
+   nahjAudioSpeed=selected;
+   try{localStorage.setItem(NAHJ_AUDIO_SPEED_KEY,String(selected))}catch(_){}
+   updateRateButtons();
+ }));
+ updateRateButtons();
+}
+
+// The single Nahj history icon follows the last audio across all three groups.
+const pmmDismissedResume={nahj:false,lessons:new Set()};
+window.addEventListener('pmm:app-foreground',()=>{
+ pmmDismissedResume.nahj=false;
+ pmmDismissedResume.lessons.clear();
+});
+function nahjSavedEntry(){
+ const saved=PMM_LEARNING_PROGRESS.getLastNahj();
+ const record=saved&&NAHJ_AUDIO_ITEMS[saved.group]?.find(x=>x.id===saved.entryId);
+ if(!saved||!record||saved.part>=(NAHJ_AUDIO_PARTS[record.id]||[]).length)return null;
+ return {saved,record};
+}
+function nahjResumeSummary(){
+ if(pmmDismissedResume.nahj)return '';
+ const found=nahjSavedEntry();
+ if(!found)return '';
+ const {saved,record}=found;
+ const label=record.title+'، '+nahjPartName(saved.part+1);
+ const point=saved.finished?'این بخش کامل شنیده شده است':'ادامه از '+nahjAudioTime(saved.seconds);
+ return '<div class="pmm-resume-card" role="group" aria-label="آخرین صوت شنیده‌شده">'+
+ '<button type="button" class="pmm-resume-dismiss" data-resume-dismiss="nahj" aria-label="پنهان کردن یادآور تا ورود بعدی">×</button>'+
+ '<span class="pmm-resume-title">🎧 آخرین چیزی که شنیدید</span>'+
+ '<span class="pmm-resume-details">'+safe(label)+' — '+safe(point)+'</span>'+
+ '<div class="pmm-resume-actions"><button type="button" class="pmm-resume-action" data-nahj-resume="last">رفتن به همین بخش</button></div></div>';
+}
+function bindNahjResumes(){
+ contents.querySelectorAll('[data-nahj-resume]').forEach(button=>button.addEventListener('click',()=>{
+  const found=nahjSavedEntry();if(!found)return;
+  setState('list','nahj',{nahjGroup:found.saved.group,nahjEntry:found.record.id});
+  requestAnimationFrame(()=>{
+   const card=contents.querySelectorAll('.nahj-part-card')[found.saved.part];
+   if(card)card.scrollIntoView({block:'center',behavior:'smooth'});
+  });
+ }));
+ contents.querySelectorAll('[data-resume-dismiss="nahj"]').forEach(button=>button.addEventListener('click',()=>{
+  pmmDismissedResume.nahj=true;
+  button.closest('.pmm-resume-card')?.remove();
+ }));
+}
+function pmmSyncNahjFinder(){
+ const button=document.getElementById('nahj-find-button');
+ const panel=document.getElementById('nahj-find-panel');
+ const chosen=screen==='list'&&section==='nahj'&&item?.nahjGroup?
+   NAHJ_AUDIO_GROUPS.find(group=>group.id===item.nahjGroup):null;
+ button.hidden=!chosen;
+ button.setAttribute('aria-expanded','false');
+ panel.hidden=true;
+ document.getElementById('nahj-find-input').value='';
+ document.getElementById('nahj-find-status').textContent='';
+ if(chosen)document.getElementById('nahj-find-label').textContent='شماره '+chosen.singular+' را وارد کنید';
+}
+function renderNahjAudioCatalog(){
+  const groupId=item&&typeof item==='object'?item.nahjGroup:null;
+  const chosen=NAHJ_AUDIO_GROUPS.find(group=>group.id===groupId);
+  if(!chosen){
+    contents.innerHTML=nahjResumeSummary()+
+      '<div class="nahj-audio-groups">'+NAHJ_AUDIO_GROUPS.map(group=>
+      `<button class="nahj-audio-group" type="button" data-nahj-group="${group.id}" aria-label="${group.title}">
+        <span class="nahj-audio-symbol" aria-hidden="true">${group.icon}</span>
+        <span class="nahj-audio-group-copy"><span class="nahj-audio-group-title">${group.title}</span>
+        </span></button>`
+    ).join('')+'</div>';
+    contents.querySelectorAll('[data-nahj-group]').forEach(button=>
+      button.addEventListener('click',()=>setState('list','nahj',{nahjGroup:button.dataset.nahjGroup})));
+    bindNahjResumes();
+    return;
+  }
+  const records=NAHJ_AUDIO_ITEMS[chosen.id];
+  const entryId=item&&typeof item==='object'?item.nahjEntry:null;
+  if(!entryId){
+    contents.innerHTML=`<div class="nahj-audio-caption">${chosen.title}</div>`+`
+      <div class="row-list nahj-audio-list">${records.map(record=>
+        `<button class="session nahj-audio-entry" type="button" data-nahj-entry="${record.id}" aria-label="${record.title}">
+         <img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}">
+         <span class="session-label" lang="fa">${record.title}</span></button>`
+      ).join('')}</div>`;
+    contents.querySelectorAll('[data-nahj-entry]').forEach(button=>
+      button.addEventListener('click',()=>setState('list','nahj',{
+        nahjGroup:chosen.id,nahjEntry:button.dataset.nahjEntry
+      })));
+    return;
+  }
+  const record=records.find(value=>value.id===entryId);
+  if(!record){setState('list','nahj',{nahjGroup:chosen.id});return;}
+  const parts=NAHJ_AUDIO_PARTS[record.id]||[];
+  if(!parts.length){
+    // Nine Gharib al-Hadith entries must remain empty until owner sends their URLs.
+    contents.innerHTML='<div class="nahj-audio-caption">'+safe(record.title)+'</div>'+
+      '<div class="nahj-audio-empty">لینک صوت این مورد هنوز ارسال نشده است.</div>';
+    return;
+  }
+  const rows=parts.map((url,i)=>{
+    const title=nahjPartName(i+1);
+    if(!nahjAudioIsOwnerURL(url))
+      return '<div class="nahj-audio-empty">نشانی صوت '+safe(title)+' معتبر نیست.</div>';
+    const rates=NAHJ_AUDIO_SPEEDS.map(rate=>
+      '<button type="button" class="nahj-part-rate" data-nahj-speed="'+rate+
+      '" aria-label="سرعت '+rate+' برابر" aria-pressed="false">'+rate+'x</button>'
+    ).join('');
+    return '<section class="nahj-part-card" data-part-title="'+safe(title)+'">'+
+      '<div class="nahj-part-heading"><span>'+safe(title)+'</span>'+
+      '<span class="nahj-part-headphones" aria-hidden="true">'+NAHJ_SVG_HEADPHONES+'</span></div>'+
+      '<div class="nahj-part-controls">'+
+      '<button class="nahj-part-play" type="button" data-nahj-toggle aria-label="پخش '+safe(title)+'">'+NAHJ_SVG_PLAY+'</button>'+
+      '<div class="nahj-part-progress"><input class="nahj-part-seek" type="range" min="0" max="100" step="0.5" value="0" data-nahj-seek aria-label="موقعیت صوت '+safe(title)+'" disabled>'+
+      '<div class="nahj-part-times"><span data-nahj-current>۰۰:۰۰</span><span data-nahj-duration>--:--</span></div></div></div>'+
+      '<div class="nahj-part-speed"><span class="nahj-part-speed-label">سرعت پخش</span>'+
+      '<div class="nahj-part-rates" role="group" aria-label="سرعت '+safe(title)+'">'+rates+'</div></div>'+
+      '<div class="nahj-part-status" data-nahj-status aria-live="polite"></div>'+
+      '<audio class="nahj-part-media" preload="none" playsinline data-src="'+safe(encodeURI(url))+'" aria-label="'+safe(record.title+'، '+title)+'"></audio></section>';
+  }).join('');
+  contents.innerHTML='<div class="nahj-audio-caption">'+safe(record.title)+'</div>'+
+     '<div class="nahj-part-cards">'+rows+'</div>';
+  attachNahjInlineAudio(chosen.id,record.id);
+}
 function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.remove('gone');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.add('gone'),2800)}
 function setState(mode,s=null,v=null){
+ if(screen==='list'&&section==='nahj')stopNahjInlineAudio();
+ if(screen==='player'&&section==='kafi')pmmStopKafiAudio();
  if(screen==='list'&&mode==='player')beforePlayerScroll=content.scrollTop;
  screen=mode; if(s!==null)section=s;item=v;render();
  if(mode==='list'&&v==='restore')content.scrollTop=beforePlayerScroll;else content.scrollTop=0;
@@ -1410,6 +2594,7 @@ function render(){
  }
  if(screen==='list'&&section==='clips')renderClips();else if(screen==='list')renderList();else if(screen==='player')renderPlayer();
  else if(screen==='about')renderAbout();else if(screen==='biography')renderBiography();else if(screen==='photo')renderPhoto();
+ pmmSyncNahjFinder();
 }
 function renderClips(){
   const clips=VIDEO_CLIPS.length?VIDEO_CLIPS:Array.from({length:5},(_,i)=>({title:'کلیپ '+fa(i+1),url:''}));
@@ -1423,26 +2608,54 @@ function renderClips(){
    else setState('player','clips',{number:Number(b.dataset.clip)+1,url:clip.url});
   }));
 }
+function openSavedLesson(which,number){
+ if(!['towhid','life','kafi'].includes(which))return;
+ const x=DATA[which]?.find(v=>v.number===number);
+ if(!x?.url){toast('لینک این جلسه هنوز ثبت نشده است.');return}
+ PMM_LEARNING_PROGRESS.openLesson(which,number);
+ if(/^https:\/\/eitaa\.com\//i.test(x.url)){
+   const y=content.scrollTop;renderList();content.scrollTop=y;
+   openEitaa(x.url);
+ }else setState('player',which,x);
+}
+function lessonResumeSummary(which){
+ if(pmmDismissedResume.lessons.has(which))return '';
+ const last=PMM_LEARNING_PROGRESS.getLesson(which);
+ const lastRecord=DATA[which]?.find(x=>x.number===last?.number&&x.url);
+ if(!lastRecord)return '';
+ const lastLabel=which==='kafi'?safe(lastRecord.title):'جلسه '+fa(last.number);
+ return '<div class="pmm-resume-card" role="group" aria-label="آخرین جلسه بازشده">'+
+ '<button type="button" class="pmm-resume-dismiss" data-resume-dismiss-lesson="'+which+
+ '" aria-label="پنهان کردن یادآور تا ورود بعدی">×</button>'+
+ '<span class="pmm-resume-title">🎧 آخرین جلسه شما</span>'+
+ '<span class="pmm-resume-details">'+lastLabel+' — آخرین جلسه بازشده</span>'+
+ '<div class="pmm-resume-actions"><button class="pmm-resume-action" type="button" data-open-last="'+which+'">باز کردن '+lastLabel+'</button></div></div>';
+}
+function bindLessonResume(){
+ contents.querySelectorAll('[data-open-last]').forEach(button=>button.addEventListener('click',()=>{
+  const last=PMM_LEARNING_PROGRESS.getLesson(button.dataset.openLast);
+  if(last)openSavedLesson(button.dataset.openLast,last.number);
+ }));
+ contents.querySelectorAll('[data-resume-dismiss-lesson]').forEach(button=>button.addEventListener('click',()=>{
+  pmmDismissedResume.lessons.add(button.dataset.resumeDismissLesson);
+  button.closest('.pmm-resume-card')?.remove();
+ }));
+}
 function renderList(){
- if(section==='nahj'){
- contents.innerHTML=`<div class="content-box"><h2>شرح صوتی نهج‌البلاغه</h2><p>برای شنیدن جلسات از آرشیو استفاده کنید.</p><a class="action"  href="${safe(DATA.nahj.url)}">نمایش آرشیو سایت</a><button class="action" type="button" id="nahj-eitaa">باز کردن آرشیو ایتا</button></div>`;
- document.getElementById('nahj-eitaa')?.addEventListener('click',()=>openEitaaArchive(DATA.nahj.eitaa_url));
- return;
- }
- contents.innerHTML='<div class="row-list" id="rows"></div>';
- drawRows();
+ if(section==='nahj'){renderNahjAudioCatalog();return;}
+ contents.innerHTML=lessonResumeSummary(section)+'<div class="row-list" id="rows"></div>';
+ drawRows();bindLessonResume();
 }
 function drawRows(){
  const el=document.getElementById('rows');if(!el)return;
  const records=DATA[section];
- el.innerHTML=records.length?records.map(x=>`<button type="button" class="session ${x.url?'':'missing'}" data-n="${x.number}" aria-label="جلسه ${fa(x.number)}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">جلسه ${fa(x.number)}</span></button>`).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
+ const last=PMM_LEARNING_PROGRESS.getLesson(section);
+ el.innerHTML=records.length?records.map(x=>{
+   const label=section==='kafi'?safe(x.title):'جلسه '+fa(x.number);
+   return `<button type="button" class="session ${x.url?'':'missing'} ${last?.number===x.number?'pmm-last-lesson':''}" data-n="${x.number}" aria-label="${label}${x.url?'':' — بدون لینک'}"><img loading="lazy" alt="" aria-hidden="true" src="${IMG['row_blank.webp']}"><span class="session-label" lang="fa">${label}</span></button>`;
+ }).join(''):'<div class="empty">جلسه‌ای یافت نشد</div>';
  el.querySelectorAll('.session').forEach(b=>b.addEventListener('click',()=>{
-  const x=DATA[section].find(v=>v.number===Number(b.dataset.n));
-  if(!x?.url){toast('لینک این جلسه هنوز ثبت نشده است.');return;}
-  // One touch to the exact media link; keep the same list in the local WebView.
-  if(/^https:\/\/eitaa\.com\//i.test(x.url)){openEitaa(x.url);return;}
-  // Restore approved in-app Aparat iframe player; no external app / intermediate page.
-  setState('player',section,x);
+   openSavedLesson(section,Number(b.dataset.n));
 }));
 }
 function openEitaaArchive(url){openEitaa(url)}
@@ -1457,18 +2670,81 @@ function openEitaa(url){
 }
 
 function renderAbout(){
+  // Always read the installed APK versionName, never hard-code a UI version.
+  let installedVersion='';
+  try {
+    if(window.PMMNative && typeof window.PMMNative.getAppVersion==='function')
+      installedVersion=String(window.PMMNative.getAppVersion()||'');
+  } catch(error) { installedVersion=''; }
   const group=USER_PHOTOS.map((src,i)=>`<button type="button" class="gallery-tile" data-photo="${i}" aria-label="نمایش تصویر ${fa(i+1)}"><img src="${src}" alt="تصویر ${fa(i+1)} از فعالیت‌های آموزشی" loading="lazy"></button>`).join('');
   contents.innerHTML=`<div class="about-menu">
-      <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>درباره ما</span></button>
+      <button class="about-entry" type="button" id="about-biography"><span class="about-entry-icon">❖</span><span>معرفی‌نامه</span></button>
       <button class="about-entry" type="button" id="about-contact"><span class="about-entry-icon">✉</span><span>ارتباط با ما</span></button>
       <div class="gallery-viewport" aria-label="گالری تصاویر فعالیت‌های آموزشی">
         <div class="gallery-track"><div class="gallery-group">${group}</div><div class="gallery-group" aria-hidden="true">${group}</div></div>
       </div>
+      <div class="about-version" aria-label="نسخه برنامه">نسخه <span>${safe(fa(installedVersion||'—'))}</span></div>
     </div>`;
   document.getElementById('about-biography').addEventListener('click',()=>setState('biography'));
   document.getElementById('about-contact').addEventListener('click',()=>openEitaa(CONTACT_URL));
   contents.querySelectorAll('[data-photo]').forEach(b=>b.addEventListener('click',()=>setState('photo',null,Number(b.dataset.photo))));
 }
+function renderReminderSettings(){
+  const panel=document.getElementById('wisdom-reminder-panel');
+  const wisdom=document.getElementById('wisdom-scroll');
+  if(!panel||wisdom.hidden)return;
+ let current={frequency:'daily',consent:false,allowed:false};
+ try{
+  if(window.PMMNative&&typeof window.PMMNative.getReminderSettings==='function'){
+    const value=JSON.parse(window.PMMNative.getReminderSettings());
+    if(value&&typeof value==='object')current=value;
+  }
+ }catch(_){}
+ const allowed=['daily','weekly','monthly','off'];
+ const frequency=allowed.includes(current.frequency)?current.frequency:'daily';
+ const options=[
+  ['daily','هر روز (پیش‌فرض)'],['weekly','هفته‌ای یک‌بار'],
+  ['monthly','ماهی یک‌بار'],['off','خاموش']
+ ];
+  panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
+ '<h2>یادآور مهمانی مولا</h2>'+
+ '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، اولین اعلان آزمایشی از ۵ دقیقه پس از اولین ورود زمان‌بندی می‌شود و حتی با بسته بودن برنامه نیز دریافت‌شدنی است. زمان نمایش ممکن است با محدودیت باتری گوشی کمی تأخیر داشته باشد.</p>'+
+ '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
+ '<select id="pmm-reminder-frequency">'+options.map(option=>
+  '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select>'+
+ '<p class="pmm-reminder-note" id="pmm-reminder-status">'+
+ (current.consent?(current.allowed?'یادآوری‌ها مجاز هستند.':'برای نمایش اعلان، اجازهٔ اندروید لازم است.'):'هنوز اجازهٔ یادآوری دریافت نشده است.')+'</p>'+
+ '<div class="pmm-reminder-actions"><button type="button" id="pmm-reminder-permission">اجازهٔ نمایش اعلان</button>'+
+ '<button type="button" id="pmm-reminder-back">بازگشت به تفال</button></div></section>';
+  panel.hidden=false;
+  wisdom.classList.add('reminder-open');
+  document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','true');
+  wisdom.scrollTop=0;
+ document.getElementById('pmm-reminder-frequency').addEventListener('change',event=>{
+  const value=event.target.value;
+  if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
+   window.PMMNative.setReminderFrequency(value);
+  document.getElementById('pmm-reminder-status').textContent=
+   value==='off'?'یادآوری خاموش شد.':'تکرار انتخابی ذخیره شد. در صورت لزوم اجازهٔ اعلان را تأیید کنید.';
+ });
+ document.getElementById('pmm-reminder-permission').addEventListener('click',()=>{
+  if(window.PMMNative&&typeof window.PMMNative.askReminderPermission==='function')
+   window.PMMNative.askReminderPermission();
+  else document.getElementById('pmm-reminder-status').textContent='این تنظیم در نسخهٔ اندروید قابل فعال‌سازی است.';
+ });
+  document.getElementById('pmm-reminder-back').addEventListener('click',closeWisdomReminderSettings);
+}
+function closeWisdomReminderSettings(){
+  const panel=document.getElementById('wisdom-reminder-panel');
+  panel.hidden=true;
+  document.getElementById('wisdom-scroll').classList.remove('reminder-open');
+  document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','false');
+  document.getElementById('wisdom-scroll').scrollTop=0;
+}
+document.getElementById('wisdom-reminder-gear').addEventListener('click',()=>{
+  if(document.getElementById('wisdom-reminder-panel').hidden)renderReminderSettings();
+  else closeWisdomReminderSettings();
+});
 function renderBiography(){
   contents.innerHTML='<article class="about-story">'+ABOUT_HTML+'</article>';
 }
@@ -1486,24 +2762,179 @@ function renderPhoto(){
   document.getElementById('photo-prev').addEventListener('click',()=>setState('photo',null,(ix-1+USER_PHOTOS.length)%USER_PHOTOS.length));
 }
 
+// Owner-approved new Kafi MP3 catalog: identical navy/gold Nahj control styling.
+// Playback remains inside the WebView; the chosen speed is Kafi-specific.
+const PMM_KAFI_SPEEDS=NAHJ_AUDIO_SPEEDS;
+const PMM_KAFI_SPEED_KEY='pmm_kafi_mp3_speed_v1';
+let pmmKafiSpeed=1;
+try{
+ const stored=Number(localStorage.getItem(PMM_KAFI_SPEED_KEY));
+ if(PMM_KAFI_SPEEDS.includes(stored))pmmKafiSpeed=stored;
+}catch(_){}
+function pmmKafiAudioIsOwnerURL(url){
+ return /^https:\/\/dl\.kazeminia110\.ir\/Audio\/kafi\/(?:kafi kotobe arbae|kafi (?:[1-9]|[1-4][0-9]|5[0-4]))\.mp3$/.test(String(url||''));
+}
+function pmmStopKafiAudio(){
+ if(!contents)return;
+ contents.querySelectorAll('audio.kafi-audio-media').forEach(audio=>{
+  audio.pause();audio.removeAttribute('src');audio.load();
+ });
+}
+function pmmKafiCardHtml(record,url){
+ const label=safe(record.title);
+ const rates=PMM_KAFI_SPEEDS.map(rate=>
+  '<button type="button" class="nahj-part-rate" data-kafi-speed="'+rate+
+  '" aria-label="سرعت '+rate+' برابر" aria-pressed="false">'+rate+'x</button>'
+ ).join('');
+ return '<div class="nahj-part-cards pmm-kafi-audio-cards"><section class="nahj-part-card kafi-audio-card" data-part-title="'+label+'">'+
+  '<div class="nahj-part-heading"><span>'+label+'</span>'+
+  '<span class="nahj-part-headphones" aria-hidden="true">'+NAHJ_SVG_HEADPHONES+'</span></div>'+
+  '<div class="nahj-part-controls">'+
+  '<button type="button" class="nahj-part-play" data-kafi-toggle aria-label="پخش '+label+'">'+NAHJ_SVG_PLAY+'</button>'+
+  '<div class="nahj-part-progress"><input type="range" class="nahj-part-seek" data-kafi-seek min="0" max="100" step="0.5" value="0" aria-label="موقعیت صوت '+label+'" disabled>'+
+  '<div class="nahj-part-times"><span data-kafi-current>۰۰:۰۰</span><span data-kafi-duration>--:--</span></div></div></div>'+
+  '<div class="nahj-part-speed"><span class="nahj-part-speed-label">سرعت پخش</span>'+
+  '<div class="nahj-part-rates" role="group" aria-label="تنظیم سرعت '+label+'">'+rates+'</div></div>'+
+  '<div class="nahj-part-status" data-kafi-status aria-live="polite"></div>'+
+  '<audio class="nahj-part-media kafi-audio-media" preload="none" playsinline data-src="'+safe(encodeURI(url))+
+  '" aria-label="شرح اصول کافی، '+label+'"></audio></section></div>';
+}
+function pmmAttachKafiAudio(){
+ const card=contents.querySelector('.kafi-audio-card');
+ if(!card)return;
+ // Two approved additions only: last-second Kafi resume and screen-off playback.
+ // Keep the exact existing Kafi controls; substitute native media when available.
+ if(window.PMM_KAFI_ONLY?.attach?.(card,item))return;
+ window.PMM_KAFI_ONLY?.attachFallback?.(card,item);
+ const audio=card.querySelector('audio.kafi-audio-media');
+ const toggle=card.querySelector('[data-kafi-toggle]');
+ const seek=card.querySelector('[data-kafi-seek]');
+ const current=card.querySelector('[data-kafi-current]');
+ const duration=card.querySelector('[data-kafi-duration]');
+ const status=card.querySelector('[data-kafi-status]');
+ const rates=Array.from(card.querySelectorAll('[data-kafi-speed]'));
+ const stream=window.PMM_STREAM_HELPER.attach(audio,status);
+ function display(){
+  const playing=!audio.paused;
+  toggle.innerHTML=playing?NAHJ_SVG_PAUSE:NAHJ_SVG_PLAY;
+  toggle.setAttribute('aria-label',(playing?'توقف':'پخش')+' جلسه صوتی');
+  card.classList.toggle('is-playing',playing);
+  const length=audio.duration;
+  current.textContent=nahjAudioTime(audio.currentTime);
+  duration.textContent=Number.isFinite(length)?nahjAudioTime(length):'--:--';
+  seek.disabled=!(Number.isFinite(length)&&length>0);
+  seek.value=!seek.disabled?String(Math.min(100,100*audio.currentTime/length)):'0';
+ }
+ function applySpeed(){
+  audio.playbackRate=pmmKafiSpeed;
+  rates.forEach(button=>{
+   const active=Number(button.dataset.kafiSpeed)===pmmKafiSpeed;
+   button.classList.toggle('is-active',active);
+   button.setAttribute('aria-pressed',String(active));
+  });
+ }
+ rates.forEach(button=>button.addEventListener('click',()=>{
+  const selected=Number(button.dataset.kafiSpeed);
+  if(!PMM_KAFI_SPEEDS.includes(selected))return;
+  pmmKafiSpeed=selected;
+  try{localStorage.setItem(PMM_KAFI_SPEED_KEY,String(selected))}catch(_){}
+  applySpeed();
+ }));
+ toggle.addEventListener('click',()=>{
+  if(!audio.paused){audio.pause();return;}
+  if(!audio.getAttribute('src'))audio.src=audio.dataset.src;
+  applySpeed();stream.started();
+  const request=audio.play();
+  if(request&&typeof request.catch==='function')request.catch(()=>{
+   status.textContent='پخش صوت برقرار نشد؛ اتصال اینترنت را بررسی کنید.';
+   display();
+  });
+ });
+ seek.addEventListener('input',()=>{
+  if(Number.isFinite(audio.duration)&&audio.duration>0){
+   audio.currentTime=audio.duration*Number(seek.value)/100;
+   display();
+  }
+ });
+ ['play','pause','timeupdate','loadedmetadata','durationchange','ended'].forEach(name=>
+  audio.addEventListener(name,display));
+ audio.addEventListener('ratechange',()=>{if(audio.playbackRate!==pmmKafiSpeed)audio.playbackRate=pmmKafiSpeed});
+ audio.addEventListener('error',()=>{display()});
+ applySpeed();display();
+}
+
 function renderPlayer(){
  const x=item; if(!x){setState('home');return}
- const match=String(x.url).match(/^https?:\/\/(?:www\.)?aparat\.com\/v\/([a-z0-9_-]+)/i);
- let html=`<div class="content-box"><h2>جلسه ${fa(x.number)}</h2>`;
- if(match){
-  const embed='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
-  html+=`<div class="player-frame"><iframe title="پخش آنلاین جلسه ${fa(x.number)}" src="${embed}" loading="eager" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
- }else if(/eitaa\.com/i.test(x.url)){
-  // Eitaa links are launched from the list directly; this is a fallback only.
+ const link=String(x.url||'');
+ const match=link.match(/^https?:\/\/(?:www\.)?aparat\.com\/v\/([a-z0-9_-]+)/i);
+ let html='<div class="content-box"><h2>'+(x.nahjAudio||section==='kafi'?safe(x.title):'جلسه '+fa(x.number))+'</h2>';
+ if(section==='kafi'){
+  // Only approved direct Kafi MP3s; never open old Eitaa/Aparat links.
+  html+=pmmKafiAudioIsOwnerURL(link)?pmmKafiCardHtml(x,link):
+    '<p class="player-note">نشانی صوت این جلسه معتبر نیست.</p>';
+ }else if(x.nahjAudio){
+  // Stream an owner-supplied MP3 in this WebView; never navigate to the website.
+  const valid=/^https:\/\/dl\.kazeminia110\.ir\/Audio\/nahj-al-balaghe\/tartibi\/(?:khotbe\/khotbe|name\/name|hekmat\/hekmat) [A-Za-z0-9. &]+\.mp3$/i.test(link);
+  if(valid){
+    html+='<button type="button" class="action" id="nahj-direct-start">▶ پخش صوت</button>'+
+      '<audio class="nahj-audio-player" controls preload="none" playsinline hidden data-src="'+safe(encodeURI(link))+
+      '" aria-label="'+safe(x.title)+'">مرورگر داخلی از پخش این صوت پشتیبانی نمی‌کند.</audio>'+
+      '<div class="nahj-stream-status" role="status" aria-live="polite"></div>';
+  }else{
+    html+='<p class="player-note">نشانی این فایل صوتی معتبر نیست.</p>';
+  }
+ }else if(match){
+  // No third-party iframe or website traffic until the visitor explicitly taps Play.
+  html+='<div class="player-frame"><button type="button" class="action" id="aparat-user-play">▶ پخش ویدئو</button></div>';
+ }else if(/eitaa\.com/i.test(link)){
+  // Other sections' Eitaa links keep their original behavior.
   html+='<p class="player-note">این جلسه در ایتا قرار دارد.</p>';
  }else{
-  html+='<a class="action"  href="'+safe(x.url)+'">باز کردن جلسه</a>';
+  html+='<a class="action" href="'+safe(link)+'">باز کردن جلسه</a>';
  }
  html+='<button class="action" type="button" id="player-back">بازگشت</button></div>';
  contents.innerHTML=html;
+ if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
+ const playVideo=contents.querySelector('#aparat-user-play');
+ if(playVideo&&match){
+   playVideo.addEventListener('click',()=>{
+     const frame=document.createElement('iframe');
+     frame.title='پخش آنلاین جلسه '+fa(x.number);
+     frame.src='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
+     frame.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+     frame.allowFullscreen=true;
+     frame.referrerPolicy='strict-origin-when-cross-origin';
+     playVideo.replaceWith(frame);
+   });
+ }
+ if(x.nahjAudio){
+   const player=contents.querySelector('audio.nahj-audio-player');
+   const start=contents.querySelector('#nahj-direct-start');
+   if(player&&start){
+     const stream=window.PMM_STREAM_HELPER.attach(player,contents.querySelector('.nahj-stream-status'));
+     start.addEventListener('click',()=>{
+       // User action is the only place where src is ever assigned.
+       if(!player.getAttribute('src')||player.error){player.src=player.dataset.src;}
+       player.hidden=false;stream.started();
+       const request=player.play();
+       if(request&&typeof request.catch==='function')request.catch(()=>{start.hidden=false});
+     });
+     player.addEventListener('playing',()=>{start.hidden=true});
+     player.addEventListener('error',()=>{start.hidden=false});
+   }
+ }
  document.getElementById('player-back').addEventListener('click',()=>goBack());
 }
-function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){const sec=section;setState('list',sec,'restore')}else if(screen==='list')setState('home');else toast('در صفحه اصلی هستید.');}
+function goBack(){if(screen==='guest' && !document.getElementById('guest-fullview').hidden){closeGuestFull();return;}if(screen==='guest'){if(guestTicker){clearInterval(guestTicker);guestTicker=null}setState('home');}else if(screen==='biography'||screen==='photo')setState('about');else if(screen==='about')setState('home');else if(screen==='player'){
+  if(section==='nahj'&&item?.nahjReturn){
+    const previousScroll=beforePlayerScroll;
+    setState('list','nahj',item.nahjReturn);content.scrollTop=previousScroll;
+  }else{const sec=section;setState('list',sec,'restore')}
+}else if(screen==='list'){
+  if(section==='nahj'&&item&&item.nahjEntry)setState('list','nahj',{nahjGroup:item.nahjGroup});
+  else if(section==='nahj'&&item&&item.nahjGroup)setState('list','nahj');
+  else setState('home');
+ }else toast('در صفحه اصلی هستید.');}
 
 // V10.0: full 9:16 posters slide together, on the ORIGINAL gold iwan.
 // Circular 18-image photo album. Whole posters (and their frames) rotate around the Y axis.
@@ -1623,6 +3054,32 @@ document.getElementById('guest-full-close').addEventListener('click',closeGuestF
 document.getElementById('home-about').addEventListener('click',()=>setState('about'));
 document.querySelectorAll('[data-section]').forEach(b=>b.addEventListener('click',()=>setState('list',b.dataset.section)));
 document.getElementById('back-button').addEventListener('click',()=>goBack());
+document.getElementById('nahj-find-button').addEventListener('click',()=>{
+ const panel=document.getElementById('nahj-find-panel');
+ const opening=panel.hidden;
+ panel.hidden=!opening;
+ document.getElementById('nahj-find-button').setAttribute('aria-expanded',String(opening));
+ document.getElementById('nahj-find-status').textContent='';
+ if(opening)document.getElementById('nahj-find-input').focus();
+});
+document.getElementById('nahj-find-close').addEventListener('click',()=>{
+ document.getElementById('nahj-find-panel').hidden=true;
+ document.getElementById('nahj-find-button').setAttribute('aria-expanded','false');
+ document.getElementById('nahj-find-button').focus();
+});
+document.getElementById('nahj-find-panel').addEventListener('submit',event=>{
+ event.preventDefault();
+ const groupId=screen==='list'&&section==='nahj'&&item?.nahjGroup;
+ if(!NAHJ_AUDIO_GROUPS.some(group=>group.id===groupId))return;
+ const input=document.getElementById('nahj-find-input');
+ const match=pmmFindNahjRecord(groupId,input.value);
+ if(!match){
+  document.getElementById('nahj-find-status').textContent='این شماره در این بخش یافت نشد.';
+  input.focus();
+  return;
+ }
+ setState('list','nahj',{nahjGroup:groupId,nahjEntry:match.id});
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace'&&document.activeElement?.tagName!=='INPUT'&&document.activeElement?.tagName!=='TEXTAREA'){e.preventDefault();goBack();}});
 render();
 
@@ -1634,7 +3091,9 @@ const pmmShell=document.getElementById('scene');
 const pmmOldStage=document.getElementById('stage');
 const galleryEl=document.getElementById('gallery-scroll');
 const galleryGrid=document.getElementById('gallery-grid');
-const album=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES:[];
+// Keep the 93 approved bundled images frozen; online entries live in this separate RAM-only list.
+window.PMM_IMAGE_ALBUM=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES.slice():[];
+const album=window.PMM_IMAGE_ALBUM;
 let galleryIndex=null;
 function galleryRenderGrid(){
  galleryIndex=null;document.getElementById('gallery-detail').hidden=true;galleryGrid.hidden=false;
@@ -1669,8 +3128,13 @@ setState=function(mode,s=null,v=null){
  if(mode==='home'){pmmOldStage.hidden=true;window.PMM_NEW_UI.restore();window.PMM_NEW_UI.showHome()}
  else{syncOldTitle();}
 };
+let legacyParentSubmenu='';
 const oldGoBack=goBack;
 goBack=function(){
+  // A nested reminder screen returns to the same Wisdom draw/result, not Home.
+  if(screen==='wisdom'&&!document.getElementById('wisdom-reminder-panel').hidden){closeWisdomReminderSettings();return;}
+ // Back inside a home submenu returns to the six-item root before leaving Home.
+ if(screen==='home'&&window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;
  // Back is navigation only. Never permit the overlapping Exit to activate
  // until the touch/keyboard gesture has fully ended and Home is stable.
  window.PMM_LAST_BACK_NAV_AT=Date.now();
@@ -1683,13 +3147,16 @@ goBack=function(){
  if(screen==='wisdom'){window.PMM_NEW_UI.leaveWisdom();screen='home';return;}
  if(screen==='gallery'){
    if(galleryIndex!==null){galleryRenderGrid();return;}
-   window.PMM_NEW_UI.closeGallery();screen='home';return;
+   window.PMM_NEW_UI.closeGallery();screen='home';window.PMM_NEW_UI.openSubmenu('media');return;
  }
  if(screen==='home'){return;}
+ const returnParent=screen==='list'&&['towhid','life','clips'].includes(section)?legacyParentSubmenu:'';
  oldGoBack();
+ if(returnParent&&screen==='home'){window.PMM_NEW_UI.openSubmenu(returnParent);legacyParentSubmenu='';}
 };
 // Delegated click routing also handles the legacy top Back button.
 const openLegacy=kind=>{
+ legacyParentSubmenu=kind==='towhid'||kind==='life'?'learning':kind==='clips'?'media':'';
  if(kind==='about'){setState('about')}
  else{if(!['nahj','towhid','life','kafi','clips'].includes(kind)){window.PMM_NEW_UI.showToast('بخش نامعتبر است');return;}setState('list',kind)}
  pmmOldStage.hidden=false;window.PMM_NEW_UI.showLegacy();
@@ -1726,7 +3193,7 @@ syncOldTitle();
 // opacity and z-index calculations as updateGuestWheel() in approved repository.
 (function(){
 'use strict';
-const photoFilesBase=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES:[];
+const photoFilesBase=window.PMM_IMAGE_ALBUM;
 const PHOTO_STORAGE_KEY='pmm_photo_quotes_drawbag_v1';
 // Use a gallery-local PRNG: the wheel must never depend on the wisdom script.
 function photoRandInt(max){
@@ -1894,6 +3361,17 @@ function mountWheel(key,items,rotorId,canvasId,posId,onSelect){
 }
 // Restore EXACT original images, card structure, curved 3D positions and 22s rotation.
 // V7 legacy router calls galleryRenderGrid on entering the photo section.
+let pmmPhotoWheelOrder=[];
+document.getElementById('pmm-photo-wheel-save').addEventListener('click',event=>{
+ event.preventDefault();event.stopPropagation();
+ const slot=activeWheels.get('photos')?.getIndex();
+ const originalIndex=Number.isInteger(slot)?pmmPhotoWheelOrder[slot]:null;
+ const source=Number.isInteger(originalIndex)?photoFilesBase[originalIndex]:null;
+ if(!source)return;
+ if(window.PMMNative&&typeof window.PMMNative.savePhotoToGallery==='function')
+   window.PMMNative.savePhotoToGallery(source);
+ else window.PMM_NEW_UI.showToast('ذخیره عکس فقط در نسخه اندروید فعال است.');
+});
 galleryRenderGrid=function(){
  galleryIndex=null;
  document.getElementById('gallery-detail').hidden=true;
@@ -1907,6 +3385,8 @@ galleryRenderGrid=function(){
  }
  if(!Array.isArray(order)||order.length!==photoFilesBase.length||new Set(order).size!==order.length)
   order=photoFilesBase.map((_,i)=>i);
+ pmmPhotoWheelOrder=order.slice();
+ document.getElementById('pmm-photo-wheel-save').hidden=order.length===0;
  const items=order.map(i=>({src:photoFilesBase[i]}));
  activeWheels.delete('photos');
  if(items.length)mountWheel('photos',items,'photo-wheel-rotor','photo-wheel-canvas','photo-wheel-position',slot=>galleryOpen(order[slot]));
@@ -1928,12 +3408,31 @@ renderClips=function(){
  contents.innerHTML='<div class="pmm-clips-panel"><div class="pmm-clips-heading">کلیپ‌های تصویری</div>'+
  '<div id="clips-wheel-canvas" class="pmm-wheel-canvas"><div id="clips-wheel-rotor" class="pmm-wheel-rotor"></div></div>'+
  '<div class="pmm-wheel-position" id="clips-wheel-position"></div>'+
+ '<button type="button" id="pmm-clip-save" title="دریافت کلیپ انتخاب‌شده" aria-label="دریافت کلیپ انتخاب‌شده"><span class="pmm-save-illustration" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg></span><span>دریافت</span></button>'+
  '<div class="pmm-clips-note">قاب‌های عمودی ۹:۱۶ — پیوند کلیپ‌ها هنوز ثبت نشده است</div></div>';
  mountWheel('clips',clips.map(c=>({title:c.title})), 'clips-wheel-rotor','clips-wheel-canvas','clips-wheel-position',i=>{
   const clip=VIDEO_CLIPS[i];
   if(!clip||!clip.url){toast('این کلیپ هنوز در مخزن ثبت نشده است.');return}
   if(/^https:\/\/eitaa\.com\//i.test(clip.url)){openEitaa(clip.url);return}
   setState('player','clips',{number:i+1,url:clip.url});
+ });
+ document.getElementById('pmm-clip-save').addEventListener('click',event=>{
+  event.preventDefault();event.stopPropagation();
+  const current=activeWheels.get('clips')?.getIndex()||0;
+  const clip=VIDEO_CLIPS[current];
+  if(!clip?.url){toast('هنوز کلیپی برای دریافت ثبت نشده است.');return;}
+  const link=String(clip.url);
+  // Aparat and Eitaa pages are not playable MP4 files. Never create a fake .mp4.
+  if(/^https:\/\/dl\.kazeminia110\.ir\/(?:[a-zA-Z0-9_.-]+\/)*[a-zA-Z0-9_.-]+\.mp4$/i.test(link)){
+    if(window.PMMNative&&typeof window.PMMNative.saveVideoToGallery==='function')
+      window.PMMNative.saveVideoToGallery(link);
+    else toast('ذخیره کلیپ در گالری فقط در نسخه اندروید فعال است.');
+    return;
+  }
+  toast('این کلیپ فایل مستقیم نیست؛ برای دریافت، آن را در ایتا یا آپارات باز کنید.');
+  if(/^https:\/\/eitaa\.com\//i.test(link))openEitaa(link);
+  else if(/^https:\/\/(?:www\.)?aparat\.com\/v\//i.test(link))
+    window.location.assign(link);
  });
 };
 
@@ -2035,7 +3534,8 @@ function resumed(){
  requestAnimationFrame(()=>{
   displayReturn();
   const top=stage.hidden?document.getElementById('back-top'):document.getElementById('legacy-back-top');
-  if(top&&!top.hidden){top.style.pointerEvents='auto';top.style.visibility='visible';}
+  if(top&&!top.hidden){top.disabled=false;top.style.pointerEvents='auto';top.style.visibility='visible';top.style.zIndex='100';}
+  const legacy=document.getElementById('back-button');if(legacy){legacy.disabled=false;legacy.style.pointerEvents='auto';}
  });
  if(openedAt){openedAt=0;try{localStorage.removeItem(STAMP)}catch(_){}}
 }
@@ -2063,7 +3563,7 @@ function recoverReload(){
 // Never navigate on touchend/pointerup: Exit overlaps Back on the Home image.
 let lastBackClick=-1000;
 function handleOnScreenBack(e){
- const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top'):null;
+ const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top,#back-button'):null;
  if(!btn||btn.hidden)return;
  e.preventDefault();e.stopImmediatePropagation();
  const now=performance.now();
@@ -2103,6 +3603,13 @@ document.addEventListener('click',e=>{
  if(!btn)return;
  // No other listener may send Exit: this capture handler owns authorization.
  e.preventDefault();e.stopImmediatePropagation();
+ if(btn.id==='exit'&&btn.classList?.contains('is-submenu-back')&&
+    !scene.hidden&&stage.hidden&&scene.dataset.screen==='home'){
+   exitStart=null;exitStartAt=0;
+   if(window.PMM_NEW_UI&&window.PMM_NEW_UI.closeSubmenu())
+     window.PMM_LAST_BACK_NAV_AT=Date.now();
+   return;
+ }
  const now=Date.now();
  const deliberate=exitStart===btn&&now-exitStartAt>=0&&now-exitStartAt<1600;
  const accessible=e.detail===0&&e.isTrusted===true&&document.activeElement===btn;
@@ -2133,7 +3640,7 @@ window.PMM_V9=Object.freeze({
  * The photo list is supplied later in photo_quotes_manifest.js. No dummy entries. */
 (function(){
  'use strict';
- const paths=Array.isArray(window.PMM_PHOTO_QUOTES)?window.PMM_PHOTO_QUOTES:[];
+ const paths=window.PMM_IMAGE_ALBUM;
  const safe=/^images\/photo_quotes\/[a-zA-Z0-9_.-]+\.(?:jpg|jpeg|png|webp)$/i;
  const photos=paths.filter(x=>typeof x==='string'&&safe.test(x));
  const fullscreen=document.getElementById('photo-fullscreen');
@@ -2159,8 +3666,19 @@ window.PMM_V9=Object.freeze({
    fullscreen.hidden=false;isOpen=true;window.PMM_PHOTO_FULLSCREEN=true;
    fullscreen.focus({preventScroll:true});
  }
- fullscreen.addEventListener('click',()=>{closePhoto();});
+ const savePhotoButton=document.getElementById('pmm-photo-save');
+ savePhotoButton.addEventListener('click',event=>{
+   event.preventDefault();event.stopPropagation();
+   if(!isOpen||!Number.isInteger(galleryIndex)||!photos[galleryIndex])return;
+   if(window.PMMNative&&typeof window.PMMNative.savePhotoToGallery==='function')
+     window.PMMNative.savePhotoToGallery(photos[galleryIndex]);
+   else window.PMM_NEW_UI.showToast('ذخیره عکس فقط در نسخه اندروید فعال است.');
+ });
+ fullscreen.addEventListener('click',event=>{if(event.target!==savePhotoButton &&
+   !savePhotoButton.contains(event.target))closePhoto();});
  fullscreen.addEventListener('keydown',event=>{
+   if((event.key==='Enter'||event.key===' ')&&
+      (event.target===savePhotoButton||savePhotoButton.contains(event.target)))return;
    if(event.key==='Escape'||event.key==='Enter'||event.key===' '){event.preventDefault();closePhoto();}
  });
  // Keep the original 3D wheel and swipe timing, without the obsolete 18 images.
@@ -2184,9 +3702,19 @@ window.PMM_V9=Object.freeze({
  window.addEventListener('pagehide',closePhoto);
  window.PMM_PHOTO_QUOTES_VIEW=Object.freeze({
    count:photos.length,open:openPhoto,close:closePhoto,
-   isOpen:()=>isOpen,paths:()=>photos.slice()
+   isOpen:()=>isOpen,paths:()=>photos.slice(),
+   addOnlinePhotos:function(urls){
+     if(!Array.isArray(urls))return;
+     urls.forEach(function(src){
+       if(typeof src!=='string'||!/^https:\/\//.test(src)||paths.includes(src))return;
+       paths.push(src);photos.push(src);
+     });
+   }
  });
 })();
 </script>
+<script src="pmm_online_updates.js"></script>
+<script src="pmm_offline_course_logic.js"></script>
+<script src="pmm_offline_course.js"></script>
 </body>
 </html>
