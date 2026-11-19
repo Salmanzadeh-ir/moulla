@@ -1,0 +1,125 @@
+name: Owner v113 Audio On Demand - Independent Downloadable Debug APK
+on:
+  push:
+    branches:
+      - feature/owner-audio-on-demand-v113-trial
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-v113:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout isolated v113 trial branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore exact owner-supplied v112 and v113 source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d scripts/v113_source_payload.b64 > "$RUNNER_TEMP/v113-source.xz"
+          echo "0166f373e3f8b2fc8f1b00e6635aacbb61791eaa015c3b6996acc3518594985e  $RUNNER_TEMP/v113-source.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/v113-source.xz"
+          python3 apply_v112.py
+          python3 scripts/apply_v113_manual_play.py
+      - name: Verify exact 178 app files match uploaded v113 ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          paths=sorted([p for p in Path('app').rglob('*') if p.is_file()], key=lambda p:p.as_posix())
+          assert len(paths)==178, f"Expected 178 app files, got {len(paths)}"
+          rows=[]
+          for path in paths:
+              data=path.read_bytes()
+              sha=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              rows.append(f'{path.as_posix()} {sha}\n')
+          actual=hashlib.sha256(''.join(rows).encode()).hexdigest()
+          expected='1567cf927c6a6f2cc5626f6c5bb14c8b31e1281ca3825fbb8cec207397177c50'
+          assert actual==expected, f"v113 source lock mismatch: {actual}"
+          print("PASS: all 178 v113 app files exactly match uploaded source Git blob SHA-1 manifest")
+          PY
+      - name: Regression checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/test_owner_offline_course_v111.cjs
+          node scripts/test_owner_home_hierarchy_v111.cjs
+          node scripts/test_owner_kafi_resume_screenoff_v111.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_v16_back_navigation.js
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Android 35 build tools
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Apply isolated v113 debug package identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          s=p.read_text()
+          for old,new in [
+            ("applicationIdSuffix '.remindtest107'","applicationIdSuffix '.audiomanual113'"),
+            ("versionNameSuffix '-debug'","versionNameSuffix '-audio-v113-trial-debug'"),
+            ("versionCode 26","versionCode 30"),
+            ("versionName '10.5.1'","versionName '10.5.5'")
+          ]:
+              assert s.count(old)==1, (old,s.count(old))
+              s=s.replace(old,new)
+          p.write_text(s)
+          PY
+          unset PMM_KEYSTORE_PATH PMM_KEYSTORE_PASSWORD
+      - name: Compile real v113 APK
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify APK signing, alignment and package identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          "$tools/apksigner" verify --verbose "$apk"
+          "$tools/zipalign" -c -v 4 "$apk"
+          "$tools/aapt" dump badging "$apk" | grep -F "package: name='ir.nahj.towhidkarbordi.audiomanual113' versionCode='30' versionName='10.5.5-audio-v113-trial-debug'"
+          mkdir -p dist
+          cp "$apk" dist/PayeMenbareMola-v113-AUDIO-ON-DEMAND-TRIAL-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+      - name: Preserve APK and checksum as GitHub artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-v113-independent-audio-debug-APK
+          path: dist/
+          retention-days: 30
+      - name: Publish direct-download trial APK on separate download branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          name=download/owner-audio-on-demand-v113-trial-20261119
+          test -z "$(git ls-remote --heads origin "refs/heads/$name")"
+          git switch -c "$name"
+          mkdir -p downloads/v113
+          cp dist/PayeMenbareMola-v113-AUDIO-ON-DEMAND-TRIAL-DEBUG.apk downloads/v113/
+          cp dist/SHA256SUMS.txt downloads/v113/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/v113/
+          git commit -m "test(v113): publish independently signed APK and SHA-256, no official release"
+          git push origin "HEAD:refs/heads/$name"
+          echo "DIRECT_APK_URL=https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/$name/downloads/v113/PayeMenbareMola-v113-AUDIO-ON-DEMAND-TRIAL-DEBUG.apk" >> "$GITHUB_STEP_SUMMARY"
