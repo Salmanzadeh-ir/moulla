@@ -66,7 +66,7 @@ for(const [name,re] of [
  ['Kafi cover audio title',/const label=safe\(record\.title\)/],
  ['Kafi last-opened label',/const lastLabel=which==='kafi'\?safe\(lastRecord\.title\)/],
  ['lesson Back preserved',/document\.getElementById\('player-back'\)\.addEventListener\('click',\(\)=>goBack\(\)\)/],
- ['audio source errors',/این فایل صوتی در حال حاضر بارگذاری نمی‌شود/]
+ ['audio source errors and diagnostics',/PMM_STREAM_HELPER\.attach\(audio,status\)/]
 ])assert(re.test(html),'Missing Kafi control: '+name);
 
 for(const [i,chunk] of [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].entries()){
