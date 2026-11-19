@@ -1,0 +1,28 @@
+package: name='ir.nahj.towhidkarbordi.ownerreview118' versionCode='35' versionName='10.5.10-owner-review-118-debug' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+sdkVersion:'23'
+targetSdkVersion:'34'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='android.permission.POST_NOTIFICATIONS'
+uses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'
+uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE' maxSdkVersion='28'
+application-label:'پای منبر مولا - آزمایشی'
+application-icon-160:'res/drawable/app_icon.png'
+application-icon-65535:'res/drawable-nodpi-v4/app_icon.png'
+application: label='پای منبر مولا - آزمایشی' icon='res/drawable/app_icon.png'
+application-debuggable
+launchable-activity: name='ir.nahj.towhidkarbordi.MainActivity'  label='' icon=''
+uses-permission: name='android.permission.READ_EXTERNAL_STORAGE' maxSdkVersion='28'
+uses-implied-permission: name='android.permission.READ_EXTERNAL_STORAGE' maxSdkVersion='28' reason='requested WRITE_EXTERNAL_STORAGE'
+feature-group: label=''
+  uses-feature: name='android.hardware.faketouch'
+  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'
+main
+other-receivers
+other-services
+supports-screens: 'small' 'normal' 'large' 'xlarge'
+supports-any-density: 'true'
+locales: '--_--'
+densities: '160' '65535'
