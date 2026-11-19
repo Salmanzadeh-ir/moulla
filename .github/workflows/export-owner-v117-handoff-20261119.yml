@@ -30,12 +30,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          git archive --format=zip --output=dist/PayeMenbareMola-v117-ACTIVE-MAIN-SOURCE.zip "3c2ab679576337fb6a35786f88d8b737d4366a7b"
-          git archive --format=zip --output=dist/PayeMenbareMola-v117-EXACT-BUILD-SOURCE-SNAPSHOT.zip "22ba3a952cc4e537b25bb731758ecc3c8b0bb965"
+          git archive --format=zip --output=dist/PayeMenbareMola-v117-ACTIVE-MAIN-SOURCE.zip "3c2ab679576337fb6a35786f88d8b737d4366a7b" -- . ':(exclude)releases'
+          git archive --format=zip --output=dist/PayeMenbareMola-v117-EXACT-BUILD-SOURCE-SNAPSHOT.zip "22ba3a952cc4e537b25bb731758ecc3c8b0bb965" -- . ':(exclude)releases'
           cat > dist/README-NEXT-CHAT-FA.md <<'EOF'
           # بسته انتقال کامل «پای منبر مولا» - ۱۹ نوامبر ۲۰۲۶
           
-          ## مهم: تفاوت دو سورس
+          ## مهم: هر دو ZIP تمام ۱۸۰ فایل برنامه را دارند؛ فقط پوشه historical releases/ داخل آنها نیست.\n          \n          ## تفاوت دو سورس
           - PayeMenbareMola-v117-ACTIVE-MAIN-SOURCE.zip: وضعیت واقعی و فعال مخزن main در SHA 3c2ab679576337fb6a35786f88d8b737d4366a7b؛ شامل ۱۸۰ فایل قفل‌شده برنامه، همه مستندات و کنترل CI.
           - PayeMenbareMola-v117-EXACT-BUILD-SOURCE-SNAPSHOT.zip: منبع دقیق بازسازی‌شده v117 از GitHub Actions و قفل‌شده در SHA 22ba3a952cc4e537b25bb731758ecc3c8b0bb965؛ ۱۸۰ فایل برنامه و مشخصات پایه پروژه.
           - تفاوت مهم: فایل app/build.gradle در main عمداً همان شناسه و versionName قدیمی V16 را نگه داشته تا نسخه رسمی بازار تغییر نکند. برای ساخت APK آزمایشی با هویت v117، این فایل فقط در محیط موقت اجرای GitHub Actions تغییر می‌کند؛ هرگز بدون اجازه صاحب پروژه در main تغییر ندهید.
@@ -70,7 +70,7 @@ jobs:
           git clone https://github.com/Salmanzadeh-ir/moulla.git
           git clone --mirror https://github.com/Salmanzadeh-ir/moulla.git
           
-          این دو ZIP خروجی git archive هستند؛ تمام فایل‌های ردیابی‌شده در commit مربوط را دارند، اما پوشه .git و تاریخچه همه شاخه‌ها داخل ZIP نیست. برای تاریخچه کامل از clone --mirror استفاده کنید.
+          این دو ZIP خروجی git archive هستند و تمام فایل‌های سورس/ساخت/اسناد در commit مربوط را دارند، اما به‌منظور دانلود روان، پوشه تاریخی releases/ حاوی APKهای قدیمی و قطعات تکراری آن عمداً حذف شده است؛ فایل‌های releases در مخزن اصلی GitHub دست‌نخورده و در دسترس هستند. پوشه .git و تاریخچه همه شاخه‌ها نیز در ZIP نیست. برای تاریخچه و باینری‌های تاریخی کامل از clone --mirror استفاده کنید.
           EOF
           cat > dist/REFERENCE-IDS.txt <<'EOF'
           main_sha=3c2ab679576337fb6a35786f88d8b737d4366a7b
