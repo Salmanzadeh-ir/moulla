@@ -62,10 +62,34 @@ jobs:
              });
            }
            if(x.nahjAudio){""")
+          s=one(s,
+            '<script src="photo_quotes_manifest.js"></script>\n',
+            '<script src="photo_quotes_manifest.js"></script>\n<script src="pmm_audio_stream_helper.js"></script>\n')
+          s=one(s,
+            '<script src="pmm_kafi_resume_screenoff.js"></script>\n<script src="pmm_audio_stream_helper.js"></script>\n',
+            '<script src="pmm_kafi_resume_screenoff.js"></script>\n')
+          s=one(s,
+            'id="course-extra">＋ صوت بیشتر</button>',
+            'id="course-extra" aria-label="امروز یک صوت بیشتر بشنوم">＋ صوت بیشتر</button>')
+          s=one(s,
+            'id="course-notes-open">☷ یادداشت‌ها</button>',
+            'id="course-notes-open" aria-label="دفترچه یادداشت‌های من">☷ یادداشت‌ها</button>')
+          s=one(s,
+            'id="course-settings-open">⚙ تنظیمات</button>',
+            'id="course-settings-open" aria-label="تغییر برنامه شنیدن">⚙ تنظیمات</button>')
+          s=one(s,
+            "if(window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;",
+            "if(screen==='home'&&window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;")
           p.write_text(s)
           p=Path('app/src/main/assets/pmm_offline_course.js')
           s=p.read_text()
           s=one(s,"new MutationObserver(()=>{miniHeard.disabled=realHeard.disabled||realHeard.hidden;}).observe(realHeard,{attributes:true,attributeFilter:['disabled','hidden']});\n","")
+          s=one(s,
+            " const button=$('course-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;return;}",
+            " const button=$('course-heard'),mini=$('course-mini-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;mini.disabled=true;return;}")
+          s=one(s,
+            " button.disabled=!logic.canMarkHeard(pos.listened,duration);",
+            " button.disabled=!logic.canMarkHeard(pos.listened,duration);mini.disabled=button.disabled;")
           p.write_text(s)
           print("Restored exact owner ZIP v113 inline-video and audio-UI changes")
           PY
