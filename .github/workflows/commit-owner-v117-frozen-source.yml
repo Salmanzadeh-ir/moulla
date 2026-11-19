@@ -1,0 +1,312 @@
+name: Freeze exact owner-authorized v117 source after successful trial build
+on:
+  push:
+    branches:
+      - feature/owner-v117-source-freeze-20261119
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  materialize-v117-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout isolated v113 trial branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore exact owner-supplied v112 and v113 source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d scripts/v113_source_payload.b64 > "$RUNNER_TEMP/v113-source.xz"
+          echo "0166f373e3f8b2fc8f1b00e6635aacbb61791eaa015c3b6996acc3518594985e  $RUNNER_TEMP/v113-source.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/v113-source.xz"
+          python3 apply_v112.py
+          python3 scripts/apply_v113_manual_play.py
+          python3 - <<'PY'
+          from pathlib import Path
+          def one(s,old,new):
+              count=s.count(old)
+              assert count==1,(old[:110],count)
+              return s.replace(old,new,1)
+          p=Path('app/src/main/assets/index.html')
+          s=p.read_text()
+          s=one(s,
+            "#stage .nahj-audio-player:focus-visible{outline:3px solid #0b5b8e;outline-offset:2px}\n",
+            "#stage .nahj-audio-player:focus-visible{outline:3px solid #0b5b8e;outline-offset:2px}\n"
+            "#stage .nahj-audio-player[hidden]{display:none!important}\n"
+            "#stage .nahj-stream-status{min-height:1.3em;margin:7px 5px;color:#8a481e;\n"
+            " font:600 clamp(11px,2.3cqw,14px)/1.6 var(--pmm-text-font);text-align:center}\n"
+            "#stage #nahj-direct-start{display:block;margin:10px auto}\n"
+            "#stage #aparat-user-play{display:block;margin:16% auto}\n")
+          s=one(s,
+            """  const embed='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
+            html+='<div class="player-frame"><iframe title="پخش آنلاین جلسه '+fa(x.number)+'" src="'+embed+
+              '" loading="eager" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';""",
+            """  // No third-party iframe or website traffic until the visitor explicitly taps Play.
+            html+='<div class="player-frame"><button type="button" class="action" id="aparat-user-play">▶ پخش ویدئو</button></div>';""")
+          s=one(s,
+            " if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();\n if(x.nahjAudio){",
+            """ if(section==='kafi'&&pmmKafiAudioIsOwnerURL(link))pmmAttachKafiAudio();
+           const playVideo=contents.querySelector('#aparat-user-play');
+           if(playVideo&&match){
+             playVideo.addEventListener('click',()=>{
+               const frame=document.createElement('iframe');
+               frame.title='پخش آنلاین جلسه '+fa(x.number);
+               frame.src='https://www.aparat.com/video/video/embed/videohash/'+encodeURIComponent(match[1])+'/vt/frame';
+               frame.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+               frame.allowFullscreen=true;
+               frame.referrerPolicy='strict-origin-when-cross-origin';
+               playVideo.replaceWith(frame);
+             });
+           }
+           if(x.nahjAudio){""")
+          s=one(s,
+            '<script src="photo_quotes_manifest.js"></script>\n',
+            '<script src="photo_quotes_manifest.js"></script>\n<script src="pmm_audio_stream_helper.js"></script>\n')
+          s=one(s,
+            '<script src="pmm_kafi_resume_screenoff.js"></script>\n<script src="pmm_audio_stream_helper.js"></script>\n',
+            '<script src="pmm_kafi_resume_screenoff.js"></script>\n')
+          s=one(s,
+            'id="course-extra">＋ صوت بیشتر</button>',
+            'id="course-extra" aria-label="امروز یک صوت بیشتر بشنوم">＋ صوت بیشتر</button>')
+          s=one(s,
+            'id="course-notes-open">☷ یادداشت‌ها</button>',
+            'id="course-notes-open" aria-label="دفترچه یادداشت‌های من">☷ یادداشت‌ها</button>')
+          s=one(s,
+            'id="course-settings-open">⚙ تنظیمات</button>',
+            'id="course-settings-open" aria-label="تغییر برنامه شنیدن">⚙ تنظیمات</button>')
+          s=one(s,
+            "if(window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;",
+            "if(screen==='home'&&window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.closeSubmenu==='function'&&window.PMM_NEW_UI.closeSubmenu())return;")
+          p.write_text(s)
+          p=Path('app/src/main/assets/pmm_offline_course.js')
+          s=p.read_text()
+          s=one(s,"new MutationObserver(()=>{miniHeard.disabled=realHeard.disabled||realHeard.hidden;}).observe(realHeard,{attributes:true,attributeFilter:['disabled','hidden']});\n","")
+          s=one(s,
+            " const button=$('course-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;return;}",
+            " const button=$('course-heard'),mini=$('course-mini-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;mini.disabled=true;return;}")
+          s=one(s,
+            " button.disabled=!logic.canMarkHeard(pos.listened,duration);",
+            " button.disabled=!logic.canMarkHeard(pos.listened,duration);mini.disabled=button.disabled;")
+          p.write_text(s)
+          print("Restored exact owner ZIP v113 inline-video and audio-UI changes")
+          PY
+      - name: Verify exact 178 app files match uploaded v113 ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          paths=sorted([p for p in Path('app').rglob('*') if p.is_file()], key=lambda p:p.as_posix())
+          assert len(paths)==178, f"Expected 178 app files, got {len(paths)}"
+          rows=[]
+          for path in paths:
+              data=path.read_bytes()
+              sha=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              rows.append(f'{path.as_posix()} {sha}\n')
+          actual=hashlib.sha256(''.join(rows).encode()).hexdigest()
+          expected='1567cf927c6a6f2cc5626f6c5bb14c8b31e1281ca3825fbb8cec207397177c50'
+          if actual!=expected:
+              for name in ('app/src/main/assets/index.html','app/src/main/assets/pmm_offline_course.js'):
+                  buf=Path(name).read_bytes().splitlines(keepends=True)
+                  print("BLOCK_SUMMARY",name,len(buf),len(b''.join(buf)))
+                  print("BLOCK_HASH",name,[(i//200,hashlib.sha256(b''.join(buf[i:i+200])).hexdigest()[:16]) for i in range(0,len(buf),200)])
+                  for start,end in ([(1400,2200),(2800,3000)] if name.endswith('index.html') else [(200,400)]):
+                      print("BLOCK20",name,start,[(i+1,hashlib.sha256(b''.join(buf[i:i+20])).hexdigest()[:12]) for i in range(start,min(end,len(buf)),20)])
+                  ranges=([(1495,1545),(2085,2120),(2940,2965)] if name.endswith('index.html') else [(235,258)])
+                  for start,end in ranges:
+                      for i in range(start,end): print("SOURCE_CONTEXT",name,i+1,repr(buf[i].decode('utf-8').rstrip('\\n')))
+
+              for path in paths:
+                  if path.suffix in ('.java','.js','.html','.gradle'):
+                      print(f"CHECK_FILE {path.as_posix()} {hashlib.sha1(b'blob '+str(path.stat().st_size).encode()+b'\0'+path.read_bytes()).hexdigest()}")
+              raise AssertionError(f"v113 source lock mismatch: {actual}")
+          
+          print("PASS: all 178 v113 app files exactly match uploaded source Git blob SHA-1 manifest")
+          PY
+      - name: Regression checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/src/main/assets/pmm_offline_course.js
+          node scripts/test_owner_home_hierarchy_v111.cjs
+          node scripts/test_owner_kafi_resume_screenoff_v111.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_no_heard_and_kafi_tail.cjs
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_v16_back_navigation.js
+      - name: Apply only owner-authorized v114 home labels and Back changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d scripts/v114_owner_patch_payload.b64 > "$RUNNER_TEMP/v114-owner-patch.tar.xz"
+          echo "a7510f0edd4e7b0dced4b4eb4016a1e4a90a88484217aea96a9305c8e5481bb2  $RUNNER_TEMP/v114-owner-patch.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/v114-owner-patch.tar.xz"
+          python3 scripts/apply_owner_main_labels_back_v114.py
+          node scripts/test_owner_main_menu_back_v114.cjs
+          node scripts/test_v16_back_navigation.js
+          if test -f scripts/test_owner_manual_on_demand_v113.cjs; then node scripts/test_owner_manual_on_demand_v113.cjs; fi
+          python3 - <<'PY'
+          from hashlib import sha1
+          from pathlib import Path
+          p=Path('app/src/main/assets/index.html')
+          data=p.read_bytes()
+          blob=sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          assert blob=='3c39c7bd8d5ee97ed09ddd6f356543e47ce12989',blob
+          print("PASS: owner v114 index precisely matches reviewed change; other 177 app files validated by v113 manifest before this step")
+          PY
+      - name: Apply only owner-approved offline-course v115 patch and regression checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d scripts/v115_course_diff_xz.b64 > "$RUNNER_TEMP/v115-course.diff.xz"
+          echo "c6cab6362ad3880c58fd2c9177d0eecfa83dadbb395c84f1034ea5ba543c9c62  $RUNNER_TEMP/v115-course.diff.xz" | sha256sum -c -
+          xz -dc "$RUNNER_TEMP/v115-course.diff.xz" > "$RUNNER_TEMP/v115-course.diff"
+          git apply --check "$RUNNER_TEMP/v115-course.diff"
+          git apply "$RUNNER_TEMP/v115-course.diff"
+          node --check app/src/main/assets/pmm_offline_course.js
+          python3 - <<'PY'
+          from pathlib import Path
+          from hashlib import sha1
+          for path,expected in {
+           'app/src/main/assets/index.html':'cb0ff010c2074556151f9fc8f2af36f1e51ba18a',
+           'app/src/main/assets/pmm_offline_course.js':'fac6f123391d9023e42e3a953ae917e30825fe11'
+          }.items():
+           buf=Path(path).read_bytes()
+           sha=sha1(b'blob '+str(len(buf)).encode()+b'\0'+buf).hexdigest()
+           assert sha==expected,(path,sha,expected)
+          html=Path('app/src/main/assets/index.html').read_text()
+          assert 'class="course-speedometer"' in html
+          assert 'class="course-extra-green" id="course-extra"' in html
+          assert 'class="course-plan-summary"' not in html
+          assert 'class="course-offline-note"' not in html
+          assert 'class="course-audio-status course-visually-hidden"' in html
+          print('PASS: reviewed v115 course-only patch, exact Git blob SHA-1 of both modified app files')
+          PY
+          node scripts/test_owner_offline_course_v115.cjs
+          if test -f scripts/test_owner_manual_on_demand_v113.cjs; then node scripts/test_owner_manual_on_demand_v113.cjs; fi
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_v16_back_navigation.js
+      - name: Apply only owner-requested devotional icons in the learning submenu
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d scripts/v116_patch_payload.b64 > "$RUNNER_TEMP/v116-icon-patch.tar.xz"
+          echo "ace56a633f6a45d6fc5de83c2dbeeb57ddf44a42cf46f8c038703b9dc4900a8c  $RUNNER_TEMP/v116-icon-patch.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/v116-icon-patch.tar.xz"
+          python3 scripts/apply_owner_icon_style_v116.py
+          node scripts/test_owner_icon_style_v116.cjs
+          node scripts/test_owner_offline_course_v115.cjs
+          if test -f scripts/test_owner_manual_on_demand_v113.cjs; then node scripts/test_owner_manual_on_demand_v113.cjs; fi
+          node scripts/test_v16_back_navigation.js
+          python3 - <<'PY'
+          from hashlib import sha1
+          from pathlib import Path
+          expected={
+            'app/src/main/assets/index.html':'dd8b7a91071debab4bbb655bf10176a8400cfe63',
+            'app/src/main/assets/pmm_offline_course.js':'fac6f123391d9023e42e3a953ae917e30825fe11'
+          }
+          for path,sha in expected.items():
+              data=Path(path).read_bytes()
+              actual=sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              assert actual==sha,(path,actual,sha)
+          print('PASS: exactly reviewed v116 icon source; approved v115 course unchanged')
+          PY
+      - name: Apply owner v117 Back, generated Allah-Kaaba images and Tafal reminder relocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "639af6d7e6acb467d39ba713d9696b87ae1e1c997a9494c7e9f78ccb08b3e9e0  scripts/v117_code.tar.xz" | sha256sum -c -
+          tar -xJf scripts/v117_code.tar.xz
+          python3 scripts/apply_owner_back_icons_reminder_v117.py
+          node scripts/test_owner_back_reminder_v117.cjs
+          node scripts/test_owner_offline_course_v115.cjs
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_media_save.cjs
+          node scripts/test_owner_nahj_numeric_search.cjs
+          node scripts/test_owner_kafi_mp3_catalog.cjs
+          if test -f scripts/test_owner_manual_on_demand_v113.cjs; then node scripts/test_owner_manual_on_demand_v113.cjs; fi
+          python3 - <<'PY'
+          from hashlib import sha1
+          from pathlib import Path
+          expected={
+            'app/src/main/assets/index.html':'69054803d7356bf1ce65a65e69baa6ffe2c8b21f',
+            'app/src/main/assets/pmm_offline_course.js':'fac6f123391d9023e42e3a953ae917e30825fe11',
+            'app/src/main/assets/images/pmm_v117_tawhid_logo.png':'7254c188558700d014b7bbf7dd271d9e24c26ddd',
+            'app/src/main/assets/images/pmm_v117_kaaba_logo.png':'dfd5f20d3480130252ff7c1416108a63ebe07407'
+          }
+          for path,sha in expected.items():
+              data=Path(path).read_bytes()
+              actual=sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              assert actual==sha,(path,actual,sha)
+          print('PASS: reviewed owner v117 markup, unchanged course and exact two locally generated image assets')
+          PY
+      - name: Commit verified v117 source into its own immutable-reference snapshot branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          files=sorted((p for p in Path('app').rglob('*') if p.is_file()),key=lambda p:p.as_posix())
+          assert len(files)==180, f'Expected 180 application source files, got {len(files)}'
+          records=[]
+          for p in files:
+           b=p.read_bytes()
+           blob=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+           records.append({'path':p.as_posix(),'blob_sha1':blob,'sha256':hashlib.sha256(b).hexdigest(),'size':len(b)})
+          expected={
+          'app/src/main/assets/index.html':'69054803d7356bf1ce65a65e69baa6ffe2c8b21f',
+          'app/src/main/assets/pmm_offline_course.js':'fac6f123391d9023e42e3a953ae917e30825fe11',
+          'app/src/main/assets/images/pmm_v117_tawhid_logo.png':'7254c188558700d014b7bbf7dd271d9e24c26ddd',
+          'app/src/main/assets/images/pmm_v117_kaaba_logo.png':'dfd5f20d3480130252ff7c1416108a63ebe07407'
+          }
+          for p,h in expected.items():
+           assert next(x['blob_sha1'] for x in records if x['path']==p)==h, p
+          out={'schema':'owner-freeze-v117-git-blobs-sha256-v1','app_file_count':len(records),
+          'source':'Exact owner-authorized v117 trial source reconstructed and verified in GitHub Actions',
+          'trial_workflow_run':'https://github.com/Salmanzadeh-ir/moulla/actions/runs/44502443550',
+          'official_release_changed':False,'requires_explicit_owner_approval_for_any_change':True,
+          'files':records}
+          Path('design').mkdir(exist_ok=True)
+          target=Path('design/owner-v117-frozen-app-lock.json')
+          target.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('PASS: exact 180 verified v117 application files materialized')
+          print('LOCK_SHA256='+hashlib.sha256(target.read_bytes()).hexdigest())
+          PY
+          mkdir -p docs
+          cat > docs/OWNER_V117_FROZEN_FA.md <<'EOF'
+          # مرجع قفل‌شده v117 پروژه «پای منبر مولا»
+          
+          مالک در ۱۹ نوامبر ۲۰۲۶ دستور ثبت تمامی تغییرات v117 در مخزن و قفل کردن همه بخش‌ها را صادر کرد.
+          
+          ## وضعیت تأییدشده
+          - سورس ۱۸۰ فایل برنامه این نسخه از اجرای بازسازی و آزمون موفق v117 در GitHub Actions استخراج و در این snapshot ثبت شده است.
+          - تغییرات v111 تا v117: دوره ۱۰۱۹ صوتی، بازگشت‌ها، نوشته‌های اصلی، پخش صوت فقط پس از Play، اصلاحات ابزارهای دوره، لوگوهای «الله» و «کعبه»، و انتقال تنظیم یادآوری به تفال.
+          - مرجع فایل: design/owner-v117-frozen-app-lock.json با Git blob SHA-1 و SHA-256 تمام ۱۸۰ فایل.
+          - APK تأییدشده فقط نسخه Debug آزمایشی است. شناسه آزمایشی: ir.nahj.towhidkarbordi.standardback117؛ versionCode 34؛ در Workflow ساخت اعمال شده است.
+          - ساخت موفق مرجع: https://github.com/Salmanzadeh-ir/moulla/actions/runs/44502443550
+          - هیچ مجوز جدیدی برای انتشار رسمی بازار، تغییر کلید امضا، جابه‌جایی شاخه‌های تاریخی یا تغییر نسخه رسمی داده نشده است.
+          
+          ## قاعده مالک
+          تمام بخش‌ها، محتوای صوت، داده‌ها، یادداشت، ظاهر، ابزارها، تنظیمات، عملکرد، لینک‌ها، منابع گرافیکی، مخزن و Workflow ها قفل هستند. هر اصلاح جدید فقط با اجازه صریح مالک برای همان مورد مجاز است. قفل اثرانگشت و CI به تنهایی جایگزین محافظت GitHub Branch Rules نیست؛ فعال‌سازی آن در تنظیمات مخزن نیز ضروری است.
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          name=snapshot/owner-v117-frozen-source-20261119
+          if git ls-remote --heads origin "refs/heads/$name" | grep -q .; then
+           echo "Snapshot branch already exists; stopping to protect the frozen reference" >&2
+           exit 1
+          fi
+          git switch -c "$name"
+          git add app/ design/owner-v117-frozen-app-lock.json docs/OWNER_V117_FROZEN_FA.md
+          git diff --cached --stat | tail -15
+          git commit -m "snapshot(v117): preserve exact built source and lock 180 application files"
+          git push origin "HEAD:refs/heads/$name"
+          echo "FROZEN_SOURCE_SNAPSHOT=$name" >> "$GITHUB_STEP_SUMMARY"
