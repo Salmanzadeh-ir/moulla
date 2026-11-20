@@ -1,0 +1,26 @@
+{
+  "schema": "pmm-owner-active-development-version-v1",
+  "project": "پای منبر مولا",
+  "repository": "Salmanzadeh-ir/moulla",
+  "active_branch": "main",
+  "active_version": "v119",
+  "approved_source_base_commit": "ca1dd669f181e328071567b3e41b4bf06744895b",
+  "active_lock": "design/owner-v119-main-app-lock.json",
+  "active_app_files": 182,
+  "active_lock_test": "scripts/verify_owner_v119_lock.py",
+  "main_ci_context": "verify-ui-lock",
+  "owner_approval": "v119 phone trial accepted by owner, then PR #15 merged 2026-11-20",
+  "last_verified_android_ci_run": "https://github.com/Salmanzadeh-ir/moulla/actions/runs/44671672004",
+  "trial_apk": {
+    "type": "debug-independent-app-id-not-market-release",
+    "package": "ir.nahj.towhidkarbordi.ownerreview119",
+    "sha256": "94702d41e292a8d84f7cdc0ad4af8e5ce5ae1727c68cc0cfb568d03d99e438e2",
+    "url": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk",
+    "build_run": "44670627786"
+  },
+  "official_market_release_modified": false,
+  "external_recoverable_backup_confirmed": false,
+  "approved_deletion_manifest": null,
+  "cleanup_authorized": false,
+  "important_note": "Any future approved version MUST update this file in a PR, with independent APK/device approval and a new lock; cleanup remains disabled until separately approved and off-repo backup restored."
+}
