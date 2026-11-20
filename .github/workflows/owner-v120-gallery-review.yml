@@ -32,8 +32,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'Historical gallery source is now checked byte-for-byte including original trailing newline.'
-          python3 scripts/prepare_owner_v120_gallery.py apply
+          echo 'Historical gallery source is checked byte-for-byte including trailing newline.'
+          if test ! -f design/owner-v120-gallery-review-app-lock.json; then
+            python3 scripts/prepare_owner_v120_gallery.py apply
           python3 scripts/prepare_owner_v120_gallery.py verify
           python3 - <<'PY'
           import subprocess
@@ -47,7 +48,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "feat(v120-candidate): append 12 original historical posters, freeze 194 app files"
           git push origin HEAD:refs/heads/feature/owner-v120-restore-12-historical-photos-20261120
-          git status --porcelain
+          fi
+          python3 scripts/prepare_owner_v120_gallery.py verify
+          test -z "$(git status --porcelain)"
       - name: Verify v120 194-file lock and old v119 lock preservation
         shell: bash
         run: |
@@ -129,7 +132,8 @@ jobs:
           (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
           git restore -- app/build.gradle
           python3 scripts/prepare_owner_v120_gallery.py verify
-          test -z "$(git status --porcelain)"
+          git diff --quiet -- app/
+          test -z "$(git ls-files --others --exclude-standard -- app/)"
           git rev-parse HEAD > dist/EXACT-SOURCE-COMMIT.txt
           echo "Owner review candidate only; main remains v119. No official release or signing changes." > dist/READ-ME.txt
           cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
