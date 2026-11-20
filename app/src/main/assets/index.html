@@ -1556,6 +1556,77 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   box-shadow:none!important;
 }
 
+
+/* v135 owner phone trial: 4x visual artwork for Exit, Back and Search.
+   Hit boxes and all event handlers stay identical to v134.
+   Each ::after is centered on the original clickable element and is
+   non-interactive. Never scale the clickable button itself. */
+#scene #exit,
+#stage #home-pane #home-exit,
+#scene #back-top,
+#stage #legacy-back-top,
+#stage #guest-return,
+#stage #back-button,
+#stage #nahj-find-button {
+  background:transparent!important;
+  background-image:none!important;
+  background-color:transparent!important;
+  color:transparent!important;
+  text-shadow:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  isolation:isolate;
+}
+/* Suppress old Exit text visually without altering button content/labels. */
+#stage #home-pane #home-exit {font-size:0!important;}
+#scene #exit::after,
+#stage #home-pane #home-exit::after,
+#scene #back-top::after,
+#stage #legacy-back-top::after,
+#stage #guest-return::after,
+#stage #back-button::after,
+#stage #nahj-find-button::after {
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  box-sizing:border-box!important;
+  width:400%!important;
+  height:400%!important;
+  left:-150%!important;
+  top:-150%!important;
+  border:0!important;
+  padding:0!important;
+  margin:0!important;
+  opacity:1!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:contain!important;
+  pointer-events:none!important;
+  visibility:visible!important;
+  transform:none!important;
+  filter:none!important;
+}
+/* Legacy and main-home Exit art */
+#scene #exit::after,#stage #home-pane #home-exit::after {
+ background-image:url("images/pmm_owner_exit_v131.png")!important;
+}
+/* All existing top Back controls; normal route/visibility checks unchanged */
+#scene #back-top::after,#stage #legacy-back-top::after,
+#stage #guest-return::after,#stage #back-button::after {
+ background-image:url("images/pmm_owner_return_v133.png")!important;
+}
+/* Numeric Nahj search control */
+#stage #nahj-find-button::after {
+ background-image:url("images/pmm_owner_search_v132.png")!important;
+}
+/* Hidden states remain strictly noninteractive and never expose the artwork. */
+#scene #exit[hidden]::after,#scene #back-top[hidden]::after,
+#stage #legacy-back-top[hidden]::after,#stage #guest-return[hidden]::after,
+#stage #nahj-find-button[hidden]::after,#stage #home-pane.gone #home-exit::after {
+ display:none!important;
+}
+
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
