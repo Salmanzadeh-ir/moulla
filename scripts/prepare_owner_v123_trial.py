@@ -79,6 +79,14 @@ def download_font():
             if href and re.search(r"download|\\.zip|\\.ttf|\\.otf|font|shablon|file",href,re.I):
                 candidate_links.append(urljoin(r.url,href))
         print("FONTYAB_LINKS",repr(candidate_links[:45]),flush=True)
+        for script in soup.find_all("script"):
+            inner=script.get_text(" ",strip=True)
+            if re.search(r"download|7512|location|timeout|\\.zip|\\.ttf",inner,re.I):
+                print("FONTYAB_INLINE_JS",inner[:3800],flush=True)
+        for form in soup.find_all("form"):
+            print("FONTYAB_FORM",form.get("method"),form.get("action"),
+                  [(el.get("name"),el.get("value")) for el in form.find_all("input")][:20],flush=True)
+        print("FONTYAB_VISIBLE",soup.get_text(" ",strip=True)[-3300:],flush=True)
         raise RuntimeError("Requested font source returned HTML instead of actual font archive; refusing substituted font.")
     ranked=[]
     for name,data in candidates:
