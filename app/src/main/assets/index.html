@@ -1362,11 +1362,12 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   text-shadow:none!important;
   display:block;flex:1 1 0%;width:auto;min-width:0;max-width:100%;
   text-align:center!important;direction:rtl!important;
-  font-size:var(--pmm-home-title-individual,22px)!important;
+  font-size:var(--pmm-home-six-uniform-size,22px)!important;
   line-height:1.15!important;
   white-space:nowrap!important;
   overflow-wrap:normal!important;word-break:keep-all!important;
   text-overflow:clip;overflow:hidden;
+  transform-origin:center center; /* only wider captions may compress horizontally, not shrink font */
 }
 
 /* v124: native audio controls deliberately mirror existing navy/gold buttons;
@@ -2102,32 +2103,38 @@ function syncHomeSubmenuReturn(){
   // Only root Home may display that artwork.
   showSceneArtwork(!isBack);
 }
-// v125: largest comfortably fitting font PER title, not the old shared
-// minimum that shrank all six labels to the size of the longest phrase.
-// Recalculate after local Lalezar is loaded, on orientation/viewport change.
+// v126: all SIX captions use exactly the same Lalezar font-size and weight.
+// The owner-approved FIRST caption «شرح جامع صوتی نهج‌البلاغه» determines
+// the size. Other captions never receive an independently smaller font-size.
 let homeTitleFitFrame=0;
 const homeTitleMeasure=document.createElement('canvas').getContext('2d');
 function fitHomeMainMenuTitles(){
   if(!homeMenuRoot||homeMenuRoot.hidden||!homeMenuRoot.clientWidth||!homeTitleMeasure)return;
   const titles=Array.from(homeMenuRoot.querySelectorAll(':scope > .home-menu-card > .home-menu-title'));
   if(titles.length!==6)return;
+  const model=titles[0];
+  if(!model.textContent.includes('شرح جامع صوتی'))return;
   const reference=48;
   homeTitleMeasure.font='400 '+reference+'px "PMM Lalezar",Tahoma,Arial,sans-serif';
+  const modelCard=model.closest('.home-menu-card');
+  const modelSpace=Math.max(1,model.clientWidth-6);
+  const modelWidth=homeTitleMeasure.measureText(model.textContent.trim()).width;
+  if(modelWidth<=0)return;
+  const maxSize=Math.min(48,Math.max(9,(modelCard?.clientHeight||70)*0.70));
+  const uniformSize=Math.max(3,Math.floor(Math.min(maxSize,modelSpace*reference/modelWidth*0.985)*10)/10);
+  // One shared value on parent: identically sized / weighted glyphs in all tiles.
+  homeMenuRoot.style.setProperty('--pmm-home-six-uniform-size',uniformSize.toFixed(1)+'px');
+  homeTitleMeasure.font='400 '+uniformSize+'px "PMM Lalezar",Tahoma,Arial,sans-serif';
   titles.forEach(title=>{
-    const card=title.closest('.home-menu-card');
-    const available=title.clientWidth-6;
+    title.style.removeProperty('--pmm-home-title-individual');
+    const available=Math.max(1,title.clientWidth-6);
     const needed=homeTitleMeasure.measureText(title.textContent.trim()).width;
-    if(available<=0||needed<=0)return;
-    // Vertical cap respects the tile height and avoids trimming descenders.
-    const maximum=Math.min(48,Math.max(9,(card?.clientHeight||70)*0.70));
-    let size=Math.min(maximum,available*reference/needed*0.985);
-    size=Math.max(3,Math.floor(size*10)/10);
-    // Apply to THIS title only; preserve bigger sizes on short captions.
-    for(let trial=0;trial<5;trial++){
-      title.style.setProperty('--pmm-home-title-individual',size.toFixed(1)+'px');
-      if(title.scrollWidth<=title.clientWidth+1)break;
-      size=Math.max(3,Math.floor(size*0.94*10)/10);
-    }
+    // Longer captions remain ONE line without reducing their CSS font size.
+    // Horizontal adjustment, only if essential, keeps all six at the same
+    // vertical size and typeface weight and avoids clipping on narrow phones.
+    const scale=needed>available?Math.max(0.55,available/needed*0.985):1;
+    title.style.transform=scale<1?'scaleX('+scale.toFixed(4)+')':'none';
+    title.style.textAlign='center';
   });
 }
 function queueHomeTitleFit(){
