@@ -82,7 +82,7 @@ def download_font():
                     text=z.read(info).decode("utf-8",errors="replace")
                     (ROOT/"docs"/"OWNER_SHABLON_DISTRIBUTION_SOURCE_NOTE.txt").write_text(
                         "Downloaded with the font archive from "+SOURCE_URL+"\\n\\n"+text,encoding="utf-8")
-    elif body[:4] in (b"\\x00\\x01\\x00\\x00",b"OTTO",b"true") or body[:4]==b"ttcf":
+    elif body[:4] in (b"\x00\x01\x00\x00",b"OTTO",b"true") or body[:4]==b"ttcf":
         candidates=[("A-Shablon-Cut.ttf",body)]
     else:
         raise RuntimeError("Verified first-party Shablon file is not a font or ZIP. Actual bytes="+repr(body[:110]))
