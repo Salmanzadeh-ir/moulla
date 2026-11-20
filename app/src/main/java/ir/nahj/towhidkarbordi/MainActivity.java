@@ -350,10 +350,11 @@ public final class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if ("file:///android_asset/index.html".equals(url)) {
                     view.evaluateJavascript("window.PMM_ANDROID=true", null);
-                    // v113 strict zero-background-network trial: no automatic manifest fetch.
-                    // The updater remains in the code but is not polled at startup.
+                    contentPageReady = true;
                     openWisdomIfPending();
                     openCourseIfPending();
+                    // v122: ask owner-approved content permission after the OS notification flow.
+                    maybeStartContentUpdates();
                 }
             }
         });
