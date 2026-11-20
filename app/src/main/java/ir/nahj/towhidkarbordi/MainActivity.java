@@ -51,6 +51,13 @@ public final class MainActivity extends Activity {
     private android.window.OnBackInvokedCallback platformBackCallback;
     private static final int REMINDER_PERMISSION_REQUEST = 9031;
     private static final int MEDIA_STORAGE_PERMISSION_REQUEST = 9032;
+    // Optional owner-approved consent for startup manifest check; Android INTERNET does not require runtime permission.
+    private static final String CONTENT_OPT_IN_PREFS = "pmm_content_startup_consent_v1";
+    private static final String CONTENT_ALLOWED = "allowed";
+    private boolean contentPageReady = false;
+    private boolean contentCheckStarted = false;
+    private boolean contentConsentPromptOpen = false;
+    private boolean notificationPermissionFlowOpen = false;
     private String pendingSaveMediaSource = null;
     private boolean pendingSaveMediaVideo = false;
     private boolean visibleToUser = false;
