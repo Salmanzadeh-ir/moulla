@@ -1,0 +1,67 @@
+name: OWNER exact-SHA branch cleanup eligibility against archived phone backup (NO DELETIONS)
+on:
+  push:
+    branches: [policy/owner-verified-branch-cleanup-plan-20261120]
+    paths:
+      - .github/workflows/owner-precise-cleanup-plan.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare-and-report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout strictly read-only cleanup gate
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify tool and SHA manifest of existing backup ZIP (not phoneside copy)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/owner_precise_cleanup_gate.py
+          mkdir -p "$RUNNER_TEMP/owner-backup" plan-input
+          gh run download 44678498751 --repo Salmanzadeh-ir/moulla \
+            --name PMM-OWNER-PHONE-FULL-BACKUP-44678498751 --dir "$RUNNER_TEMP/owner-backup"
+          inner="$RUNNER_TEMP/owner-backup/PayeMenbareMola-COMPLETE-OWNER-BACKUP-44678498751.zip"
+          test -s "$inner"
+          echo '2b32807107ac7d44cbecb74881d51a42d452bb4201e17bf0b73d5909e1362a07  '"$inner" | sha256sum -c -
+          unzip -tq "$inner"
+          unzip -p "$inner" PayeMenbareMola-BACKUP-v119/metadata/ALL-GIT-REFS.txt > plan-input/ALL-GIT-REFS-original-archive.txt
+          test "$(grep -c '^refs/heads/' plan-input/ALL-GIT-REFS-original-archive.txt)" -ge 78
+          echo 'Validated original 388-MB owner archive as source for branch ref SHA comparison.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Fetch exact current GitHub branch heads and open PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "/repos/Salmanzadeh-ir/moulla/branches?per_page=100&page=1" > plan-input/current-branches.json
+          gh api "/repos/Salmanzadeh-ir/moulla/branches?per_page=100&page=2" > plan-input/page2.json
+          test "$(jq 'length' plan-input/page2.json)" -eq 0
+          gh api "/repos/Salmanzadeh-ir/moulla/pulls?state=open&per_page=100" > plan-input/open-prs.json
+          test "$(jq -r '.[] | select(.name=="main") | .commit.sha' plan-input/current-branches.json)" = "12016838e98d8c1eadadbb0a96321f4855f1c5cd"
+      - name: Generate fail-closed exact-branch-SHA review plan without any delete calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/owner_precise_cleanup_gate.py \
+            --archived-refs plan-input/ALL-GIT-REFS-original-archive.txt \
+            --branches-json plan-input/current-branches.json \
+            --open-prs-json plan-input/open-prs.json \
+            --output plan-output
+          (cd plan-output && sha256sum --check SHA256SUMS.txt)
+          jq -e '.delete_operations_allowed == false and .deletions_performed == [] and .approved_exact_delete_manifest == null' plan-output/EXACT-BRANCH-CLEANUP-REVIEW-ONLY.json
+          sed -n '1,18p' plan-output/EXACT-BRANCH-CLEANUP-REVIEW-ONLY.md >> "$GITHUB_STEP_SUMMARY"
+          echo '**No branch, tag, release, APK or file deleted.**' >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish itemized owner review list, NOT independent backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-OWNER-EXACT-SHA-CLEANUP-PLAN-NO-DELETE-${{ github.run_id }}
+          path: plan-output/
+          retention-days: 30
+          if-no-files-found: error
