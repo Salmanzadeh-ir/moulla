@@ -1345,17 +1345,28 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   line-height:1.3!important;
   letter-spacing:0!important;
 }
-/* v123: only SIX primary-home labels use the owner's free Persian A Shablon Cut font.
-   Inner-page titles, audio, notes, Back and the approved iwan remain unchanged. */
-@font-face{font-family:'PMM Shablon';src:url('fonts/A-Shablon-Cut.ttf') format('truetype');
-  font-style:normal;font-weight:400;font-display:swap}
-#home-main-menu > .home-menu-card > .home-menu-title{
-  font-family:'PMM Shablon',Tahoma,Arial,sans-serif!important;
-  font-weight:400!important;-webkit-text-stroke:.06em currentColor!important;
-  paint-order:stroke fill;text-shadow:none!important;
-  font-size:var(--pmm-home-six-title-size,14px)!important;
-  white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important;
-  text-overflow:clip;overflow:hidden;min-width:0;max-width:100%;
+/* v125 OWNER: only SIX main Home titles, bold genuine OFL Lalezar.
+   All other titles, text, Back/Exit, reminder panels and audio remain unchanged. */
+@font-face {
+  font-family:'PMM Lalezar';
+  src:url('fonts/Lalezar-Regular.ttf') format('truetype');
+  font-style:normal;font-weight:400;font-display:swap;
+}
+#home-main-menu > .home-menu-card {
+  text-align:center!important; /* never inherit right alignment */
+}
+#home-main-menu > .home-menu-card > .home-menu-title {
+  font-family:'PMM Lalezar',Tahoma,Arial,sans-serif!important;
+  font-weight:400!important;
+  -webkit-text-stroke:0!important; /* Lalezar is already a heavy display face */
+  text-shadow:none!important;
+  display:block;flex:1 1 0%;width:auto;min-width:0;max-width:100%;
+  text-align:center!important;direction:rtl!important;
+  font-size:var(--pmm-home-title-individual,22px)!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;word-break:keep-all!important;
+  text-overflow:clip;overflow:hidden;
 }
 
 /* v124: native audio controls deliberately mirror existing navy/gold buttons;
@@ -2091,31 +2102,33 @@ function syncHomeSubmenuReturn(){
   // Only root Home may display that artwork.
   showSceneArtwork(!isBack);
 }
-// v123: font-aware responsive title fit, shared maximum single-line size across six labels.
-// Schedule at most ONE fit per frame; document.fonts.ready and ResizeObserver handle
-// font swaps, viewport rotation and narrow phones without repeated layout thrash.
+// v125: largest comfortably fitting font PER title, not the old shared
+// minimum that shrank all six labels to the size of the longest phrase.
+// Recalculate after local Lalezar is loaded, on orientation/viewport change.
 let homeTitleFitFrame=0;
 const homeTitleMeasure=document.createElement('canvas').getContext('2d');
 function fitHomeMainMenuTitles(){
   if(!homeMenuRoot||homeMenuRoot.hidden||!homeMenuRoot.clientWidth||!homeTitleMeasure)return;
   const titles=Array.from(homeMenuRoot.querySelectorAll(':scope > .home-menu-card > .home-menu-title'));
   if(titles.length!==6)return;
-  const reference=44;
-  homeTitleMeasure.font='400 '+reference+'px "PMM Shablon",Tahoma,Arial,sans-serif';
-  let bound=reference;
-  for(const title of titles){
-    const available=title.getBoundingClientRect().width-4;
+  const reference=48;
+  homeTitleMeasure.font='400 '+reference+'px "PMM Lalezar",Tahoma,Arial,sans-serif';
+  titles.forEach(title=>{
+    const card=title.closest('.home-menu-card');
+    const available=title.clientWidth-6;
     const needed=homeTitleMeasure.measureText(title.textContent.trim()).width;
-    if(available>0&&needed>0)bound=Math.min(bound,available*reference/needed);
-  }
-  // Heavy stroked glyph edges must also fit: reserve 12% horizontal safety.
-  let size=Math.min(reference,Math.max(3,Math.floor(bound*8.8)/10));
-  for(let trial=0;trial<9;trial++){
-    homeMenuRoot.style.setProperty('--pmm-home-six-title-size',size.toFixed(1)+'px');
-    const ratio=Math.max(1,...titles.map(t=>t.scrollWidth/Math.max(1,t.clientWidth-2)));
-    if(ratio<=1.001)break;
-    size=Math.max(3,Math.floor(size/ratio*9.4)/10);
-  }
+    if(available<=0||needed<=0)return;
+    // Vertical cap respects the tile height and avoids trimming descenders.
+    const maximum=Math.min(48,Math.max(9,(card?.clientHeight||70)*0.70));
+    let size=Math.min(maximum,available*reference/needed*0.985);
+    size=Math.max(3,Math.floor(size*10)/10);
+    // Apply to THIS title only; preserve bigger sizes on short captions.
+    for(let trial=0;trial<5;trial++){
+      title.style.setProperty('--pmm-home-title-individual',size.toFixed(1)+'px');
+      if(title.scrollWidth<=title.clientWidth+1)break;
+      size=Math.max(3,Math.floor(size*0.94*10)/10);
+    }
+  });
 }
 function queueHomeTitleFit(){
   if(homeTitleFitFrame)return;
@@ -2125,12 +2138,12 @@ function queueHomeTitleFit(){
   });
 }
 if(document.fonts?.ready)document.fonts.ready.then(queueHomeTitleFit);
-if(document.fonts?.load)document.fonts.load('18px "PMM Shablon"').then(queueHomeTitleFit).catch(()=>{});
+if(document.fonts?.load)document.fonts.load('24px "PMM Lalezar"').then(queueHomeTitleFit).catch(()=>{});
 window.addEventListener('resize',queueHomeTitleFit,{passive:true});
 window.addEventListener('load',queueHomeTitleFit,{once:true});
 if(typeof ResizeObserver==='function'&&homeMenuRoot){
- const homeTitleObserver=new ResizeObserver(queueHomeTitleFit);
- homeTitleObserver.observe(homeMenuRoot);
+  const homeTitleObserver=new ResizeObserver(queueHomeTitleFit);
+  homeTitleObserver.observe(homeMenuRoot);
 }
 queueHomeTitleFit();
 function resetHomeMenu(restoreFocus=false){
