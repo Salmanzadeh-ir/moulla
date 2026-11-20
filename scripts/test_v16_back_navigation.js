@@ -54,6 +54,10 @@ for(const route of ['gallery','wisdom','list','about','biography','photo','playe
  emit('click',exit,0,true);
  assert.equal(exits,0,route+': delayed ghost click without focus blocked');
  emit('pointerdown',exit);emit('touchstart',exit);emit('click',exit,1,true);
+ if(exits!==1){
+   const debug=vm.runInNewContext("({screen,stageHidden:stage.hidden,sceneHidden:scene.hidden,sceneNavMode:scene.dataset.navMode,sceneScreen:scene.dataset.screen,menuHidden:document.getElementById('home-main-menu').hidden,exitHidden:document.getElementById('exit').hidden,exitDisabled:document.getElementById('exit').disabled,hasExitGesture:exitStart===document.getElementById('exit'),exitStartAt,now:Date.now(),lastBackAt:window.PMM_LAST_BACK_NAV_AT,exitOnHome:exitOnHome(document.getElementById('exit'))})",ctx);
+   console.log('HOME_EXIT_DIAGNOSTIC',route,debug);
+ }
  assert.equal(exits,1,route+': deliberate NEW Exit gesture allowed');
 }
 assert(!html.includes("document.getElementById('exit').addEventListener('click'"),
