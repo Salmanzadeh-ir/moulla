@@ -1,4 +1,4 @@
-name: Verify owner-approved active v119 reminders and preserve V118/V117/V16/V10.4.9
+name: Verify single approved active v129 Touch97 source; preserve V118/V117/V16/V10.4.9
 on:
   pull_request:
     branches: [main]
@@ -11,13 +11,17 @@ jobs:
   verify-ui-lock:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout active owner-approved v119 reminder source
+      - name: Checkout owner-approved v129 source
         uses: actions/checkout@v4
-      - name: Check every active application file against v119 owner lock
-        run: python3 scripts/verify_owner_v119_lock.py
+      - name: Check every active application file against new 199-file v129 owner lock
+        run: python3 scripts/verify_owner_v129_main_lock.py
       - name: Check active course JavaScript parsing and existing Back regression
         run: |
           node --check app/src/main/assets/pmm_offline_course.js
+          node --check app/src/main/assets/pmm_unified_background_audio_v124.js
+          node scripts/test_owner_v129_touch97.cjs
+          node scripts/test_owner_v128_recent_task_audio.cjs
+          node scripts/test_owner_v124_seven_fixes.cjs
           node scripts/test_v16_back_navigation.js
           node scripts/test_owner_v118_back_notes.cjs
       - name: Check reminder schedule and JS state across updates
@@ -26,6 +30,7 @@ jobs:
           javac -d "$RUNNER_TEMP/pmm-clock" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
           java -cp "$RUNNER_TEMP/pmm-clock" TestReminderClock
           node scripts/test_course_state_compat.js
+          node scripts/test_owner_v122_content_startup.cjs
           bash scripts/test_native_compile.sh
       - name: Checkout owner-approved v118 historical reference
         uses: actions/checkout@v4
