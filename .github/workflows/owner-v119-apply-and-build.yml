@@ -132,10 +132,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$ANDROID_HOME"
-          command -v sdkmanager
-          sdkmanager --version
-          sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          sdkmanager_bin="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"
+          test -x "$sdkmanager_bin"
+          "$sdkmanager_bin" --version
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "$ANDROID_HOME/cmdline-tools/16.0/bin" >> "$GITHUB_PATH"
+          set +o pipefail
+          yes | "$sdkmanager_bin" --licenses >/dev/null
+          set -o pipefail
+          "$sdkmanager_bin" --install 'platforms;android-35' 'build-tools;35.0.0'
           test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
           test -x "$ANDROID_HOME/build-tools/35.0.0/zipalign"
           test -x "$ANDROID_HOME/build-tools/35.0.0/aapt"
