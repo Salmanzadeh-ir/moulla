@@ -416,7 +416,7 @@ public final class MainActivity extends Activity {
         contentConsentPromptOpen = true;
         new android.app.AlertDialog.Builder(this)
             .setTitle("اجازه بررسی مطالب جدید")
-            .setMessage("اگر اجازه دهید، هنگام ورود به برنامه فقط فهرست مطالب تازه بررسی می‌شود. در صورت انتشار صوت، عکس، کلیپ یا حکمت تازه، پنجره «دریافت مطالب جدید» یا «بعداً» نمایش داده می‌شود. خود فایل‌های صوتی و تصویری خودکار دریافت یا پخش نمی‌شوند. این اجازه مستقل از مجوز اعلان‌های تفأل و دوره آفلاین است.")
+            .setMessage("همراه گرامی!\n\nاز آنجا که مطالب «پای منبر مولا» همواره به‌روزرسانی می‌شوند، لطفاً اجازه دهید پس از بارگذاری مطالب تازه، هنگام ورود شما به برنامه وجود آن‌ها بررسی شود تا بتوانید با انتخاب «دریافت مطالب جدید»، محتوا را در نرم‌افزار خود مشاهده کنید.\n\nهیچ فایل صوتی یا تصویری بدون درخواست شما دانلود یا پخش نخواهد شد. این اجازه از مجوز اعلان‌ها مستقل است.")
             .setPositiveButton("اجازه می‌دهم", (dialog, which) -> {
                 contentConsentPromptOpen = false;
                 getSharedPreferences(CONTENT_OPT_IN_PREFS, MODE_PRIVATE).edit()
@@ -578,9 +578,30 @@ public final class MainActivity extends Activity {
         web.post(() -> {
             if (!eitaaReturnPending || !hasWindowFocus() || isFinishing() || isDestroyed() || web == null) return;
             eitaaReturnPending = false;
-            web.requestFocus();
+            // After returning from Eitaa, clear the stale focused external-link
+            // element BEFORE allowing the first Back tap. Android sometimes
+            // consumes that first touch solely to restore WebView focus.
+            web.setFocusable(true);
+            web.setFocusableInTouchMode(true);
+            web.requestFocusFromTouch();
             if ("file:///android_asset/index.html".equals(web.getUrl())) {
-                web.evaluateJavascript("window.dispatchEvent(new Event('pmm:external-return'))", null);
+                web.evaluateJavascript(
+                    "(function(){try{document.activeElement?.blur?.();"
+                    + "window.dispatchEvent(new Event('pmm:external-return'));"
+                    + "window.PMM_LAST_BACK_NAV_AT=0;"
+                    + "document.getElementById('legacy-back-top')?.removeAttribute('disabled');"
+                    + "document.getElementById('back-top')?.removeAttribute('disabled');"
+                    + "}catch(e){}})()",null);
+                // Repeat after Android transition/focus animation completes;
+                // no navigation is triggered until the user taps Back.
+                web.postDelayed(() -> {
+                    if (!isFinishing() && !isDestroyed() && web != null &&
+                        "file:///android_asset/index.html".equals(web.getUrl())) {
+                        web.requestFocusFromTouch();
+                        web.evaluateJavascript(
+                            "window.dispatchEvent(new Event('pmm:external-return'))", null);
+                    }
+                }, 100L);
             }
         });
     }
@@ -734,6 +755,8 @@ public final class MainActivity extends Activity {
         visibleToUser = true;
         if (web != null) web.onResume();
         restoreAfterEitaaIfFocused();
+        // Focus may arrive AFTER onResume; onWindowFocusChanged will run
+        // restoration again only if Eitaa-return remains pending.
         WisdomReminderScheduler.sync(this);
         CourseReminderScheduler.sync(this);
         // Reset only the visual × dismissals; keep stored audio progress.
