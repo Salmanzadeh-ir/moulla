@@ -69,7 +69,17 @@ def download_font():
     elif body[:4] in (b"\x00\x01\x00\x00",b"OTTO",b"true") or body[:4]==b"ttcf":
         candidates=[("A-Shablon-Cut.ttf",body)]
     else:
-        raise RuntimeError("Shablon download is not a TTF/OTF or ZIP: "+repr(body[:100]))
+        from bs4 import BeautifulSoup
+        from urllib.parse import urljoin
+        soup=BeautifulSoup(r.text,"html.parser")
+        print("FONTYAB_HTML",r.url,"title",soup.title.get_text(" ",strip=True) if soup.title else None,flush=True)
+        candidate_links=[]
+        for node in soup.find_all(["a","form","iframe","meta"]):
+            href=node.get("href") or node.get("action") or node.get("src") or node.get("content") or ""
+            if href and re.search(r"download|\\.zip|\\.ttf|\\.otf|font|shablon|file",href,re.I):
+                candidate_links.append(urljoin(r.url,href))
+        print("FONTYAB_LINKS",repr(candidate_links[:45]),flush=True)
+        raise RuntimeError("Requested font source returned HTML instead of actual font archive; refusing substituted font.")
     ranked=[]
     for name,data in candidates:
         try:
