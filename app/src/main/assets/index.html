@@ -1366,8 +1366,8 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   line-height:1.15!important;
   white-space:nowrap!important;
   overflow-wrap:normal!important;word-break:keep-all!important;
-  text-overflow:clip;overflow:hidden;
-  transform-origin:center center; /* only wider captions may compress horizontally, not shrink font */
+  text-overflow:clip;overflow:visible;
+  transform-origin:center center; /* allow a scaled long title to paint fully before horizontal scaling */
 }
 
 /* v124: native audio controls deliberately mirror existing navy/gold buttons;
@@ -2121,7 +2121,11 @@ function fitHomeMainMenuTitles(){
   const modelWidth=homeTitleMeasure.measureText(model.textContent.trim()).width;
   if(modelWidth<=0)return;
   const maxSize=Math.min(48,Math.max(9,(modelCard?.clientHeight||70)*0.70));
-  const uniformSize=Math.max(3,Math.floor(Math.min(maxSize,modelSpace*reference/modelWidth*0.985)*10)/10);
+  // Owner v127: shrink the identical font-size of ALL six captions by
+  // precisely one sixth (five sixths of the former v126 reference size).
+  // Keep the first «شرح جامع صوتی» as the size reference.
+  const previousUniformSize=Math.max(3,Math.floor(Math.min(maxSize,modelSpace*reference/modelWidth*0.985)*10)/10);
+  const uniformSize=Math.max(3,previousUniformSize*(5/6));
   // One shared value on parent: identically sized / weighted glyphs in all tiles.
   homeMenuRoot.style.setProperty('--pmm-home-six-uniform-size',uniformSize.toFixed(1)+'px');
   homeTitleMeasure.font='400 '+uniformSize+'px "PMM Lalezar",Tahoma,Arial,sans-serif';
