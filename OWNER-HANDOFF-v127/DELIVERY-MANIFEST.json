@@ -1,0 +1,82 @@
+{
+  "schema": "pmm-owner-v127-complete-handoff-v1",
+  "project": "پای منبر مولا",
+  "handoff_date": "2026-11-20",
+  "repository": "https://github.com/Salmanzadeh-ir/moulla",
+  "reference": "OWNER-HANDOFF-v127/START-HERE-FA.md",
+  "status": "OWNER_TEST_PENDING_NOT_MERGED",
+  "active_main": {
+    "version": "v119",
+    "commit": "c38804038eebd8bc62a36d9fc37cd305bdab1207",
+    "app_files": 182
+  },
+  "candidate": {
+    "version": "v127",
+    "tested_source_commit": "c4ae9dc21900851a33869b9a58fa73a9f6ac71b2",
+    "source_branch": "feature/owner-v127-uniform-six-minus-one-sixth-20261120",
+    "archive_branch": "archive/owner-v127-full-tested-source-20261120",
+    "pr": 22,
+    "pr_draft": true,
+    "app_files": 199,
+    "source_git_blob_lock": "design/owner-v127-test-app-lock.json",
+    "source_lock_verifier": "scripts/verify_owner_v127_full_lock.py",
+    "changes_from_v126": [
+      "app/src/main/assets/index.html"
+    ],
+    "unchanged_from_v126_count": 198,
+    "ui_change": "six main Lalezar centered uniform labels precisely 5/6 of v126 font size; no clipping before scale"
+  },
+  "build": {
+    "ci_run_id": 44732228717,
+    "conclusion": "success",
+    "apk_name": "PayeMenbareMola-v127-FINAL-OWNER-TEST-DEBUG.apk",
+    "apk_size_bytes": 32315047,
+    "apk_sha256": "a575bc7c18f4d737ed32e5a2d6f7c0d8227f68dcc9df126abb430746785f4f3b",
+    "apk_download": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/PayeMenbareMola-v127-FINAL-OWNER-TEST-DEBUG.apk",
+    "package_id": "ir.nahj.towhidkarbordi.ownerfinalreview127",
+    "version_code": 127,
+    "debug_signed": true,
+    "official_signing_modified": false
+  },
+  "source_archive": {
+    "single_zip_commit_download": "https://github.com/Salmanzadeh-ir/moulla/archive/c4ae9dc21900851a33869b9a58fa73a9f6ac71b2.zip",
+    "single_zip_is_generated_by_github": true,
+    "preserved_test_zip_name": "PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip",
+    "full_source_size_bytes": 115378647,
+    "full_source_sha256": "f06d088332db1d45cd2de8f7323b912afdabf5b777db8e0a7b3c00bc060f4525",
+    "parts": [
+      {
+        "name": "part00",
+        "size": 41943040,
+        "sha256": "e6b997bec8a195395d8476c638848bcc94360b897177da353865f8ca4e073ddf",
+        "url": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part00"
+      },
+      {
+        "name": "part01",
+        "size": 41943040,
+        "sha256": "0f18ceef6af19f3e9b20d82d3064b86f565979d488849d59fdbe0b723796e352",
+        "url": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part01"
+      },
+      {
+        "name": "part02",
+        "size": 31492567,
+        "sha256": "addc75528388d16545a29a0e84c6b0221483183006a42c961c4b3f4a0c8cdb37",
+        "url": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part02"
+      }
+    ],
+    "part_sha_manifest": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/SHA256SUMS-SOURCE-PARTS.txt",
+    "full_sha_manifest": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/SHA256SUMS.txt"
+  },
+  "security": {
+    "git_rulesets_active": false,
+    "why_not": "GitHub connector lacks administration permission; owner must enable Rulesets in GitHub Settings",
+    "other_files_changed": false,
+    "main_merge_permitted": false,
+    "historical_cleanup_permitted": false
+  },
+  "backup": {
+    "historical_full_backup_sha256": "2b32807107ac7d44cbecb74881d51a42d452bb4201e17bf0b73d5909e1362a07",
+    "owner_phone_download_completed": true,
+    "owner_phone_local_checksum_verified": false
+  }
+}
