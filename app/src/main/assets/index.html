@@ -1627,6 +1627,39 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  display:none!important;
 }
 
+
+/* v136 illustrated Nahj choices: one centered column, equal artwork
+ * dimensions, unchanged original buttons and navigation handlers. */
+#stage .nahj-audio-groups {
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ justify-items:center!important;align-items:start!important;
+ gap:clamp(8px,2cqw,13px)!important;direction:rtl!important;
+}
+#stage .nahj-audio-group {
+ box-sizing:border-box!important;display:block!important;
+ position:relative!important;width:clamp(124px,37cqw,195px)!important;
+ max-width:100%!important;min-width:0!important;height:auto!important;
+ min-height:0!important;aspect-ratio:1/1!important;
+ margin:0 auto!important;padding:0!important;border:0!important;
+ border-radius:0!important;background-color:transparent!important;
+ background-position:center!important;background-repeat:no-repeat!important;
+ background-size:contain!important;box-shadow:none!important;
+ text-shadow:none!important;
+}
+#stage .nahj-audio-group[data-nahj-group="sermons"] {
+ background-image:url("images/pmm_owner_nahj_sermons_v136.png")!important;
+}
+#stage .nahj-audio-group[data-nahj-group="letters"] {
+ background-image:url("images/pmm_owner_nahj_letters_v136.png")!important;
+}
+#stage .nahj-audio-group[data-nahj-group="wisdoms"] {
+ background-image:url("images/pmm_owner_nahj_wisdom_v136.png")!important;
+}
+#stage .nahj-audio-group .nahj-audio-symbol,
+#stage .nahj-audio-group .nahj-audio-group-copy {
+ display:none!important;
+}
+
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
