@@ -2,6 +2,25 @@
 
 > **یک لینک برای انتقال کامل اطلاعات:** همین صفحه را به چت جدید بدهید. چت جدید باید سه فایل پایین و متن دستور را از همین مخزن بخواند؛ نیازی به بارگذاری مجدد فایل از گوشی نیست.
 
+## به‌روزرسانی راستی‌آزمایی‌شده پس از انتقال — ۲۰ نوامبر ۲۰۲۶
+
+> **این بخش جدیدتر از «وضعیت تأییدشده» پایین صفحه است.** مطالب پایین تاریخچه لحظه انتقال‌اند؛ اکنون v119 در شاخه مستقل اعمال و APK آزمایشی ساخته شده، اما هنوز در main ادغام نشده است.
+
+- **main در آخرین بررسی:** همان v118 با SHA `0fce031b91ffd90893482dba664a8bd0704fac98`.
+- **سورس v119 در شاخه مجزا:** `feature/owner-v119-tafal-course-reminders` با Commit نهایی [7554ee346d44ec39328a924c87976049dbf10852](https://github.com/Salmanzadeh-ir/moulla/commit/7554ee346d44ec39328a924c87976049dbf10852).
+- **PR ثبت‌شده و باز، هنوز ادغام نشده:** [Pull Request #15](https://github.com/Salmanzadeh-ir/moulla/pull/15)، شامل ۱۶ فایل تغییر و قفل ۱۸۲ فایل app.
+- **ساخت واقعی Android Debug، آزمون‌ها، apksigner، zipalign، badging، SHA و بارگذاری:** [Actions Run 44670627786 — success](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44670627786).
+- **CI بر روی PR، حفاظت v119 و تاریخچه v118/v117/V16/V10.4.9:** [Actions Run 44670904838 — success](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44670904838)، job `verify-ui-lock`.
+- **آزمایش دانلود عمومی فایل APK، تطبیق بایت‌ها با SHA و دسترسی URL آرشیو کامل:** [Actions Run 44671078072 — success](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44671078072).
+- **[دانلود مستقیم APK آزمایشی v119](https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk)**؛ ۲۹٬۲۰۳٬۱۴۳ بایت؛ Package مستقل `ir.nahj.towhidkarbordi.ownerreview119`.
+- **SHA-256 نسخه قابل دانلود:** `94702d41e292a8d84f7cdc0ad4af8e5ce5ae1727c68cc0cfb568d03d99e438e2`؛ [SHA256SUMS.txt](https://github.com/Salmanzadeh-ir/moulla/blob/download/owner-v119-review-44670627786-1/downloads/v119/SHA256SUMS.txt).
+- **[دانلود ZIP سورس کامل اعمال‌شده v119](https://github.com/Salmanzadeh-ir/moulla/archive/7554ee346d44ec39328a924c87976049dbf10852.zip)**.
+- **اصلاح ایمن الگوی patch:** در بسته اصلی شرط تطبیق دقیق `@Override public void onNewIntent` با v118 حقیقی (`protected`) تفاوت داشت؛ الگوی فایل اسکریپت فقط در محیط موقت رانر، با بررسی یکتایی دقیق، هماهنگ شد. محتوای ZIP اصلی و قفل‌های v117/v118 تغییر نکرد.
+- **کار باقی‌مانده:** بررسی اعلان‌ها روی گوشی واقعی Android 12 و Android 13+، ریبوت/تغییر ساعت/منطقه زمانی، لمس اعلان بدون دانلود MP3 قبل از Play و سازگاری داده‌ها توسط مالک. بدون تأیید آزمون گوشی، PR نباید ادغام شود. نسخه رسمی بازار، Secrets، امضا و Git refs تاریخی تغییری نکرده‌اند. Rulesets مخزن در آخرین API query خالی (`[]`) بوده و محافظت سمت سرور برای main فعال گزارش نشده است.
+
+---
+
+
 ## وضعیت تأییدشده — ۲۰ نوامبر ۲۰۲۶
 
 - مخزن اصلی: https://github.com/Salmanzadeh-ir/moulla
