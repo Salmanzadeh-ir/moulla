@@ -57,6 +57,7 @@ public final class MainActivity extends Activity {
     private boolean contentPageReady = false;
     private boolean contentCheckStarted = false;
     private boolean contentConsentPromptOpen = false;
+    private boolean contentConsentDeclinedThisLaunch = false;
     private boolean notificationPermissionFlowOpen = false;
     private String pendingSaveMediaSource = null;
     private boolean pendingSaveMediaVideo = false;
@@ -403,7 +404,7 @@ public final class MainActivity extends Activity {
      */
     private void maybeStartContentUpdates() {
         if (!contentPageReady || !visibleToUser || contentCheckStarted ||
-            notificationPermissionFlowOpen || contentConsentPromptOpen ||
+            contentConsentDeclinedThisLaunch || notificationPermissionFlowOpen || contentConsentPromptOpen ||
             isFinishing() || isDestroyed() || web == null ||
             !"file:///android_asset/index.html".equals(web.getUrl())) return;
         if (getSharedPreferences(CONTENT_OPT_IN_PREFS, MODE_PRIVATE)
@@ -424,6 +425,7 @@ public final class MainActivity extends Activity {
             })
             .setNegativeButton("فعلاً نه", (dialog, which) -> {
                 contentConsentPromptOpen = false;
+                contentConsentDeclinedThisLaunch = true;
                 // No network request, no saved denial; the user can choose next time.
             })
             .setCancelable(false)
