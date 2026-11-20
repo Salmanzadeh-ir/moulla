@@ -55,6 +55,22 @@ def download_font():
     r=requests.get(SOURCE_URL,headers=headers,timeout=30)
     r.raise_for_status()
     body=r.content
+    # FontYab intentionally serves a 5-second browser download page before
+    # exposing the actual binary in the server-generated secure hidden field.
+    # Follow that ONE first-party-provided URL; do not scrape random substitutes.
+    if b"<html" in body[:1000].lower() or b"<!doctype html" in body[:1000].lower():
+        from bs4 import BeautifulSoup
+        from urllib.parse import urlparse
+        soup=BeautifulSoup(r.text,"html.parser")
+        target=soup.find(id="secure-download-link")
+        direct=str(target.get("value","")).strip() if target else ""
+        scheme=urlparse(direct)
+        if scheme.scheme!="https" or not scheme.hostname or scheme.username or scheme.password:
+            raise RuntimeError("Official Shablon page did not expose a validated HTTPS download URL")
+        print("SHABLON_SOURCE_HOST",scheme.hostname,flush=True)
+        download=requests.get(direct,headers={"User-Agent":"Mozilla/5.0","Referer":r.url},timeout=35)
+        download.raise_for_status()
+        body=download.content
     candidates=[]
     if zipfile.is_zipfile(io.BytesIO(body)):
         with zipfile.ZipFile(io.BytesIO(body)) as z:
@@ -65,29 +81,11 @@ def download_font():
                 if info.filename.lower().endswith(("license.txt","ofl.txt","readme.txt")) and info.file_size<100_000:
                     text=z.read(info).decode("utf-8",errors="replace")
                     (ROOT/"docs"/"OWNER_SHABLON_DISTRIBUTION_SOURCE_NOTE.txt").write_text(
-                        "Downloaded with the font archive from "+SOURCE_URL+"\n\n"+text,encoding="utf-8")
-    elif body[:4] in (b"\x00\x01\x00\x00",b"OTTO",b"true") or body[:4]==b"ttcf":
+                        "Downloaded with the font archive from "+SOURCE_URL+"\\n\\n"+text,encoding="utf-8")
+    elif body[:4] in (b"\\x00\\x01\\x00\\x00",b"OTTO",b"true") or body[:4]==b"ttcf":
         candidates=[("A-Shablon-Cut.ttf",body)]
     else:
-        from bs4 import BeautifulSoup
-        from urllib.parse import urljoin
-        soup=BeautifulSoup(r.text,"html.parser")
-        print("FONTYAB_HTML",r.url,"title",soup.title.get_text(" ",strip=True) if soup.title else None,flush=True)
-        candidate_links=[]
-        for node in soup.find_all(["a","form","iframe","meta"]):
-            href=node.get("href") or node.get("action") or node.get("src") or node.get("content") or ""
-            if href and re.search(r"download|\\.zip|\\.ttf|\\.otf|font|shablon|file",href,re.I):
-                candidate_links.append(urljoin(r.url,href))
-        print("FONTYAB_LINKS",repr(candidate_links[:45]),flush=True)
-        for script in soup.find_all("script"):
-            inner=script.get_text(" ",strip=True)
-            if re.search(r"download|7512|location|timeout|\\.zip|\\.ttf",inner,re.I):
-                print("FONTYAB_INLINE_JS",inner[:3800],flush=True)
-        for form in soup.find_all("form"):
-            print("FONTYAB_FORM",form.get("method"),form.get("action"),
-                  [(el.get("name"),el.get("value")) for el in form.find_all("input")][:20],flush=True)
-        print("FONTYAB_VISIBLE",soup.get_text(" ",strip=True)[-3300:],flush=True)
-        raise RuntimeError("Requested font source returned HTML instead of actual font archive; refusing substituted font.")
+        raise RuntimeError("Verified first-party Shablon file is not a font or ZIP. Actual bytes="+repr(body[:110]))
     ranked=[]
     for name,data in candidates:
         try:
