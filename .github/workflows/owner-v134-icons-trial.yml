@@ -1,0 +1,147 @@
+name: Owner v134 icon replacement independent Android DEBUG test
+on:
+  push:
+    branches:
+      - feature/owner-v134-session-list-banner-trial-20261120
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-owner-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout the exact owner v134 trial source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify exact app source, approved trial assets and untouched Java
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:app)" = "$(git rev-parse 107c84ba46cfa261c96fe586ead6825907d47749:app)"
+          python3 - <<'PY'
+          import hashlib,pathlib
+          root=pathlib.Path("app/src/main/assets")
+          html=(root/"index.html").read_text(encoding="utf-8")
+          for asset,sha in {
+             "images/pmm_owner_exit_v131.png":"1c977f5cdfb81b063f4cee75bfd97e07473d875c",
+             "images/pmm_owner_search_v132.png":"cac39a80cefd8768f08619b122cf06b86649241c",
+             "images/pmm_owner_return_v133.png":"2dfc936e035857bea21c57ce1aaa25a1f5b13070",
+             "images/pmm_owner_session_banner_v134.png":"e9c15f4304055c2fc51007b5f39be5f495b52d53"
+          }.items():
+             data=(root/asset).read_bytes()
+             gitsha=hashlib.sha1(b"blob "+str(len(data)).encode()+b"\0"+data).hexdigest()
+             assert gitsha==sha,(asset,gitsha)
+          assert 'IMG = {' in html
+          assert '"row_blank.webp":"images/pmm_owner_session_banner_v134.png"' in html
+          assert html.count("IMG['row_blank.webp']")==2
+          assert 'background:transparent url("images/pmm_owner_search_v132.png") center/contain no-repeat' in html
+          assert 'background:transparent url("images/pmm_owner_return_v133.png") center/contain no-repeat!important' in html
+          assert 'images/pmm_owner_exit_v131.png' in html
+          assert 'document.getElementById(\'nahj-find-button\').addEventListener(\'click\'' in html
+          print("PASS: exact app sources, four transparent/optimized artwork PNGs and lesson text binding")
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Verify original behavior regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/test_owner_v129_touch97.cjs
+          node scripts/test_owner_v128_recent_task_audio.cjs
+          node scripts/test_owner_v124_seven_fixes.cjs
+          node scripts/test_course_state_compat.js
+          node --check app/src/main/assets/pmm_offline_course.js
+          bash scripts/test_native_compile.sh
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Apply independent install identity inside runner only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("app/build.gradle")
+          s=p.read_text(encoding="utf-8")
+          replacements={
+           "applicationIdSuffix '.newiwanv16'":"applicationIdSuffix '.ownericons134'",
+           "versionCode 16":"versionCode 134",
+           "versionName '10.5.4-v16-preview'":"versionName '10.5.26-owner-icons-v134'",
+          }
+          for old,new in replacements.items():
+           assert s.count(old)==1,(old,s.count(old))
+           s=s.replace(old,new,1)
+          p.write_text(s,encoding="utf-8")
+          PY
+          test "$(git diff --name-only)" = "app/build.gradle"
+      - name: Build signed Android DEBUG APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          env -u PMM_KEYSTORE_PATH -u PMM_KEYSTORE_PASSWORD gradle --no-daemon :app:assembleDebug
+      - name: Validate APK signature, installation package and included exact artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$apk"
+          bt="$ANDROID_HOME/build-tools/35.0.0"
+          "$bt/apksigner" verify --verbose --print-certs "$apk"
+          "$bt/zipalign" -c -v 4 "$apk"
+          mkdir -p dist
+          "$bt/aapt" dump badging "$apk" > dist/APK-PACKAGE.txt
+          grep -F "name='ir.nahj.towhidkarbordi.ownericons134'" dist/APK-PACKAGE.txt
+          grep -F "versionCode='134'" dist/APK-PACKAGE.txt
+          grep -F "versionName='10.5.26-owner-icons-v134-debug'" dist/APK-PACKAGE.txt
+          cp "$apk" dist/PayeMenbareMola-v134-ICON-TEST-DEBUG.apk
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import hashlib
+          with ZipFile("dist/PayeMenbareMola-v134-ICON-TEST-DEBUG.apk") as z:
+           for asset in ["index.html","images/pmm_owner_exit_v131.png",
+                         "images/pmm_owner_search_v132.png","images/pmm_owner_return_v133.png",
+                         "images/pmm_owner_session_banner_v134.png"]:
+            expected=Path("app/src/main/assets",asset).read_bytes()
+            actual=z.read("assets/"+asset)
+            assert actual==expected,asset
+          print("PASS: APK contains exact source HTML and all four owner PNGs")
+          PY
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum --check SHA256SUMS.txt)
+          printf "Independent debug installation for owner phone trial. NOT official market release. Original main/v129 unchanged.\n" > dist/README.txt
+          git restore -- app/build.gradle
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v134-OWNER-ICON-TRIAL-${{ github.run_id }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Preserve direct-download debug APK on a NEW branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/pmm-v134-download"
+          git worktree add --detach "$dir" HEAD
+          (
+            cd "$dir"
+            git checkout -q -b "download/owner-v134-icons-trial-${{ github.run_id }}"
+            mkdir -p downloads/v134
+            cp "$GITHUB_WORKSPACE/dist/PayeMenbareMola-v134-ICON-TEST-DEBUG.apk" "$GITHUB_WORKSPACE/dist/SHA256SUMS.txt" downloads/v134/
+            git add downloads/v134
+            git -c user.name='pmm-owner-trial-ci' -c user.email='pmm-owner-trial-ci@users.noreply.github.com' commit -qm "archive(v134): owner debug APK and checksum"
+            git push origin "HEAD:refs/heads/download/owner-v134-icons-trial-${{ github.run_id }}"
+          )
+          url="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v134-icons-trial-${{ github.run_id }}/downloads/v134/PayeMenbareMola-v134-ICON-TEST-DEBUG.apk"
+          echo "Direct test APK: $url" >> "$GITHUB_STEP_SUMMARY"
+          echo "SHA-256: $(sha256sum dist/PayeMenbareMola-v134-ICON-TEST-DEBUG.apk)" >> "$GITHUB_STEP_SUMMARY"
