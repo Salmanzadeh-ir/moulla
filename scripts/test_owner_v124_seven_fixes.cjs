@@ -9,8 +9,8 @@ const audio=get('app/src/main/assets/pmm_unified_background_audio_v124.js');
 // 1 consent content is understandable, opt-in and separate from OS notifications
 for(const word of ['همراه گرامی!','از آنجا که مطالب','بدون درخواست شما دانلود یا پخش','CONTENT_OPT_IN_PREFS'])
  assert(java.includes(word),word);
-// 2 same Persian Shablon, doubled perceptual stroke and proportional single-line fit
-for(const word of ['fonts/A-Shablon-Cut.ttf','-webkit-text-stroke:.06em','white-space:nowrap!important',
+// 2 genuine bold Persian Lalezar, centered responsive single-line Home titles
+for(const word of ['fonts/Lalezar-Regular.ttf','-webkit-text-stroke:0!important','white-space:nowrap!important',
                    'ResizeObserver(queueHomeTitleFit)','if(titles.length!==6)return;'])
  assert(html.includes(word),word);
 // 3 course Back while rules unchecked and no implicit acceptance
