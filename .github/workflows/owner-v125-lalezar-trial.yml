@@ -25,7 +25,8 @@ jobs:
           python3 -m pip install --quiet fonttools
           if test ! -f design/owner-v125-test-app-lock.json; then
             python3 scripts/prepare_owner_v125_lalezar.py apply
-            git diff --check --cached
+            # Preserve Google's verbatim OFL license bytes, check only authored HTML.
+            git diff --check --cached -- app/src/main/assets/index.html
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "feat(v125 owner trial): local OFL Lalezar, centered largest one-line per main title, exact 199-app-file lock"
