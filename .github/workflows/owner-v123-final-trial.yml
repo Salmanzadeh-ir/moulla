@@ -4,6 +4,7 @@ on:
     branches: [feature/owner-v123-final-unified-speed-review-20261120]
     paths:
       - .github/workflows/owner-v123-final-trial.yml
+      - scripts/prepare_owner_v123_trial.py
   workflow_dispatch:
 permissions:
   contents: write
