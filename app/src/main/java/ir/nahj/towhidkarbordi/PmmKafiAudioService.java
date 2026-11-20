@@ -145,13 +145,16 @@ public final class PmmKafiAudioService extends Service {
         }
         lastListenWall=now;
     }
-    private void saveSecond() {
+    private void saveSecond() {saveSecond(false);}
+    private void saveSecond(boolean synchronous) {
         if(!approved(source))return;
         captureListening();
         int n=clamp(position);
-        getSharedPreferences(PREFS,MODE_PRIVATE).edit()
+        SharedPreferences.Editor edit=getSharedPreferences(PREFS,MODE_PRIVATE).edit()
             .putInt(key(source),n)
-            .putLong("heard-"+key(source),listenedMillis).apply();
+            .putLong("heard-"+key(source),listenedMillis);
+        // Task removal may kill the process shortly after this callback.
+        if(synchronous)edit.commit();else edit.apply();
         lastSaved=n;
     }
     private void clearSavedSecond() {
@@ -409,6 +412,27 @@ public final class PmmKafiAudioService extends Service {
         }else if(ACTION_STOP.equals(action))stopSelf();
         else if(!active)stopSelf();
         return START_NOT_STICKY;
+    }
+    /**
+     * Explicit removal from Android Recents means the user closed the entire
+     * app task. This differs from Home, screen-off, or Back/Exit inside the app:
+     * those must keep the owner-approved foreground audio playing.
+     *
+     * Preserve the last position and genuine listening credit synchronously,
+     * then stop playback and its notification before the process can be killed.
+     * Do not set android:stopWithTask=true; that skips this callback.
+     */
+    @Override public void onTaskRemoved(Intent rootIntent) {
+        captureListening();
+        if(active) {
+            try{if(player!=null&&prepared)position=player.getCurrentPosition()/1000;}
+            catch(Exception ignored){}
+            saveSecond(true);
+        }
+        discardPlayer(); // Stop sound immediately, including during preparation.
+        if(foreground){stopForeground(true);foreground=false;}
+        stopSelf();
+        super.onTaskRemoved(rootIntent);
     }
     @Override public void onDestroy() {
         captureListening();
