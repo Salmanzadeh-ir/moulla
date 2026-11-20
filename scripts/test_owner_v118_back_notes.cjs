@@ -7,7 +7,9 @@ const course=fs.readFileSync('app/src/main/assets/pmm_offline_course.js','utf8')
 for(const name of ['back-top','legacy-back-top','back-button','guest-return']){
   assert(html.includes('id="'+name+'"'), 'Missing back control: '+name);
 }
-assert(html.includes("button.textContent=isBack?'بازگشت':''"), 'Submenu back must say بازگشت');
+assert(html.includes("back.textContent='بازگشت'") &&
+       html.includes("exit.hidden=isBack;") && html.includes("exit.disabled=isBack;"),
+       'Submenu must show independent Persian Back and completely disable Exit');
 assert(html.includes("font-family:'PMM Estedad'"), 'Approved installed font absent');
 assert(html.includes('id="course-note-toggle"'), 'Small notebook button missing');
 assert(html.includes('id="course-notes-open"'), 'Notes list action missing');
