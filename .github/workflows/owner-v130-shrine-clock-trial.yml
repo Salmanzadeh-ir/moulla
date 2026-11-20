@@ -1,0 +1,18 @@
+name: Owner v130 shrine clock trial - image prep and Android debug
+on:
+  push:
+    branches: [feature/owner-v130-shrine-clock-interactive-trial-20261120]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v130-owner-shrine-base
+          path: app/src/main/assets/images/pmm_shrine_clock_original.webp
+          retention-days: 5
+          if-no-files-found: error
