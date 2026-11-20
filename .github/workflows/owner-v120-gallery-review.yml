@@ -24,7 +24,9 @@ jobs:
           git fetch origin refs/heads/main:refs/remotes/origin/main
           test "$(git rev-parse refs/remotes/origin/main)" = "12016838e98d8c1eadadbb0a96321f4855f1c5cd"
           test -n "$(git rev-parse v10.4.9)"
+          test -z "$(git status --porcelain)"
           python3 -m py_compile scripts/prepare_owner_v120_gallery.py
+          rm -rf scripts/__pycache__
           test -z "$(git status --porcelain)"
       - name: Safely restore only twelve historical originals on candidate branch
         shell: bash
