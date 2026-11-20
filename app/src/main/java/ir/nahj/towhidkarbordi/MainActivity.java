@@ -224,6 +224,36 @@ public final class MainActivity extends Activity {
             });
         }
 
+        /**
+         * One foreground native media service for every approved first-party
+         * Kafi, Nahj and offline-course MP3. Called ONLY in user Play handlers.
+         * No background prefetch or automatic new-track playback.
+         */
+        @JavascriptInterface
+        public void pmmAudioStart(final String url,final String title,
+                                  final float rate,final int resumeSecond) {
+            if(!PmmKafiAudioService.approved(url)||
+               resumeSecond<0||resumeSecond>86400||
+               !Float.isFinite(rate)||rate<0.75f||rate>2f)return;
+            runOnUiThread(()->{
+                if(isFinishing()||isDestroyed()||!visibleToUser||web==null||
+                   !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                Intent start=new Intent(MainActivity.this,PmmKafiAudioService.class)
+                    .setAction(PmmKafiAudioService.ACTION_PLAY);
+                start.putExtra("url",url);
+                start.putExtra("title",title==null?"صوت پای منبر مولا":title);
+                start.putExtra("rate",rate);
+                start.putExtra("resumeSeconds",resumeSecond);
+                try{
+                    if(Build.VERSION.SDK_INT>=26)startForegroundService(start);
+                    else startService(start);
+                }catch(Exception e){
+                    Toast.makeText(MainActivity.this,
+                        "پخش صوت در پس‌زمینه برقرار نشد.",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
         @JavascriptInterface
         public void kafiToggle(final String url) {
             if(!PmmKafiAudioService.approved(url))return;
