@@ -3678,6 +3678,14 @@ function handleOnScreenBack(e){
  const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top,#back-button'):null;
  if(!btn||btn.hidden)return;
  e.preventDefault();e.stopImmediatePropagation();
+ // Course Welcome Back is available BEFORE accepting any rules. Prefer its
+ // direct owner route instead of relying on stale Home/Back transition state.
+ const course=document.getElementById('offline-course-scroll');
+ if(course&&!course.hidden&&window.PMM_OFFLINE_COURSE?.back){
+   window.PMM_LAST_BACK_NAV_AT=Date.now();
+   window.PMM_OFFLINE_COURSE.back();
+   return;
+ }
  const now=performance.now();
  if(now-lastBackClick<350)return;
  lastBackClick=now;
