@@ -1,0 +1,69 @@
+name: Owner single-active-version governance (READ ONLY, NO DELETIONS)
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: owner-single-active-version-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  governance-safety:
+    name: owner-governance-safety
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source and policy
+        uses: actions/checkout@v4
+      - name: Compile and test fail-closed governance scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/owner_version_inventory.py scripts/owner_cleanup_plan.py
+          python3 scripts/owner_version_inventory.py --self-test
+          python3 scripts/owner_cleanup_plan.py --self-test
+          python3 scripts/verify_owner_v119_lock.py
+          test -f docs/OWNER_SINGLE_ACTIVE_VERSION_POLICY_FA.md
+          test -f design/owner-active-version.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("design/owner-active-version.json").read_text())
+          assert p["active_branch"]=="main"
+          assert p["active_version"]=="v119"
+          assert not p["cleanup_authorized"]
+          assert not p["external_recoverable_backup_confirmed"]
+          print("PASS: main is only approved active development source; cleanup disabled")
+          PY
+  inventory:
+    name: owner-full-ref-inventory-read-only
+    if: github.event_name != 'pull_request'
+    needs: governance-safety
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout inventory scripts
+        uses: actions/checkout@v4
+      - name: Generate complete inventory and proposed NO DELETE plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/owner_version_inventory.py --output-dir audit-output
+          python3 scripts/owner_cleanup_plan.py --inventory audit-output/owner-version-inventory.json --output-dir audit-output
+          (cd audit-output && sha256sum --check SHA256SUMS.txt)
+          echo 'No delete operations performed or authorized.' >> "$GITHUB_STEP_SUMMARY"
+          cat audit-output/owner-version-inventory.md >> "$GITHUB_STEP_SUMMARY"
+          cat audit-output/owner-cleanup-plan-NO-DELETE.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload metadata audit only — NOT independent backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-version-audit-NO-DELETE-${{ github.run_id }}
+          path: audit-output/
+          if-no-files-found: error
+          retention-days: 30

@@ -1,3 +1,13 @@
+# دائمی: تنها نسخه فعال development در main (فرمان مالک ۲۰ نوامبر ۲۰۲۶)
+
+**مقدم بر عنوان‌های تاریخی زیر:** تنها منبع فعال توسعه `main` و فعلاً نسخه v119 با قفل ۱۸۲ فایل `design/owner-v119-main-app-lock.json` است. سیاست الزام‌آور: `docs/OWNER_SINGLE_ACTIVE_VERSION_POLICY_FA.md`؛ منبع ماشین‌خوان: `design/owner-active-version.json`.
+
+برای هر نسخه جدید: شاخه مجزا ← آزمون جامع و APK Debug مستقل ← تایید صریح مالک همان نسخه ← PR/CI ← ادغام `main` ← پشتیبان خارج مخزن و تست بازیابی ← مجوز دقیق فهرست حذف ← پاک‌سازی مشروط. **تا زمان تحقق این موارد هیچ شاخه، تگ، Release، APK، فایل قدیمی، تاریخچه یا کلید امضا را حذف نکنید.** Build رسمی/امضا/شناسه رسمی بدون مجوز جداگانه ممنوع است. Workflowهای ساخت تاریخی مرجع پیش‌فرض نیستند.
+
+توضیح: بخش‌های بعدی سند متن آرشیوی نسخه‌های قبلی‌اند و عنوان «نسخه فعال» در آن‌ها بیانگر وضعیت زمان نگارش است، نه وضع امروز.
+
+---
+
 # New owner-authorized v119 reminder branch — 2026-11-20
 Only owner-approved persistent Wisdom and course local reminders are changed.
 Active file lock: design/owner-v119-main-app-lock.json (182 app files).
