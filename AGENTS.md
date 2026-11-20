@@ -1,3 +1,10 @@
+# New owner-authorized v119 reminder branch — 2026-11-20
+Only owner-approved persistent Wisdom and course local reminders are changed.
+Active file lock: design/owner-v119-main-app-lock.json (182 app files).
+Historical v118 lock is preserved. No official release authorized.
+
+---
+
 # Current owner-approved v118 freeze — 2026-11-19
 
 The owner tested and approved the v118 trial APK, then explicitly requested that the exact approved changes be registered on main. **The new active lock is `design/owner-v118-main-app-lock.json`**, verified by `python3 scripts/verify_owner_v118_lock.py` and the unchanged CI status context `verify-ui-lock`. All 180 app files remain covered: exactly two files differ from historical v117 (`app/src/main/assets/index.html`, `app/src/main/assets/pmm_offline_course.js`). The earlier approved audio on-demand cleanup is preserved. All other 178 files, fonts, visual assets, course data and release identifiers are unchanged.

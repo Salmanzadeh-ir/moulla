@@ -1474,6 +1474,16 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   padding:4px 11px;background:#e6f1fb;color:#0a477e;font-weight:900;
 }
 #offline-course-scroll #course-notes-items{max-width:100%;min-width:0;}
+/* v119 owner-requested reminder clock, within the existing course setup card. */
+#offline-course-scroll .course-reminder-setting{margin:3% 0;padding:3%;border:1.5px solid #c4933b;
+ border-radius:13px;background:#fff7dd;color:#07376f;text-align:right}
+#offline-course-scroll .course-reminder-setting label{display:block;margin-bottom:6px;
+ font:900 clamp(11px,1.85cqw,16px)/1.7 'PMM Estedad',Tahoma,sans-serif}
+#offline-course-scroll #course-reminder-time{display:block;direction:ltr;text-align:center;width:min(100%,170px);
+ min-height:44px;box-sizing:border-box;border:2px solid #bb8733;border-radius:9px;
+ background:#fffdf3;color:#07376f;font:800 17px/1.4 Tahoma,sans-serif}
+#offline-course-scroll .course-reminder-setting p{margin:7px 0 0;
+ font:600 clamp(10px,1.5cqw,13px)/1.9 'PMM Estedad',Tahoma,sans-serif}
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
@@ -1619,6 +1629,12 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
           <button type="button" class="course-plan-choice" data-course-plan="daily1" aria-pressed="false">روزی ۱ صوت</button>
           <button type="button" class="course-plan-choice" data-course-plan="daily2" aria-pressed="false">روزی ۲ صوت</button>
           <button type="button" class="course-plan-choice" data-course-plan="weekly" aria-pressed="false">هفته‌ای ۱ صوت</button>
+        </div>
+        <div class="course-reminder-setting">
+          <label for="course-reminder-time">ساعت یادآوری قرار امروز</label>
+          <input type="time" id="course-reminder-time" value="09:00" step="60" required
+                 aria-describedby="course-reminder-time-help" aria-label="انتخاب ساعت یادآوری دوره آفلاین">
+          <p id="course-reminder-time-help">از ۵:۰۰ صبح تا ۲۳:۵۹؛ یا ۰۰:۰۰ به معنی ۱۲ شب در پایان روز انتخاب‌شده. اعلان فقط در صورت اجازه شما فعال می‌شود.</p>
         </div>
         <div class="course-weekdays" id="course-weekdays" hidden>
           <p>کدام روز هفته برای همراهی شما مناسب‌تر است؟</p>
@@ -2772,7 +2788,7 @@ function renderReminderSettings(){
  ];
   panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
  '<h2>یادآور مهمانی مولا</h2>'+
- '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، اولین اعلان آزمایشی از ۵ دقیقه پس از اولین ورود زمان‌بندی می‌شود و حتی با بسته بودن برنامه نیز دریافت‌شدنی است. زمان نمایش ممکن است با محدودیت باتری گوشی کمی تأخیر داشته باشد.</p>'+
+ '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، ساعت تأیید اولیه، مبنای اعلان‌های روزانه، هفتگی یا ماهانه است. در صورت تأیید بین ۱۲ شب و ۷ صبح، ساعت ۷ صبح ملاک می‌شود. اعلان تفأل هرگز از ۰۰:۰۰ تا قبل از ۷:۰۰ نمایش داده نمی‌شود. محدودیت باتری می‌تواند اعلان را با تأخیر نمایش دهد.</p>'+
  '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
  '<select id="pmm-reminder-frequency">'+options.map(option=>
   '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select>'+
