@@ -3,24 +3,26 @@
   "project": "پای منبر مولا",
   "repository": "Salmanzadeh-ir/moulla",
   "active_branch": "main",
-  "active_version": "v119",
-  "approved_source_base_commit": "ca1dd669f181e328071567b3e41b4bf06744895b",
-  "active_lock": "design/owner-v119-main-app-lock.json",
-  "active_app_files": 182,
-  "active_lock_test": "scripts/verify_owner_v119_lock.py",
+  "active_version": "v129",
+  "approved_source_base_commit": "e5eac6143386b3a0b2b1bbabd41b4860852266b4",
+  "active_lock": "design/owner-v129-main-app-lock.json",
+  "active_app_files": 199,
+  "active_lock_test": "scripts/verify_owner_v129_main_lock.py",
   "main_ci_context": "verify-ui-lock",
-  "owner_approval": "v119 phone trial accepted by owner, then PR #15 merged 2026-11-20",
-  "last_verified_android_ci_run": "https://github.com/Salmanzadeh-ir/moulla/actions/runs/44671672004",
+  "owner_approval": "2026-11-20: owner explicitly approved exact v128 TOUCH97 APK (SHA256 d590deb4...) and authorized making this source the sole approved main. All v128 Recents audio behavior is preserved.",
+  "last_verified_android_ci_run": null,
   "trial_apk": {
     "type": "debug-independent-app-id-not-market-release",
-    "package": "ir.nahj.towhidkarbordi.ownerreview119",
-    "sha256": "94702d41e292a8d84f7cdc0ad4af8e5ce5ae1727c68cc0cfb568d03d99e438e2",
-    "url": "https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk",
-    "build_run": "44670627786"
+    "package": "ir.nahj.towhidkarbordi.ownerpress97t128",
+    "sha256": "d590deb4521bb08a17913a5c951b3ea0a0d404bb5debd313bf2f6c8874dfe76f",
+    "size_bytes": 32215236,
+    "url": null,
+    "build_run": null,
+    "source_app_index_blob_sha": "9c215076a6efc0a02333425bd06810ca1112b3c1"
   },
   "official_market_release_modified": false,
   "external_recoverable_backup_confirmed": false,
   "approved_deletion_manifest": null,
   "cleanup_authorized": false,
-  "important_note": "Any future approved version MUST update this file in a PR, with independent APK/device approval and a new lock; cleanup remains disabled until separately approved and off-repo backup restored."
+  "important_note": "v129 is the only owner-approved active development source in main after PR merge. Debug trial APK does NOT upgrade the official market app. Keep all old branches, tags, releases and backups until owner separately authorizes each cleanup; active development locks detect changes but do not replace GitHub administrative Rulesets."
 }
