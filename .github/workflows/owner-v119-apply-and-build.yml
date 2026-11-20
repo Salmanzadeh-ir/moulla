@@ -64,6 +64,7 @@ jobs:
           entry="$(find "$RUNNER_TEMP/pmm119" -path '*/scripts/apply_to_checkout.py' -type f -print -quit)"
           test -n "$entry"
           package="$(dirname "$(dirname "$entry")")"
+          sed -n '1,220p' "$package/scripts/patch_main_activity.py"
           python3 "$package/scripts/apply_to_checkout.py" "$GITHUB_WORKSPACE/source"
           cd "$GITHUB_WORKSPACE/source"
           git add -A
