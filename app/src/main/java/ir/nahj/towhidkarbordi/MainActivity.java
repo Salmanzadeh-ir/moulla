@@ -620,6 +620,7 @@ public final class MainActivity extends Activity {
 
     private void requestReminderPermission() {
         if (!visibleToUser || isFinishing() || isDestroyed()) return;
+        notificationPermissionFlowOpen = true;
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // Android 13+: genuine system permission. It can only be granted by the user.
@@ -635,10 +636,14 @@ public final class MainActivity extends Activity {
                 .setPositiveButton("اجازه می‌دهم", (dialog, which) -> {
                     WisdomReminderScheduler.consent(MainActivity.this, true);
                     CourseReminderScheduler.sync(MainActivity.this);
+                    notificationPermissionFlowOpen = false;
+                    maybeStartContentUpdates();
                 })
                 .setNegativeButton("فعلاً نه", (dialog, which) -> {
                     WisdomReminderScheduler.consent(MainActivity.this, false);
                     CourseReminderScheduler.sync(MainActivity.this);
+                    notificationPermissionFlowOpen = false;
+                    maybeStartContentUpdates();
                 })
                 .setCancelable(false)
                 .show();
@@ -683,6 +688,8 @@ public final class MainActivity extends Activity {
                     grantResults[0] == PackageManager.PERMISSION_GRANTED;
             WisdomReminderScheduler.consent(this, granted);
             CourseReminderScheduler.sync(this);
+            notificationPermissionFlowOpen = false;
+            maybeStartContentUpdates();
             // A denial deactivates both reminder streams; no hidden background notice.
         }
     }
@@ -731,6 +738,7 @@ public final class MainActivity extends Activity {
         if (web != null && "file:///android_asset/index.html".equals(web.getUrl()))
             web.evaluateJavascript("window.dispatchEvent(new Event('pmm:app-foreground'))", null);
         initializeReminderPermissionIfNeeded();
+        maybeStartContentUpdates();
     }
     @Override protected void onDestroy() {
         contentExecutor.shutdownNow();
