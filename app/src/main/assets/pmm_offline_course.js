@@ -131,6 +131,7 @@ function renderSetup(){
  draftMode=state.plan?.mode||'daily1';
  draftWeekday=state.plan?.weekday??null;
  $('course-reminder-time').value=validCourseReminderTime(state.plan?.reminderTime)?state.plan.reminderTime:'09:00';
+ window.PMM_SHRINE_CLOCK?.sync();
  document.querySelectorAll('[data-course-plan]').forEach(button=>{
   const selected=button.dataset.coursePlan===draftMode;
   button.classList.toggle('is-selected',selected);button.setAttribute('aria-pressed',String(selected));

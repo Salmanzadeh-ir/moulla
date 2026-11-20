@@ -1509,6 +1509,35 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 #offline-course-scroll .course-reminder-setting p{margin:7px 0 0;
  font:600 clamp(10px,1.5cqw,13px)/1.9 'PMM Estedad',Tahoma,sans-serif}
 
+
+/* v130 OWNER TRIAL: shrine clock fits only in the EXISTING offline-course scroll card. */
+#offline-course-scroll .pmm-shrine-clock{--pmm-clock-brightness:1;--pmm-clock-saturation:1;--pmm-clock-warmth:0;
+ width:100%;max-width:390px;margin:5px auto 9px;text-align:center;direction:rtl;contain:layout style}
+#offline-course-scroll .pmm-shrine-clock-picture{position:relative;width:100%;aspect-ratio:4/3;
+ border:1px solid #a98642;border-radius:10px;overflow:hidden;background:#15365b}
+#offline-course-scroll .pmm-shrine-clock-picture img{display:block;width:100%;height:100%;object-fit:contain;
+ filter:brightness(var(--pmm-clock-brightness)) saturate(var(--pmm-clock-saturation));pointer-events:none;user-select:none}
+#offline-course-scroll .pmm-shrine-clock-warmth{position:absolute;inset:0;pointer-events:none;
+ background:#d9853e;opacity:var(--pmm-clock-warmth);mix-blend-mode:soft-light}
+#offline-course-scroll .pmm-shrine-clock-svg{position:absolute;inset:0;width:100%;height:100%;display:block;
+ pointer-events:none;overflow:visible;direction:ltr}
+#offline-course-scroll .pmm-shrine-clock-touch{pointer-events:all;touch-action:none;cursor:grab}
+#offline-course-scroll .pmm-shrine-clock-adjusting .pmm-shrine-clock-touch{cursor:grabbing}
+#offline-course-scroll .pmm-shrine-clock-hand{stroke:#1d2028;stroke-linecap:round;
+ stroke-linejoin:round;filter:drop-shadow(0px 1.5px 1px #b5a079)}
+#offline-course-scroll .pmm-shrine-clock-hour{stroke-width:8}
+#offline-course-scroll .pmm-shrine-clock-minute{stroke-width:5}
+#offline-course-scroll .pmm-shrine-clock-pivot{fill:#282a30;stroke:#a98d53;stroke-width:2;pointer-events:none}
+#offline-course-scroll .pmm-shrine-clock-readout{display:flex;justify-content:center;align-items:center;
+ gap:9px;margin:6px 0 1px;direction:rtl;color:#06366d}
+#offline-course-scroll #course-shrine-clock-display{font:900 clamp(19px,3.5cqw,27px)/1.3 Tahoma,Arial,sans-serif;
+ direction:rtl;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+#offline-course-scroll #course-shrine-clock-phase{font:700 clamp(11px,1.7cqw,14px)/1.5 'PMM Estedad',Tahoma,sans-serif}
+#offline-course-scroll .pmm-shrine-clock-instructions{font:600 clamp(10px,1.45cqw,12px)/1.6 'PMM Estedad',Tahoma,sans-serif;
+ color:#644c26;margin:2px 0 5px}
+#offline-course-scroll .pmm-shrine-clock-svg [role=slider]:focus-visible{outline:3px solid #f3be5a;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#offline-course-scroll .pmm-shrine-clock-picture *,#offline-course-scroll .pmm-shrine-clock-svg *{transition:none!important;animation:none!important}}
+
 /* Owner trial TOUCH-97: all visibly operable controls, no resting-state changes.
    Individual scale/translate compose with preserved base transforms, including 3D wheel boards.
    The selectors below neutralize *only prior :active scaling* to avoid 0.97 * older scales. */
@@ -1686,8 +1715,28 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
         </div>
         <div class="course-reminder-setting">
           <label for="course-reminder-time">ساعت یادآوری قرار امروز</label>
+          <div id="course-shrine-clock" class="pmm-shrine-clock" role="group" aria-label="ساعت تعاملی حرم برای تعیین زمان یادآوری">
+            <div class="pmm-shrine-clock-picture">
+              <img src="images/pmm_shrine_clock_clean.webp" width="768" height="576" loading="lazy" decoding="async" alt="نمای ساعت حرم امیرالمؤمنین علیه‌السلام با عقربه‌های قابل تنظیم">
+              <span class="pmm-shrine-clock-warmth" aria-hidden="true"></span>
+              <svg id="course-shrine-clock-svg" class="pmm-shrine-clock-svg" viewBox="0 0 768 576" xmlns="http://www.w3.org/2000/svg" aria-label="برای تنظیم ساعت، عقربه‌های روی صفحه را بکشید">
+                <circle cx="404" cy="256" r="79" fill="transparent" class="pmm-shrine-clock-touch" aria-hidden="true"/>
+                <g id="course-shrine-hour-hand" data-shrine-hand="hour" role="slider" tabindex="0" aria-label="تنظیم عقربه ساعت" aria-valuemin="0" aria-valuemax="23" aria-valuenow="9">
+                  <line class="pmm-shrine-clock-hand pmm-shrine-clock-hour" x1="404" y1="263" x2="404" y2="220"/>
+                  <line class="pmm-shrine-clock-touch" x1="404" y1="263" x2="404" y2="215" stroke="transparent" stroke-width="31" stroke-linecap="round"/>
+                </g>
+                <g id="course-shrine-minute-hand" data-shrine-hand="minute" role="slider" tabindex="0" aria-label="تنظیم عقربه دقیقه" aria-valuemin="0" aria-valuemax="59" aria-valuenow="0">
+                  <line class="pmm-shrine-clock-hand pmm-shrine-clock-minute" x1="404" y1="263" x2="404" y2="193"/>
+                  <line class="pmm-shrine-clock-touch" x1="404" y1="263" x2="404" y2="188" stroke="transparent" stroke-width="26" stroke-linecap="round"/>
+                </g>
+                <circle cx="404" cy="256" r="6" class="pmm-shrine-clock-pivot"/>
+              </svg>
+            </div>
+            <div class="pmm-shrine-clock-readout"><output id="course-shrine-clock-display" for="course-reminder-time" aria-live="polite">۰۹:۰۰</output><span id="course-shrine-clock-phase">صبح</span></div>
+            <p class="pmm-shrine-clock-instructions">عقربه ساعت را برای گذر از صبح به شب بچرخانید؛ عقربه دقیقه جداگانه تنظیم می‌شود.</p>
+          </div>
           <input type="time" id="course-reminder-time" value="09:00" step="60" required
-                 aria-describedby="course-reminder-time-help" aria-label="انتخاب ساعت یادآوری دوره آفلاین">
+                 aria-describedby="course-reminder-time-help" aria-label="تنظیم دقیق ساعت یادآوری دوره آفلاین">
           <p id="course-reminder-time-help">از ۵:۰۰ صبح تا ۲۳:۵۹؛ یا ۰۰:۰۰ به معنی ۱۲ شب در پایان روز انتخاب‌شده. اعلان فقط در صورت اجازه شما فعال می‌شود.</p>
         </div>
         <div class="course-weekdays" id="course-weekdays" hidden>
@@ -3936,6 +3985,7 @@ window.PMM_V9=Object.freeze({
 <!-- Native foreground playback is started only by explicit Play buttons. -->
 <script src="pmm_unified_background_audio_v124.js"></script>
 <script src="pmm_offline_course_logic.js"></script>
+<script src="pmm_shrine_clock_v130.js"></script>
 <script src="pmm_offline_course.js"></script>
 <!-- Owner v124: removed unrequested wisdom-bookmarks-and-notes module entirely. -->
 <script id="pmm-owner-touch97-trial">
