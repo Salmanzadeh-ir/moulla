@@ -128,13 +128,17 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Install Android platform 35 and tools 35.0.0
+      - name: Install Android SDK 35 from hosted runner using sdkmanager
         shell: bash
         run: |
           set -euo pipefail
+          test -n "$ANDROID_HOME"
+          command -v sdkmanager
+          sdkmanager --version
           sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/zipalign"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/aapt"
       - name: Set runner-only DEBUG identity without changing official source
         shell: bash
         working-directory: source
