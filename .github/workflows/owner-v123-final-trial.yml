@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/owner-v123-final-trial.yml
       - scripts/prepare_owner_v123_trial.py
+      - scripts/test_v16_back_navigation.js
+      - scripts/test_owner_v118_back_notes.cjs
   workflow_dispatch:
 permissions:
   contents: write
