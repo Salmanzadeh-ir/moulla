@@ -36,6 +36,8 @@ button:not(:disabled){cursor:pointer}
  background:linear-gradient(90deg,#002c72,#167db8,#001b53);box-shadow:0 0 1px 1px #b28337}
 .exit,.about{position:absolute;appearance:none;border:0;background:transparent;z-index:5}
 .exit{left:78.65%;top:33.54%;width:11.75%;height:5.1%}
+/* Owner trial: replace the pre-rendered Exit artwork without touching its bounds or handlers. */
+#scene #exit{background:transparent url("images/pmm_owner_exit_v131.png") center/contain no-repeat}
 .about{left:23.7%;top:86.74%;width:52.6%;height:7.65%}
 .exit:focus-visible,.about:focus-visible{outline:3px solid #0473ce;border-radius:30px}
 /* Wisdom view uses the very same scroll aperture and original decorative backdrop. */
@@ -1543,7 +1545,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 </head>
 <body>
 <main class="scene" id="scene" data-screen="home" aria-label="صفحه جدید پای منبر مولا">
-  <img class="scene-bg" src="images/new_ui_bg.png" alt="" aria-hidden="true">
+  <img class="scene-bg" src="images/new_ui_bg_no_exit.png" alt="" aria-hidden="true">
   <section class="main-scroll" id="main-scroll" aria-label="منوی اصلی شش‌بخشی" tabindex="0">
     <div class="menu-content home-menu-content">
       <div class="home-menu-grid" id="home-main-menu" role="group" aria-label="بخش‌های اصلی برنامه">
@@ -1892,7 +1894,7 @@ const wisdomLookup=new Map(wisdoms.map(w=>[w.id,w]));
 const STORAGE_KEY='pmm_hikmat_489_drawbag_v1';
 const scene=document.getElementById('scene');
 const sceneBackdrop=scene.querySelector('img.scene-bg');
-const HOME_EXIT_ART='images/new_ui_bg.png';
+const HOME_EXIT_ART='images/new_ui_bg_no_exit.png';
 const INNER_NO_EXIT_ART='images/new_ui_bg_no_exit.png';
 function showSceneArtwork(showHomeExit){
   const src=showHomeExit?HOME_EXIT_ART:INNER_NO_EXIT_ART;
