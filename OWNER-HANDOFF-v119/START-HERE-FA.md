@@ -1,5 +1,18 @@
 # پای منبر مولا — نقطه شروع واحد چت جدید (v119)
 
+## وضعیت رسمی پس از ممیزی عمیق همه نسخه‌ها — ۲۰ نوامبر ۲۰۲۶
+
+> **مقدم بر تمام بخش‌های تاریخی این صفحه.** نسخه فعال پروژه **فقط `main` با کد v119** است و *نه* ادعای ادغام بدون بررسی همه شاخه‌های قدیمی. آخرین Commit `main`: [`12016838e98d8c1eadadbb0a96321f4855f1c5cd`](https://github.com/Salmanzadeh-ir/moulla/commit/12016838e98d8c1eadadbb0a96321f4855f1c5cd). PR ابزار ممیزی [#18](https://github.com/Salmanzadeh-ir/moulla/pull/18) با **صفر تغییر در `app/`** ادغام شده و [CI قفل‌های تاریخی](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44680874855) و [CI سیاست نسخه واحد](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44680874908) پس از Merge هر دو **success** هستند.
+
+- [گزارش معتبر ممیزی همه نسخه‌ها در main](https://github.com/Salmanzadeh-ir/moulla/blob/main/docs/OWNER_DEEP_UNIFICATION_AUDIT_20261120_FA.md): ۸۱ شاخه و ۶ تگ در زمان ممیزی؛ ۳۸ شاخه با Git blob برنامه متفاوت نسبت به base جداشدن؛ ۱۸ تصویر قدیمی با ۶ تطبیق دقیق و ۱۲ مورد نیازمند تصمیم؛ ماژول‌های آزمایشی قدیمی v108 دارای برخی قابلیت‌های اضافی بدون معادل دقیقِ ثابت‌شده در v119.
+- [Run ممیزی کامل 81 شاخه + آزمون‌ها](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44679750448)، [تصویر تطبیق و داده‌های JSON](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44679750448/artifacts/14602834520)، [APK امضا/شناسه/هش واقعی Run 44680293745](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44680293745)، [CSV/JSON هر APK](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44680293745/artifacts/14603723235).
+- **پشتیبان قابل دانلود برای گوشی:** [Artifact 14603476394](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44678498751/artifacts/14603476394)، ZIP اصلی `PayeMenbareMola-COMPLETE-OWNER-BACKUP-44678498751.zip`، **۳۸۷٬۵۵۹٬۰۰۶ بایت**، SHA-256 `2b32807107ac7d44cbecb74881d51a42d452bb4201e17bf0b73d5909e1362a07`. در Actions دو بار recovery و hash pass شده؛ **دریافت و صحت فایل روی گوشی مالک هنوز تایید نشده**. شامل ۸۰ شاخه هنگام تهیه و ۸ Release asset.
+- **خطر انتشار رسمی:** بسته `ir.nahj.towhidkarbordi` از v10.4.9 رسمی versionCode=15 گواهی امضای متفاوت از APK بازار 10.5.1 versionCode=26 دارد؛ نباید جایگزینی مستقیم با حفظ داده فرض شود. `app/build.gradle` رسمی دست‌نخورده، versionCode=16 و نباید برای بازار بدون مجوز جداگانه استفاده شود.
+- **ادغام تغییرات عملکردی/حذف هنوز انجام نشده:** `main` تحت قفل ۱۸۲ فایل و v119 گوشی‌تاییدشده باقی است. ۱۲ تصویر قدیمی و ماژول‌های اختیاری v108 نیازمند بررسی تأیید مالک؛ هر نسخه عملکردی تازه نیازمند Debug APK مستقل و تأیید همان APK است. حذف فقط بعد از SHA-256 و حفظ فایل توسط مالک روی گوشی، تصمیم درباره موارد اختلافی، و موافقت دقیق با فهرست حذف. در [Issue #17](https://github.com/Salmanzadeh-ir/moulla/issues/17) پیگیری شود.
+- [سورس کامل main در این نقطه](https://github.com/Salmanzadeh-ir/moulla/archive/12016838e98d8c1eadadbb0a96321f4855f1c5cd.zip)؛ [APK v119 گوشی‌تاییدشده با SHA درست](https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk) با SHA-256 `94702d41e292a8d84f7cdc0ad4af8e5ce5ae1727c68cc0cfb568d03d99e438e2`.
+
+---
+
 > **یک لینک برای انتقال کامل اطلاعات:** همین صفحه را به چت جدید بدهید. چت جدید باید سه فایل پایین و متن دستور را از همین مخزن بخواند؛ نیازی به بارگذاری مجدد فایل از گوشی نیست.
 
 ## وضعیت نهایی رسمی v119 — ادغام در main و CI موفق (۲۰ نوامبر ۲۰۲۶)
