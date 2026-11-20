@@ -1,0 +1,164 @@
+name: Owner v127 six captions minus one-sixth, full source archive - independent Android APK
+on:
+  push:
+    branches: [feature/owner-v127-uniform-six-minus-one-sixth-20261120]
+    paths:
+      - .github/workflows/owner-v127-final-one-sixth-trial.yml
+      - scripts/verify_owner_v127_full_lock.py
+      - design/owner-v127-test-app-lock.json
+      - app/src/main/assets/index.html
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  owner-test-android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify source 199-file exact lock; do not alter approved audio or other assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_owner_v127_full_lock.py
+          test -z "$(git status --porcelain)"
+      - name: Test six large center-aligned labels and preserve all v124 features
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/test_owner_v124_seven_fixes.cjs
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_course_state_compat.js
+          node scripts/test_owner_v122_content_startup.cjs
+          node scripts/test_pmm_content_server.mjs
+          node scripts/test_pmm_content_server.mjs --single-file
+          node --check app/src/main/assets/pmm_unified_background_audio_v124.js
+          node --check app/src/main/assets/pmm_offline_course.js
+          mkdir -p "$RUNNER_TEMP/pmm-reminder-clock"
+          javac -d "$RUNNER_TEMP/pmm-reminder-clock" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-reminder-clock" TestReminderClock
+          bash scripts/test_native_compile.sh
+          python3 scripts/verify_owner_v127_full_lock.py
+          echo 'PASS: all six titles exactly match first-title Lalezar font-size and weight'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Independent owner review app ID and version - RUNNER ONLY
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          text=p.read_text(encoding='utf-8')
+          for a,b in {
+           "applicationIdSuffix '.newiwanv16'":"applicationIdSuffix '.ownerfinalreview127'",
+           "versionCode 16":"versionCode 127",
+           "versionName '10.5.4-v16-preview'":"versionName '10.5.19-owner-final-review127'",
+          }.items():
+           assert text.count(a)==1,(a,text.count(a))
+           text=text.replace(a,b,1)
+          p.write_text(text,encoding='utf-8')
+          PY
+          test "$(git diff --name-only)" = "app/build.gradle"
+      - name: Build independent signed DEBUG Android APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          env -u PMM_KEYSTORE_PATH -u PMM_KEYSTORE_PASSWORD gradle --no-daemon :app:assembleDebug
+      - name: Verify signed APK, manifest identity, font license and SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$ANDROID_HOME/build-tools/35.0.0"
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$apk"
+          "$sdk/apksigner" verify --verbose --print-certs "$apk"
+          "$sdk/zipalign" -c -v 4 "$apk"
+          mkdir -p dist
+          "$sdk/aapt" dump badging "$apk" > dist/APK-PACKAGE.txt
+          grep -F "name='ir.nahj.towhidkarbordi.ownerfinalreview127'" dist/APK-PACKAGE.txt
+          grep -F "versionCode='127'" dist/APK-PACKAGE.txt
+          grep -F "versionName='10.5.19-owner-final-review127-debug'" dist/APK-PACKAGE.txt
+          unzip -Z1 "$apk" | grep -Fqx 'assets/fonts/Lalezar-Regular.ttf'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/fonts/Lalezar-OFL.txt'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/images/photo_quotes/quote_105.jpg'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_unified_background_audio_v124.js'
+          if unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_owner_wisdom_tools_v121.js'; then
+            echo 'FAIL: unrequested Tafal wisdom module has returned'; exit 1
+          fi
+          cp "$apk" dist/PayeMenbareMola-v127-FINAL-OWNER-TEST-OWNER-TEST-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          # Full immutable Git source archive includes ALL app/java/assets/scripts/docs/locks,
+          # never release signing keys, built APKs, Gradle outputs or external secrets.
+          git archive --format=zip --output=dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip HEAD
+          unzip -tq dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip
+          unzip -Z1 dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip | grep -Fqx "design/owner-v127-test-app-lock.json"
+          unzip -Z1 dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip | grep -Fqx "app/src/main/assets/index.html"
+          unzip -Z1 dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip | grep -Fqx "app/src/main/assets/fonts/Lalezar-Regular.ttf"
+          (cd dist && sha256sum *.zip >> SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          git restore -- app/build.gradle
+          python3 scripts/verify_owner_v127_full_lock.py
+          git diff --exit-code -- app/
+          test -z "$(git ls-files --others --exclude-standard -- app/src/)"
+          git rev-parse HEAD > dist/SOURCE-COMMIT.txt
+          printf 'OWNER TRIAL ONLY: Six centered large genuine Persian Lalezar captions; independently fitted on one line. All seven v124 corrections preserved. No official market release.\n' > dist/README.txt
+          cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
+          echo "Exact source commit $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-v127-FINAL-OWNER-TEST-${{ github.run_id }}
+          path: dist/
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish and verify a DIRECT download APK (no ZIP)
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="${{ github.workspace }}/dist/PayeMenbareMola-v127-FINAL-OWNER-TEST-OWNER-TEST-DEBUG.apk"
+          sums="${{ github.workspace }}/dist/SHA256SUMS.txt"
+          dir="$(mktemp -d)"
+          mkdir -p "$dir/downloads/v127"
+          cp "$apk" "$sums" "${{ github.workspace }}/dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip" "$dir/downloads/v127/"
+          cd "$dir"
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q -b "download/owner-v127-final-owner-test-${{ github.run_id }}"
+          git add downloads/v127/
+          git commit -qm "test(v127): direct independently signed Lalezar owner review APK"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git push origin "HEAD:refs/heads/download/owner-v127-final-owner-test-${{ github.run_id }}"
+          url="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v127-final-owner-test-${{ github.run_id }}/downloads/v127/PayeMenbareMola-v127-FINAL-OWNER-TEST-OWNER-TEST-DEBUG.apk"
+          expected="$(cut -d' ' -f1 "$sums")"
+          verified=no
+          for i in 1 2 3 4 5 6; do
+            if curl --fail --location --silent --show-error --max-time 90 "$url" -o /tmp/pmm-v127-direct.apk; then
+              actual="$(sha256sum /tmp/pmm-v127-direct.apk | cut -d' ' -f1)"
+              if test "$actual" = "$expected"; then verified=yes; break; fi
+            fi
+            sleep 4
+          done
+          test "$verified" = yes
+          echo "Verified direct downloadable APK: $url" >> "$GITHUB_STEP_SUMMARY"
+          echo "SHA-256: $expected" >> "$GITHUB_STEP_SUMMARY"
+          source_url="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v127-final-owner-test-${{ github.run_id }}/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip"
+          expected_source="$(awk '/COMPLETE-TESTED-SOURCE.zip/{print $1}' "$sums")"
+          curl --fail --location --silent --show-error --max-time 120 "$source_url" -o /tmp/pmm-v127-complete-source.zip
+          test "$(sha256sum /tmp/pmm-v127-complete-source.zip | cut -d' ' -f1)" = "$expected_source"
+          unzip -tq /tmp/pmm-v127-complete-source.zip
+          echo "Verified independently hosted full-source ZIP: $source_url" >> "$GITHUB_STEP_SUMMARY"
+          echo "Full source SHA-256: $expected_source" >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$url" > "${{ github.workspace }}/dist/DIRECT-APK-VERIFIED.txt"
