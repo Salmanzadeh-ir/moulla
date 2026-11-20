@@ -1,0 +1,35 @@
+name: PMM v119 verify published direct APK bytes and full source archive
+on:
+  push:
+    branches:
+      - automation/owner-v119-apply-20261120
+    paths:
+      - .github/workflows/owner-v119-verify-download.yml
+permissions:
+  contents: read
+jobs:
+  verify-direct-download:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check direct public download against independently built APK SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk'
+          sumurl='https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/SHA256SUMS.txt'
+          mkdir -p "$RUNNER_TEMP/v119-direct"
+          cd "$RUNNER_TEMP/v119-direct"
+          curl --fail --location --retry 4 --retry-all-errors --show-error --silent "$url" -o PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk
+          curl --fail --location --retry 4 --retry-all-errors --show-error --silent "$sumurl" -o SHA256SUMS.txt
+          test "$(stat -c %s PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk)" = 29203143
+          sha256sum --check SHA256SUMS.txt
+          echo '94702d41e292a8d84f7cdc0ad4af8e5ce5ae1727c68cc0cfb568d03d99e438e2  PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk' | sha256sum --check
+          echo 'PASS: verified exact publicly downloadable APK bytes and SHA-256' >> "$GITHUB_STEP_SUMMARY"
+      - name: Confirm full source archive at exact v119 feature commit can be requested
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --show-error --silent --head \
+            'https://github.com/Salmanzadeh-ir/moulla/archive/7554ee346d44ec39328a924c87976049dbf10852.zip' >/dev/null
+          echo 'PASS: full source archive URL reachable' >> "$GITHUB_STEP_SUMMARY"
