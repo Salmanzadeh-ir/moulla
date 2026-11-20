@@ -88,7 +88,7 @@ public final class MainActivity extends Activity {
                     "(function(){try{var s=document.getElementById('scene');"
                     + "var t=document.getElementById('stage');var now=Date.now();"
                     + "var home=typeof screen==='string'&&screen==='home'&&s&&t&&"
-                    + "((!s.hidden&&s.dataset.screen==='home'&&t.hidden)||(s.hidden&&!t.hidden));"
+                    + "((!s.hidden&&s.dataset.screen==='home'&&s.dataset.navMode==='home-root'&&t.hidden&&document.getElementById('home-main-menu')&&!document.getElementById('home-main-menu').hidden)||(s.hidden&&!t.hidden&&document.getElementById('home-pane')&&!document.getElementById('home-pane').classList.contains('gone')));"
                     + "return !!home&&window.PMM_EXIT_AUTHORIZED_AT>0&&"
                     + "now-window.PMM_EXIT_AUTHORIZED_AT>=0&&now-window.PMM_EXIT_AUTHORIZED_AT<1700&&"
                     + "now-(window.PMM_LAST_BACK_NAV_AT||0)>1000;"
