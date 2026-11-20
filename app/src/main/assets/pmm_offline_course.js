@@ -81,7 +81,14 @@ function updateCourseScrollbar(){
 function enterScene(){
  if(typeof resetHomeMenu==='function')resetHomeMenu(false);
  mainScroll.hidden=true;wisdomScroll.hidden=true;if(galleryScroll)galleryScroll.hidden=true;
- course.hidden=false;exit.hidden=true;about.hidden=true;backTop.hidden=false;floor.hidden=false;
+ course.hidden=false;exit.hidden=true;exit.disabled=true;about.hidden=true;
+ backTop.hidden=false;backTop.disabled=false;backTop.style.pointerEvents='auto';
+ backTop.setAttribute('aria-label','بازگشت به صفحه اصلی');
+ floor.hidden=false;
+ // Course welcome does not depend on checking the acceptance box for Back.
+ // In particular, never leave the root-home Exit artwork behind the Back.
+ scene.dataset.navMode='inner';
+ if(typeof showSceneArtwork==='function')showSceneArtwork(false);
  scene.dataset.screen='offline-course';course.scrollTop=0;
  requestAnimationFrame(updateCourseScrollbar);
 }
@@ -90,6 +97,7 @@ function leaveCourse(){
  savePlayback(true);audio.pause();courseOpen=false;activeTrack=null;activeTrackIndex=-1;activeIsRevisit=false;activeTrackId='';
  audio.removeAttribute('src');audio.load(); // Abort buffering when leaving the course.
  course.hidden=true;
+ exit.disabled=false;
  if(window.PMM_NEW_UI&&typeof window.PMM_NEW_UI.showHome==='function')window.PMM_NEW_UI.showHome();
  else{
   mainScroll.hidden=false;exit.hidden=false;about.hidden=false;backTop.hidden=true;floor.hidden=true;scene.dataset.screen='home';
@@ -453,6 +461,9 @@ window.addEventListener('pagehide',()=>{savePlayback(true)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')savePlayback(true)});
 const previousGoBack=goBack;
 function courseBack(){
+ // If a visitor declines the initial agreement, the Back icon must
+ // always leave immediately without accepting anything or saving consent.
+ if(!$('course-welcome').hidden){leaveCourse();return;}
  if(!$('course-notebook').hidden){$('course-notebook').hidden=true;$('course-note-toggle').setAttribute('aria-expanded','false');return;}
  if(!$('course-setup').hidden&&state.plan){renderDashboard();return;}
  if(!$('course-note-list').hidden){renderDashboard();return;}
