@@ -204,6 +204,14 @@ jobs:
           test -z "$(git diff --name-only)"
           test -z "$(git diff --cached --name-only -- app/build.gradle app/src/main/AndroidManifest.xml design/owner-v118-main-app-lock.json)"
           git diff --cached --check
+          echo "::group::V119 GENERATED VERIFY WORKFLOW FOR SEPARATE CONNECTOR WRITE"
+          cat .github/workflows/verify-layout-lock.yml
+          echo "::endgroup::"
+          # GitHub Actions GITHUB_TOKEN cannot push a commit changing workflows.
+          # Keep this exact generated workflow for a later separately authorized connector write.
+          git restore --staged -- .github/workflows/verify-layout-lock.yml
+          git restore --worktree -- .github/workflows/verify-layout-lock.yml
+          test -z "$(git diff --name-only)"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m "feat(v119): owner-approved Tafal and offline course reminder fixes with 182-file lock"
