@@ -64,7 +64,19 @@ jobs:
           entry="$(find "$RUNNER_TEMP/pmm119" -path '*/scripts/apply_to_checkout.py' -type f -print -quit)"
           test -n "$entry"
           package="$(dirname "$(dirname "$entry")")"
-          sed -n '1,220p' "$package/scripts/patch_main_activity.py"
+          python3 - "$package/scripts/patch_main_activity.py" "$GITHUB_WORKSPACE/source/app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java" <<'PY'
+          from pathlib import Path
+          import sys
+          helper, base = map(Path, sys.argv[1:])
+          source=helper.read_text(encoding='utf-8')
+          actual=base.read_text(encoding='utf-8')
+          old='    @Override public void onNewIntent(Intent intent) {'
+          correct='    @Override protected void onNewIntent(Intent intent) {'
+          assert source.count(old)==2, "unexpected template anchors; refusing compatibility correction"
+          assert actual.count(correct)==1 and old not in actual, "unexpected v118 MainActivity; refusing correction"
+          helper.write_text(source.replace(old,correct),encoding='utf-8')
+          print("PASS: compatibility correction only in temporary patch helper; source untouched")
+          PY
           python3 "$package/scripts/apply_to_checkout.py" "$GITHUB_WORKSPACE/source"
           cd "$GITHUB_WORKSPACE/source"
           git add -A
