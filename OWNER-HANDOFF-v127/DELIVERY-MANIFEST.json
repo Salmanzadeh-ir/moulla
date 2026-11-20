@@ -7,8 +7,11 @@
   "status": "OWNER_TEST_PENDING_NOT_MERGED",
   "active_main": {
     "version": "v119",
-    "commit": "c38804038eebd8bc62a36d9fc37cd305bdab1207",
-    "app_files": 182
+    "app_source_baseline_commit": "c38804038eebd8bc62a36d9fc37cd305bdab1207",
+    "current_head_should_be_fetched_from_github": true,
+    "app_files": 182,
+    "docs_only_pr_23_merge_sha": "7abd95c3dbaf47318ccdaccc52ebd1bbdca419b6",
+    "note": "The docs-only merge and subsequent report correction changed the main branch HEAD without changing app files."
   },
   "candidate": {
     "version": "v127",
@@ -78,5 +81,13 @@
     "historical_full_backup_sha256": "2b32807107ac7d44cbecb74881d51a42d452bb4201e17bf0b73d5909e1362a07",
     "owner_phone_download_completed": true,
     "owner_phone_local_checksum_verified": false
+  },
+  "documentation": {
+    "main_file": "docs/OWNER_V127_COMPLETE_HANDOFF_FA.md",
+    "single_handoff_file": "OWNER-HANDOFF-v127/START-HERE-FA.md",
+    "main_report_pr": 23,
+    "main_report_status": "merged",
+    "main_report_ci_success": true,
+    "link": "https://github.com/Salmanzadeh-ir/moulla/blob/main/docs/OWNER_V127_COMPLETE_HANDOFF_FA.md"
   }
 }
