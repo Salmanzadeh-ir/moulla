@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pip install --quiet pillow requests fonttools opencv-python-headless numpy
+          python3 -m pip install --quiet pillow requests fonttools opencv-python-headless numpy beautifulsoup4
           python3 -m py_compile scripts/prepare_owner_v123_trial.py
           rm -rf scripts/__pycache__
           git diff --exit-code
