@@ -396,6 +396,40 @@ public final class MainActivity extends Activity {
      * JavaScript universal network access or exposing a generic URL-fetch bridge.
      * The manifest is held in memory; no remote media or JSON is written to disk.
      */
+    /**
+     * Owner-approved one-time opt-in for a READ-ONLY content manifest check.
+     * The full app, course and historical audio remain offline until user action.
+     * INTERNET is a normal Android permission and has no OS runtime prompt.
+     */
+    private void maybeStartContentUpdates() {
+        if (!contentPageReady || !visibleToUser || contentCheckStarted ||
+            notificationPermissionFlowOpen || contentConsentPromptOpen ||
+            isFinishing() || isDestroyed() || web == null ||
+            !"file:///android_asset/index.html".equals(web.getUrl())) return;
+        if (getSharedPreferences(CONTENT_OPT_IN_PREFS, MODE_PRIVATE)
+                .getBoolean(CONTENT_ALLOWED, false)) {
+            contentCheckStarted = true;
+            checkContentUpdates();
+            return;
+        }
+        contentConsentPromptOpen = true;
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("اجازه بررسی مطالب جدید")
+            .setMessage("اگر اجازه دهید، هنگام ورود به برنامه فقط فهرست مطالب تازه بررسی می‌شود. در صورت انتشار صوت، عکس، کلیپ یا حکمت تازه، پنجره «دریافت مطالب جدید» یا «بعداً» نمایش داده می‌شود. خود فایل‌های صوتی و تصویری خودکار دریافت یا پخش نمی‌شوند. این اجازه مستقل از مجوز اعلان‌های تفأل و دوره آفلاین است.")
+            .setPositiveButton("اجازه می‌دهم", (dialog, which) -> {
+                contentConsentPromptOpen = false;
+                getSharedPreferences(CONTENT_OPT_IN_PREFS, MODE_PRIVATE).edit()
+                    .putBoolean(CONTENT_ALLOWED, true).apply();
+                maybeStartContentUpdates();
+            })
+            .setNegativeButton("فعلاً نه", (dialog, which) -> {
+                contentConsentPromptOpen = false;
+                // No network request, no saved denial; the user can choose next time.
+            })
+            .setCancelable(false)
+            .show();
+    }
+
     private void checkContentUpdates() {
         if (PMM_CONTENT_MANIFEST_URL.isEmpty() || web == null) return;
         final URL endpoint;
