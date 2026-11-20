@@ -1508,6 +1508,36 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  background:#fffdf3;color:#07376f;font:800 17px/1.4 Tahoma,sans-serif}
 #offline-course-scroll .course-reminder-setting p{margin:7px 0 0;
  font:600 clamp(10px,1.5cqw,13px)/1.9 'PMM Estedad',Tahoma,sans-serif}
+
+/* Owner trial TOUCH-97: all visibly operable controls, no resting-state changes.
+   Individual scale/translate compose with preserved base transforms, including 3D wheel boards.
+   The selectors below neutralize *only prior :active scaling* to avoid 0.97 * older scales. */
+.pmm-owner-touch97 {
+  scale:.97!important;
+  translate:0 1px;
+}
+/* Old active transforms are retained where they implement a nudge, but their old
+   scale is removed so the complete press is 97%, not 97% of a second scale. */
+.gold-button.pmm-owner-touch97:active,.navy-button.pmm-owner-touch97:active,
+.top-action.pmm-owner-touch97:active,.action.pmm-owner-touch97:active,
+.photo-controls button.pmm-owner-touch97:active,
+#stage .nahj-audio-group.pmm-owner-touch97:active,
+#wisdom-scroll .wisdom-utility-button.pmm-owner-touch97:active,
+.home-menu-card.pmm-owner-touch97:active { translate:none; }
+.home-hit.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.session.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.about-home-button.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.about-entry.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.gallery-tile.pmm-owner-touch97:active,.guest-mola-card.pmm-owner-touch97:active,
+.home-door.pmm-owner-touch97:active {transform:none}
+#home-pane .home-door.pmm-owner-touch97:active {transform:translateY(1px)!important;translate:none}
+#home-pane #home-about.pmm-owner-touch97:active {transform:translateY(2px)!important;translate:none}
+#home-pane #home-exit.pmm-owner-touch97:active {transform:none!important}
+#scene #back-top.pmm-owner-touch97:active,#stage #legacy-back-top.pmm-owner-touch97:active {transform:none!important}
+#stage .nahj-part-play.pmm-owner-touch97:active {transform:none}
+.home-menu-card.pmm-owner-touch97:active {transform:translateY(1px)}
+/* No paint/motion when the OS requests reduced motion. */
+@media (prefers-reduced-motion:reduce){.pmm-owner-touch97{scale:none!important;translate:none!important}}
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
@@ -3908,5 +3938,118 @@ window.PMM_V9=Object.freeze({
 <script src="pmm_offline_course_logic.js"></script>
 <script src="pmm_offline_course.js"></script>
 <!-- Owner v124: removed unrequested wisdom-bookmarks-and-notes module entirely. -->
-</body>
+<script id="pmm-owner-touch97-trial">
+/* Visual-only, delegated, future-proof. No synthetic clicks, navigation, or event cancellation. */
+(()=>{
+  'use strict';
+  const CONTROL='button,a[href],select,summary,input[type="button"],input[type="submit"],'+
+     'input[type="reset"],input[type="time"],[role="button"],[role="link"],'+
+     'label.course-accept-row,#photo-fullscreen img';
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+  if(!window.CSS?.supports?.('scale','0.97'))return; // Preserve transforms on older WebViews.
+  const originals=new WeakMap(), timers=new WeakMap();
+  let active=null;
+  const DURATION_DOWN=100,DURATION_UP=145;
+  const easing='cubic-bezier(.2,.7,.3,1)';
+  function eligible(node){
+    const el=node instanceof Element?node.closest(CONTROL):null;
+    if(!el||el.matches(':disabled,[disabled],[aria-disabled="true"]'))return null;
+    if(el.closest('[inert],[aria-hidden="true"],fieldset[disabled]'))return null;
+    if(el.isContentEditable||el.closest('[contenteditable="true"]'))return null;
+    if(!el.isConnected||!el.getClientRects().length)return null;
+    const s=getComputedStyle(el);
+    if(s.pointerEvents==='none'||s.visibility!=='visible')return null;
+    return el;
+  }
+  function cancelRestore(el){
+    const id=timers.get(el);
+    if(id!==undefined){clearTimeout(id);timers.delete(el);}
+  }
+  function transition(el,phase){
+    const saved=originals.get(el);
+    const duration=phase==='down'?DURATION_DOWN:DURATION_UP;
+    // Preserve the exact previous inline transition for restoration, and all
+    // computed existing transitions (including the wheel's transform timing).
+    el.style.setProperty('transition',saved.computed+', scale '+duration+'ms '+easing+
+      ', translate '+duration+'ms '+easing);
+  }
+  function begin(el,id,x,y,mode){
+    if(reduced?.matches)return;
+    if(active)finish();
+    cancelRestore(el);
+    if(!originals.has(el))originals.set(el,{
+      inline:el.style.getPropertyValue('transition'),
+      priority:el.style.getPropertyPriority('transition'),
+      computed:getComputedStyle(el).transition
+    });
+    transition(el,'down');
+    el.classList.add('pmm-owner-touch97');
+    active={el,id,x,y,mode};
+  }
+  function finish(){
+    if(!active)return;
+    const {el}=active;
+    active=null;
+    if(!el.isConnected){originals.delete(el);return;}
+    transition(el,'up');
+    el.classList.remove('pmm-owner-touch97');
+    cancelRestore(el);
+    const timer=setTimeout(()=>{
+      if(active?.el===el)return;
+      const saved=originals.get(el);
+      if(!saved)return;
+      if(saved.inline)el.style.setProperty('transition',saved.inline,saved.priority);
+      else el.style.removeProperty('transition');
+      originals.delete(el);timers.delete(el);
+    },DURATION_UP+30);
+    timers.set(el,timer);
+  }
+  document.addEventListener('pointerdown',e=>{
+    if(e.button!==0||active)return;
+    const el=eligible(e.target);
+    if(el)begin(el,e.pointerId,e.clientX,e.clientY,'pointer');
+  },{capture:true,passive:true});
+  document.addEventListener('pointermove',e=>{
+    if(!active||active.mode!=='pointer'||active.id!==e.pointerId)return;
+    const dx=e.clientX-active.x,dy=e.clientY-active.y;
+    const box=active.el.getBoundingClientRect();
+    if(dx*dx+dy*dy>225||e.clientX<box.left-10||e.clientX>box.right+10||
+       e.clientY<box.top-10||e.clientY>box.bottom+10)finish();
+  },{capture:true,passive:true});
+  document.addEventListener('pointerup',e=>{
+    if(active?.mode==='pointer'&&active.id===e.pointerId)finish();
+  },{capture:true,passive:true});
+  document.addEventListener('pointercancel',finish,{capture:true,passive:true});
+  document.addEventListener('dragstart',finish,{capture:true,passive:true});
+  document.addEventListener('scroll',finish,{capture:true,passive:true});
+  document.addEventListener('keydown',e=>{
+    if(e.repeat||active||!['Enter',' '].includes(e.key))return;
+    const el=eligible(e.target);
+    if(el&&el.matches('button,a[href],select,summary,[role="button"],[role="link"]'))
+       begin(el,e.key,0,0,'keyboard');
+  },true);
+  document.addEventListener('keyup',e=>{
+    if(active?.mode==='keyboard'&&active.id===e.key)finish();
+  },true);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)finish()});
+  window.addEventListener('blur',finish);
+  // WebView without PointerEvent: touch fallback; no duplicates on modern Android.
+  if(!window.PointerEvent){
+    document.addEventListener('touchstart',e=>{
+      if(active||e.touches.length!==1)return;
+      const touch=e.touches[0],el=eligible(e.target);
+      if(el)begin(el,touch.identifier,touch.clientX,touch.clientY,'touch');
+    },{capture:true,passive:true});
+    document.addEventListener('touchmove',e=>{
+      if(!active||active.mode!=='touch')return;
+      const touch=Array.from(e.touches).find(t=>t.identifier===active.id);
+      if(!touch)return finish();
+      const dx=touch.clientX-active.x,dy=touch.clientY-active.y;
+      if(dx*dx+dy*dy>225)finish();
+    },{capture:true,passive:true});
+    document.addEventListener('touchend',finish,{capture:true,passive:true});
+    document.addEventListener('touchcancel',finish,{capture:true,passive:true});
+  }
+})();
+</script></body>
 </html>
