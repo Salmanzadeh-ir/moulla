@@ -119,9 +119,9 @@ button:not(:disabled){cursor:pointer}
 #stage #nahj-find-button{
  position:absolute;left:9.6%;top:33.54%;width:11.75%;height:5.1%;z-index:56;
  display:flex;align-items:center;justify-content:center;gap:2px;
- border:3px solid #edbe58;border-radius:999px;
- background:linear-gradient(155deg,#0863a5,#06356f,#061d4a);color:#fff4cb;
- box-shadow:0 0 0 3px #a86e14,0 5px 9px #6c431440;
+ border:3px solid transparent;border-radius:999px;
+ background:transparent url("images/pmm_owner_search_v132.png") center/contain no-repeat;color:#fff4cb;
+ box-shadow:none;
  padding:0 3px;cursor:pointer;touch-action:manipulation;
 }
 #stage #nahj-find-button svg{width:clamp(15px,3.6cqw,22px);height:clamp(15px,3.6cqw,22px);flex:none}
@@ -2465,7 +2465,7 @@ window.PMM_NEW_UI=Object.freeze({
 </div>
 <div class="toast gone" id="toast"></div>
 <div class="wisdom-floor-cover" aria-hidden="true"></div><button type="button" id="legacy-back-top" class="legacy-back" aria-label="بازگشت به صفحه جدید">بازگشت</button>
-<button type="button" id="nahj-find-button" class="legacy-back" title="جستجوی شماره" aria-label="جستجوی شماره خطبه، نامه یا حکمت" aria-controls="nahj-find-panel" aria-expanded="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button></main>
+<button type="button" id="nahj-find-button" class="legacy-back" title="جستجوی شماره" aria-label="جستجوی شماره خطبه، نامه یا حکمت" aria-controls="nahj-find-panel" aria-expanded="false" hidden></button></main>
 
 <script src="nahj_audio_links.js"></script>
 <script src="pmm_kafi_resume_screenoff.js"></script>
