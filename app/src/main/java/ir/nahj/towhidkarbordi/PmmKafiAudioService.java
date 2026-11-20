@@ -156,7 +156,8 @@ public final class PmmKafiAudioService extends Service {
     }
     private void clearSavedSecond() {
         if(!approved(source))return;
-        getSharedPreferences(PREFS,MODE_PRIVATE).edit().putInt(key(source),0).apply();
+        getSharedPreferences(PREFS,MODE_PRIVATE).edit()
+            .putInt(key(source),0).putBoolean("finished-"+key(source),true).apply();
         lastSaved=0;position=0;
     }
     static String status(Context ctx,String requestedUrl) {
@@ -174,6 +175,8 @@ public final class PmmKafiAudioService extends Service {
             answer.put("buffering",same&&service.buffering);
             answer.put("position",same?service.position:savedSecond(ctx,requestedUrl));
             answer.put("saved",savedSecond(ctx,requestedUrl));
+            answer.put("finished",ctx.getSharedPreferences(PREFS,MODE_PRIVATE)
+                .getBoolean("finished-"+key(requestedUrl),false));
             answer.put("duration",same?service.duration:0);
             answer.put("listened",(same?service.listenedMillis:savedListened(ctx,requestedUrl))/1000.0);
             answer.put("rate",same?service.rate:1f);
@@ -295,6 +298,8 @@ public final class PmmKafiAudioService extends Service {
         position=savedSecond(this,url);
         if(position<=0&&userResumeSecond>0)position=clamp(userResumeSecond);
         listenedMillis=savedListened(this,url);
+        getSharedPreferences(PREFS,MODE_PRIVATE).edit()
+            .putBoolean("finished-"+key(url),false).apply();
         lastListenWall=SystemClock.elapsedRealtime();
         duration=0;
         errorSource="";lastError="";
