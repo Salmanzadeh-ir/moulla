@@ -1,0 +1,42 @@
+name: Owner v122 content opt-in and existing Cloudflare manager CI (READ ONLY)
+on:
+  push:
+    branches: [feature/owner-v122-home-exit-only-back-navigation-20261120]
+    paths: [.github/workflows/owner-v122-content-regression.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-content-manager:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate restored Cloudflare KV-only admin source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check online-content/admin-page.js
+          node --check online-content/cloudflare-dashboard-single-file.js
+          node --check online-content/worker.js
+          node scripts/test_pmm_content_server.mjs
+          node scripts/test_pmm_content_server.mjs --single-file
+      - name: Validate owner app consent and content update UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/src/main/assets/pmm_online_updates.js
+          node scripts/test_owner_v122_content_startup.cjs
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_course_state_compat.js
+          mkdir -p "$RUNNER_TEMP/pmm-clocks"
+          javac -d "$RUNNER_TEMP/pmm-clocks" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-clocks" TestReminderClock
+          bash scripts/test_native_compile.sh
+          echo 'All content portal, app update opt-in, historical Back and reminders checks successful. No updates were published.' >> "$GITHUB_STEP_SUMMARY"
