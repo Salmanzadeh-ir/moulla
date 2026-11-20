@@ -55,6 +55,9 @@ const fa=(n)=>{
 };
 function attachNahjCards(cards,groupId,entryId,opts){
  if(!available()||!Array.isArray(cards)||!opts)return false;
+ // Make the decision before adding ANY handlers: one invalid item must
+ // fall back entirely to HTML5, never create duplicate native+web players.
+ if(cards.some(card=>!ownerUrl(card.querySelector('audio.nahj-part-media')?.dataset?.src||'')))return false;
  const data=cards.map((card,index)=>{
   const player=card.querySelector('audio.nahj-part-media');
   const url=ownerUrl(player?.dataset?.src||'');
