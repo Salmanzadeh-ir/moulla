@@ -1,0 +1,184 @@
+name: Owner v124 seven fixes - signed direct-install Android trial
+on:
+  push:
+    branches: [feature/owner-v124-seven-owner-fixes-test-20261120]
+    paths:
+      - .github/workflows/owner-v124-seven-fixes-debug.yml
+      - app/**
+      - scripts/test_owner_v124_seven_fixes.cjs
+      - design/owner-v124-test-app-lock.json
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  owner-v124-android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Exact 197-file app lock and historical baseline protection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,subprocess,pathlib
+          root=pathlib.Path('.')
+          lock=json.loads(pathlib.Path('design/owner-v124-test-app-lock.json').read_text())
+          baseline=json.loads(pathlib.Path('design/owner-v123-test-app-lock.json').read_text())
+          paths=subprocess.check_output(['git','ls-files','--','app/'],text=True).splitlines()
+          assert len(paths)==197==len(lock['files']),(len(paths),len(lock['files']))
+          assert set(paths)==set(lock['files'])
+          assert lock['status']=='REVIEW_APK_NOT_OWNER_APPROVED_DO_NOT_MERGE'
+          mutable=set(lock['modified_app_files'])
+          added=set(lock['new_files']);removed=set(lock['removed_from_active_app'])
+          assert added=={'app/src/main/assets/pmm_unified_background_audio_v124.js'}
+          assert removed=={'app/src/main/assets/pmm_owner_wisdom_tools_v121.js'}
+          assert mutable=={
+            'app/src/main/assets/index.html',
+            'app/src/main/assets/pmm_offline_course.js',
+            'app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java',
+            'app/src/main/java/ir/nahj/towhidkarbordi/PmmKafiAudioService.java'}
+          for name in paths:
+            value=(root/name).read_bytes()
+            h=hashlib.sha1(b'blob '+str(len(value)).encode()+b'\0'+value).hexdigest()
+            assert h==lock['files'][name],('v124 lock',name)
+            if name in baseline['files'] and name not in mutable:
+              assert h==baseline['files'][name],('unexpected v123 difference',name)
+          for name in removed:assert not (root/name).exists()
+          assert lock['files']['app/build.gradle']==baseline['files']['app/build.gradle']
+          assert lock['files']['app/src/main/AndroidManifest.xml']==baseline['files']['app/src/main/AndroidManifest.xml']
+          print('PASS: 197/197 Git blobs locked; only 4 existing modified, 1 new and 1 removed; gradle, manifest, audio data and APK signing unchanged')
+          PY
+      - name: Owner seven-issue test and all historical audio/back/consent regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/src/main/assets/pmm_unified_background_audio_v124.js
+          node --check app/src/main/assets/pmm_offline_course.js
+          node --check app/src/main/assets/pmm_online_updates.js
+          node --check app/src/main/assets/pmm_kafi_resume_screenoff.js
+          node scripts/test_owner_v124_seven_fixes.cjs
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_course_state_compat.js
+          node scripts/test_owner_v122_content_startup.cjs
+          node scripts/test_pmm_content_server.mjs
+          node scripts/test_pmm_content_server.mjs --single-file
+          mkdir -p "$RUNNER_TEMP/pmm-reminder-clock"
+          javac -d "$RUNNER_TEMP/pmm-reminder-clock" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-reminder-clock" TestReminderClock
+          bash scripts/test_native_compile.sh
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Set independent owner test identity ON RUNNER ONLY
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          s=p.read_text(encoding='utf-8')
+          for before,after in {
+            "applicationIdSuffix '.newiwanv16'":"applicationIdSuffix '.ownersevenreview124'",
+            "versionCode 16":"versionCode 124",
+            "versionName '10.5.4-v16-preview'":"versionName '10.5.16-owner-seven-review124'",
+          }.items():
+            assert s.count(before)==1,(before,s.count(before))
+            s=s.replace(before,after,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          test "$(git diff --name-only)" = "app/build.gradle"
+      - name: Build actual Android 35 Debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          env -u PMM_KEYSTORE_PATH -u PMM_KEYSTORE_PASSWORD gradle --no-daemon :app:assembleDebug
+      - name: Verify APK signing, app identity, no unsolicited Tafal module, assets, SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$ANDROID_HOME/build-tools/35.0.0"
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          "$sdk/apksigner" verify --verbose --print-certs "$apk"
+          "$sdk/zipalign" -c -v 4 "$apk"
+          mkdir -p dist
+          "$sdk/aapt" dump badging "$apk" > dist/APK-IDENTITY.txt
+          grep -F "name='ir.nahj.towhidkarbordi.ownersevenreview124'" dist/APK-IDENTITY.txt
+          grep -F "versionCode='124'" dist/APK-IDENTITY.txt
+          grep -F "versionName='10.5.16-owner-seven-review124-debug'" dist/APK-IDENTITY.txt
+          unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_unified_background_audio_v124.js'
+          if unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_owner_wisdom_tools_v121.js'; then
+            echo 'FAIL: unwanted wisdom bookmarks still in APK'; exit 1
+          fi
+          unzip -Z1 "$apk" | grep -Fqx 'assets/fonts/A-Shablon-Cut.ttf'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/images/new_ui_bg_no_exit.png'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_online_updates.js'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_offline_course.js'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/images/photo_quotes/quote_105.jpg'
+          cp "$apk" dist/PayeMenbareMola-v124-SEVEN-FIXES-OWNER-TEST-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          git restore -- app/build.gradle
+          git diff --exit-code -- app/
+          test -z "$(git ls-files --others --exclude-standard -- app/src/)"
+          git rev-parse HEAD > dist/SOURCE-COMMIT.txt
+          cat > dist/README-FA.txt <<'EOF'
+          نسخه آزمایشی مستقل v124؛ هفت اصلاح درخواستی مالک:
+          متن رضایت به‌روزرسانی، شابلون ضخیم‌تر، بازگشت دوره بدون
+          قبول قوانین، حذف نشانک‌های ناخواسته تفأل، چهار تنظیم یادآوری،
+          پخش پس‌زمینه صوت‌های معتبر برنامه، و بازگشت فوری از ایتا.
+          APK با امضای Debug و شناسه مستقل نصب می‌شود و نسخه بازار را تغییر نمی‌دهد.
+          ادغام main یا پاکسازی فقط پس از تایید مالک.
+          EOF
+          echo 'v124 successful seven owner fixes trial' >> "$GITHUB_STEP_SUMMARY"
+          cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
+          cat dist/SOURCE-COMMIT.txt >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-v124-SEVEN-FIXES-${{ github.run_id }}
+          path: dist/
+          compression-level: 0
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish separately downloadable APK to a NEW isolated download branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="${{ github.workspace }}/dist/PayeMenbareMola-v124-SEVEN-FIXES-OWNER-TEST-DEBUG.apk"
+          sha="${{ github.workspace }}/dist/SHA256SUMS.txt"
+          copydir="$(mktemp -d)"
+          mkdir -p "$copydir/downloads/v124"
+          cp "$apk" "$copydir/downloads/v124/"
+          cp "$sha" "$copydir/downloads/v124/"
+          cd "$copydir"
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q -b "download/owner-v124-seven-fixes-${{ github.run_id }}"
+          git add downloads/v124/
+          git commit -qm "test(v124): independently signed owner-review APK and SHA-256 only"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git push origin "HEAD:refs/heads/download/owner-v124-seven-fixes-${{ github.run_id }}"
+          url="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v124-seven-fixes-${{ github.run_id }}/downloads/v124/PayeMenbareMola-v124-SEVEN-FIXES-OWNER-TEST-DEBUG.apk"
+          expected="$(cut -d' ' -f1 "$sha")"
+          verified=no
+          for i in 1 2 3 4 5 6; do
+            if curl --fail --location --silent --show-error --max-time 90 "$url" -o /tmp/pmm-v124-direct.apk; then
+              actual="$(sha256sum /tmp/pmm-v124-direct.apk | cut -d' ' -f1)"
+              if [ "$actual" = "$expected" ]; then verified=yes; break; fi
+            fi
+            sleep 4
+          done
+          test "$verified" = yes
+          printf 'Verified exact direct APK: %s\nSHA256: %s\n' "$url" "$expected" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$url" > "${{ github.workspace }}/dist/DIRECT-APK-VERIFIED.txt"
