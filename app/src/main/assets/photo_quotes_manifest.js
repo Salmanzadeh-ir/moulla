@@ -1,5 +1,5 @@
-/* 93 distinct user-supplied photo quotes, stored fully offline.
- * Mixed order is stable; the previous 18-image library is not referenced.
+/* v120 REVIEW: 93 unchanged approved photos + 12 distinct historic v10.4.9 photos, fully offline.
+ * The first 93 images retain their exact order and bytes; 12 historic originals are appended.
  * Each image is one full poster: the 9:16 slot uses object-fit: contain. */
 window.PMM_PHOTO_QUOTES = Object.freeze([
   'images/photo_quotes/quote_001.jpg',
@@ -95,4 +95,16 @@ window.PMM_PHOTO_QUOTES = Object.freeze([
   'images/photo_quotes/quote_091.jpg',
   'images/photo_quotes/quote_092.jpg',
   'images/photo_quotes/quote_093.jpg',
+  'images/photo_quotes/quote_094.jpg',
+  'images/photo_quotes/quote_095.jpg',
+  'images/photo_quotes/quote_096.jpg',
+  'images/photo_quotes/quote_097.jpg',
+  'images/photo_quotes/quote_098.jpg',
+  'images/photo_quotes/quote_099.jpg',
+  'images/photo_quotes/quote_100.jpg',
+  'images/photo_quotes/quote_101.jpg',
+  'images/photo_quotes/quote_102.jpg',
+  'images/photo_quotes/quote_103.jpg',
+  'images/photo_quotes/quote_104.jpg',
+  'images/photo_quotes/quote_105.jpg',
 ]);
