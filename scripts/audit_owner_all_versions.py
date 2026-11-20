@@ -42,7 +42,8 @@ def git(mirror, *args, data=False, check=True):
 
 
 def trees(mirror, ref, prefix="app/"):
-    output = git(mirror, "ls-tree", "-r", "-z", ref, "--", prefix, data=True)
+    args = ("ls-tree", "-r", "-z", ref, "--", prefix) if prefix else ("ls-tree", "-r", "-z", ref)
+    output = git(mirror, *args, data=True)
     out = {}
     for entry in output.split(b"\0"):
         if not entry:
