@@ -1,0 +1,70 @@
+name: Owner v122 inspect images and exact Shablon sources (no app writes)
+on:
+  push:
+    branches: [feature/owner-v122-home-exit-only-back-navigation-20261120]
+    paths: [.github/workflows/v122-inspect-art-font.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Inspect original artwork and font source page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow requests beautifulsoup4
+          mkdir -p art-font-inspect
+          python3 - <<'PY'
+          from PIL import Image,ImageOps,ImageDraw
+          from pathlib import Path
+          import requests,re
+          from bs4 import BeautifulSoup
+          p=Path('app/src/main/assets/images')
+          names=['new_ui_bg.png','IMAGE_01_APPROVED_ORIGINAL.png','home_bg_separated.png']
+          canvas=Image.new('RGB',(1120,1100),'white')
+          draw=ImageDraw.Draw(canvas)
+          report=[]
+          for j,n in enumerate(names):
+            im=Image.open(p/n).convert('RGB')
+            w,h=im.size
+            report.append(f'{n}: {w}x{h}')
+            th=ImageOps.contain(im,(330,870))
+            canvas.paste(th,(20+j*365,55))
+            draw.text((20+j*365,20),n,fill='black')
+            x1=int(.70*w);y1=int(.29*h);x2=int(.95*w);y2=int(.45*h)
+            crop=im.crop((x1,y1,x2,y2))
+            crop.save('art-font-inspect/CROP-'+n)
+          canvas.save('art-font-inspect/ALL-ORIGINAL-BACKDROPS.png')
+          targets=[
+            'https://www.fontyab.com/2504/a-shablon.html',
+            'https://fontx.ir/font/%D8%AF%D8%A7%D9%86%D9%84%D9%88%D8%AF-%D9%81%D9%88%D9%86%D8%AA-%D8%A8%D8%B1%D8%B4-%D8%B4%D8%A7%D8%A8%D9%84%D9%88%D9%86--%D8%B3%D8%B1%DB%8C-%D8%A2',
+            'https://www.arfonts.net/a-shablon-cut-font']
+          for target in targets:
+            try:
+              r=requests.get(target,timeout=12,headers={'User-Agent':'Mozilla/5.0'})
+              report.append('PAGE '+target+' STATUS '+str(r.status_code)+' LEN '+str(len(r.content)))
+              if r.ok and 'html' in r.headers.get('content-type',''):
+                soup=BeautifulSoup(r.text,'html.parser')
+                for a in soup.find_all(['a','link','script','form'],href=True):
+                  url=a.get('href','')
+                  if re.search(r'shablon|download|\\.ttf|\\.zip|woff',url,re.I):
+                    report.append('  LINK '+url[:360])
+                for a in soup.find_all(['a','form'],action=True):
+                  report.append('  ACTION '+a.get('action','')[:360])
+            except Exception as e:
+              report.append('PAGE_ERROR '+target+' '+str(e)[:200])
+          Path('art-font-inspect/REPORT.txt').write_text('\n'.join(report)+'\n')
+          print('\n'.join(report))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v122-inspect-backgrounds-fontlinks-${{ github.run_id }}
+          path: art-font-inspect/
+          if-no-files-found: error
+          retention-days: 5
