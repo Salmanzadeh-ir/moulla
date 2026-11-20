@@ -1351,7 +1351,8 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   font-style:normal;font-weight:400;font-display:swap}
 #home-main-menu > .home-menu-card > .home-menu-title{
   font-family:'PMM Shablon',Tahoma,Arial,sans-serif!important;
-  font-weight:400!important;-webkit-text-stroke:0!important;text-shadow:none!important;
+  font-weight:400!important;-webkit-text-stroke:.06em currentColor!important;
+  paint-order:stroke fill;text-shadow:none!important;
   font-size:var(--pmm-home-six-title-size,14px)!important;
   white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important;
   text-overflow:clip;overflow:hidden;min-width:0;max-width:100%;
@@ -2095,7 +2096,8 @@ function fitHomeMainMenuTitles(){
     const needed=homeTitleMeasure.measureText(title.textContent.trim()).width;
     if(available>0&&needed>0)bound=Math.min(bound,available*reference/needed);
   }
-  let size=Math.min(reference,Math.max(3,Math.floor(bound*9.6)/10));
+  // Heavy stroked glyph edges must also fit: reserve 12% horizontal safety.
+  let size=Math.min(reference,Math.max(3,Math.floor(bound*8.8)/10));
   for(let trial=0;trial<9;trial++){
     homeMenuRoot.style.setProperty('--pmm-home-six-title-size',size.toFixed(1)+'px');
     const ratio=Math.max(1,...titles.map(t=>t.scrollWidth/Math.max(1,t.clientWidth-2)));
@@ -2816,39 +2818,32 @@ function renderReminderSettings(){
   ['daily','هر روز (پیش‌فرض)'],['weekly','هفته‌ای یک‌بار'],
   ['monthly','ماهی یک‌بار'],['off','خاموش']
  ];
-  panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
- '<h2>یادآور مهمانی مولا</h2>'+
- '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، ساعت تأیید اولیه، مبنای اعلان‌های روزانه، هفتگی یا ماهانه است. در صورت تأیید بین ۱۲ شب و ۷ صبح، ساعت ۷ صبح ملاک می‌شود. اعلان تفأل هرگز از ۰۰:۰۰ تا قبل از ۷:۰۰ نمایش داده نمی‌شود. محدودیت باتری می‌تواند اعلان را با تأخیر نمایش دهد.</p>'+
- '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
- '<select id="pmm-reminder-frequency">'+options.map(option=>
-  '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select>'+
- '<p class="pmm-reminder-note" id="pmm-reminder-status">'+
- (current.consent?(current.allowed?'یادآوری‌ها مجاز هستند.':'برای نمایش اعلان، اجازهٔ اندروید لازم است.'):'هنوز اجازهٔ یادآوری دریافت نشده است.')+'</p>'+
- '<div class="pmm-reminder-actions"><button type="button" id="pmm-reminder-permission">اجازهٔ نمایش اعلان</button>'+
- '<button type="button" id="pmm-reminder-back">بازگشت به تفال</button></div></section>';
+  // Owner v124: ONLY this label and exactly four frequency choices belong
+  // inside the Tafal settings view; the fixed global Back icon remains outside.
+  panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم تکرار یادآوری">'+
+    '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
+    '<select id="pmm-reminder-frequency" aria-label="تکرار یادآوری">'+options.map(option=>
+    '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select></section>';
   panel.hidden=false;
   wisdom.classList.add('reminder-open');
   document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','true');
+  document.getElementById('wisdom-reminder-gear').hidden=true;
+  const back=document.getElementById('back-top');
+  back.hidden=false;back.disabled=false;back.style.pointerEvents='auto';
   wisdom.scrollTop=0;
  document.getElementById('pmm-reminder-frequency').addEventListener('change',event=>{
-  const value=event.target.value;
-  if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
-   window.PMMNative.setReminderFrequency(value);
-  document.getElementById('pmm-reminder-status').textContent=
-   value==='off'?'یادآوری خاموش شد.':'تکرار انتخابی ذخیره شد. در صورت لزوم اجازهٔ اعلان را تأیید کنید.';
+   const value=event.target.value;
+   if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
+     window.PMMNative.setReminderFrequency(value);
  });
- document.getElementById('pmm-reminder-permission').addEventListener('click',()=>{
-  if(window.PMMNative&&typeof window.PMMNative.askReminderPermission==='function')
-   window.PMMNative.askReminderPermission();
-  else document.getElementById('pmm-reminder-status').textContent='این تنظیم در نسخهٔ اندروید قابل فعال‌سازی است.';
- });
-  document.getElementById('pmm-reminder-back').addEventListener('click',closeWisdomReminderSettings);
+
 }
 function closeWisdomReminderSettings(){
   const panel=document.getElementById('wisdom-reminder-panel');
   panel.hidden=true;
   document.getElementById('wisdom-scroll').classList.remove('reminder-open');
   document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','false');
+  document.getElementById('wisdom-reminder-gear').hidden=false;
   document.getElementById('wisdom-scroll').scrollTop=0;
 }
 document.getElementById('wisdom-reminder-gear').addEventListener('click',()=>{
@@ -3646,7 +3641,12 @@ function resumed(){
  requestAnimationFrame(()=>{
   displayReturn();
   const top=stage.hidden?document.getElementById('back-top'):document.getElementById('legacy-back-top');
-  if(top&&!top.hidden){top.disabled=false;top.style.pointerEvents='auto';top.style.visibility='visible';top.style.zIndex='100';}
+  if(top&&!top.hidden){
+   top.disabled=false;top.style.pointerEvents='auto';top.style.visibility='visible';top.style.zIndex='100';
+   // On Eitaa return, focus the actual Back before the first user touch;
+   // otherwise some Android WebViews consume that touch just to regain focus.
+   if(openedAt||screen==='about')top.focus({preventScroll:true});
+  }
   const legacy=document.getElementById('back-button');if(legacy){legacy.disabled=false;legacy.style.pointerEvents='auto';}
  });
  if(openedAt){openedAt=0;try{localStorage.removeItem(STAMP)}catch(_){}}
@@ -3733,7 +3733,9 @@ document.addEventListener('click',e=>{
 window.addEventListener('focus',resumed);
 window.addEventListener('pageshow',resumed);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resumed()});
-window.addEventListener('pmm:external-return',resumed); // app test hook
+window.addEventListener('pmm:external-return',()=>{
+  lastBackClick=-1000;lastResume=0;resumed();
+}); // Android Eitaa return must not consume the first Back
 recoverReload();
 window.PMM_V9=Object.freeze({
  version:'9',getRoute:()=>({screen,section,stageVisible:!stage.hidden,sceneVisible:!scene.hidden}),
@@ -3823,7 +3825,6 @@ window.PMM_V9=Object.freeze({
 <script src="pmm_online_updates.js"></script>
 <script src="pmm_offline_course_logic.js"></script>
 <script src="pmm_offline_course.js"></script>
-<!-- Owner v121 trial only: optional local wisdom bookmark and notes. Never auto-plays audio. -->
-<script src="pmm_owner_wisdom_tools_v121.js"></script>
+<!-- Owner v124: removed unrequested wisdom-bookmarks-and-notes module entirely. -->
 </body>
 </html>
