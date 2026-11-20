@@ -1,0 +1,68 @@
+name: Owner all historical APK real SHA256, package and signatures (READ ONLY)
+on:
+  push:
+    branches: [audit/owner-unify-all-versions-20261120]
+    paths:
+      - scripts/audit_owner_apks.py
+      - .github/workflows/owner-all-apk-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare-all-version-apk-identities:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate Python audit script
+        run: python3 -m py_compile scripts/audit_owner_apks.py
+      - name: Install APK inspection utilities
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Clone Git history and fetch all 5 GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --mirror https://github.com/Salmanzadeh-ir/moulla.git "$RUNNER_TEMP/apk-historical.git"
+          git --git-dir="$RUNNER_TEMP/apk-historical.git" fsck --full --no-reflogs
+          mkdir -p release-assets
+          gh api "/repos/Salmanzadeh-ir/moulla/releases?per_page=100" > releases.json
+          jq -e 'type=="array" and length>=5 and length<100' releases.json >/dev/null
+          jq -r '.[].tag_name' releases.json | while IFS= read -r tag; do
+            mkdir -p "release-assets/$tag"
+            gh release download "$tag" --repo Salmanzadeh-ir/moulla --dir "release-assets/$tag" --clobber
+          done
+      - name: Calculate real APK byte hashes and verify package identities and signatures
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$ANDROID_HOME/build-tools/35.0.0"
+          test -x "$sdk/aapt"
+          test -x "$sdk/apksigner"
+          python3 scripts/audit_owner_apks.py \
+            --mirror "$RUNNER_TEMP/apk-historical.git" \
+            --release-dir release-assets \
+            --release-metadata releases.json \
+            --aapt "$sdk/aapt" --apksigner "$sdk/apksigner" --output-dir audit-apk-out
+          (cd audit-apk-out && sha256sum --check CHECKSUMS-SHA256.txt)
+          echo 'Inspected APK hashes, application IDs and cert SHA256 with NO changes to any APK or key.' >> "$GITHUB_STEP_SUMMARY"
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r=json.load(open("audit-apk-out/APK-METADATA-ALL-VERSIONS.json"))
+          print("Git APK/AAB blobs:",r["git_apk_aab_distinct_blobs"])
+          print("Release APKs:",r["github_release_apk_files_inspected"])
+          print("All records:",len(r["rows"]))
+          PY
+      - name: Publish APK identity audit ONLY, not historical binaries or secrets
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-ALL-APK-SHA256-AND-SIGNATURE-AUDIT-${{ github.run_id }}
+          path: audit-apk-out/
+          if-no-files-found: error
+          retention-days: 30

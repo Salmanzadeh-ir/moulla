@@ -1,0 +1,58 @@
+name: Owner deep integration audit of ALL versions (NO APP WRITES)
+on:
+  push:
+    branches: [audit/owner-unify-all-versions-20261120]
+    paths:
+      - .github/workflows/owner-all-version-audit.yml
+      - scripts/audit_owner_all_versions.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  full-readonly-integration-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify audit tools and install image comparison dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/audit_owner_all_versions.py
+          python3 -m pip install --quiet Pillow
+      - name: Clone all Git history without deleting or changing refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --mirror https://github.com/Salmanzadeh-ir/moulla.git "$RUNNER_TEMP/moulla-audit.git"
+          git --git-dir="$RUNNER_TEMP/moulla-audit.git" fsck --full --no-reflogs
+      - name: Inventory every branch's app differences, legacy photos and APK blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/audit_owner_all_versions.py --mirror "$RUNNER_TEMP/moulla-audit.git" --output-dir audit-integration-out
+          (cd audit-integration-out && sha256sum -c REPORT-SHA256SUMS.txt)
+          sed -n '1,95p' audit-integration-out/OWNER-UNIFICATION-AUDIT.md >> "$GITHUB_STEP_SUMMARY"
+          echo 'Read-only audit completed; no app file, branch, tag, release, signing asset or APK was modified.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Repeat current 182-file lock and core compatibility unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_owner_v119_lock.py
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_course_state_compat.js
+          mkdir -p "$RUNNER_TEMP/pmm-clock"
+          javac -d "$RUNNER_TEMP/pmm-clock" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-clock" TestReminderClock
+          bash scripts/test_native_compile.sh
+          git diff --quiet -- app/
+      - name: Publish safe readable audit including photo side-by-side sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-all-versions-semantic-audit-NO-DELETE-${{ github.run_id }}
+          path: audit-integration-out/
+          retention-days: 30
+          if-no-files-found: error
