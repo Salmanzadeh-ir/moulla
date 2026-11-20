@@ -133,7 +133,9 @@ jobs:
           git restore -- app/build.gradle
           python3 scripts/prepare_owner_v120_gallery.py verify
           git diff --quiet -- app/
-          test -z "$(git ls-files --others --exclude-standard -- app/)"
+          # Gradle outputs are untracked under app/build; never treat generated APK files as app source changes.
+          test -z "$(git ls-files --others --exclude-standard -- app/src/)"
+          echo "PASS: every tracked app file remains byte-locked and no untracked app/src files exist."
           git rev-parse HEAD > dist/EXACT-SOURCE-COMMIT.txt
           echo "Owner review candidate only; main remains v119. No official release or signing changes." > dist/READ-ME.txt
           cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
