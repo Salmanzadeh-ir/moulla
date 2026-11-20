@@ -1540,6 +1540,22 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 .home-menu-card.pmm-owner-touch97:active {transform:translateY(1px)}
 /* No paint/motion when the OS requests reduced motion. */
 @media (prefers-reduced-motion:reduce){.pmm-owner-touch97{scale:none!important;translate:none!important}}
+
+/* Owner v133 trial: purely visual Back emblem substitution. Preserve existing
+ * element geometry, input handlers, screen routes, visibility, accessibility,
+ * and the approved 97% tactile press behavior verbatim. */
+#scene #back-top,
+#stage #legacy-back-top,
+#stage #guest-return,
+#stage #back-button {
+  background:transparent url("images/pmm_owner_return_v133.png") center/contain no-repeat!important;
+  color:transparent!important;
+  text-shadow:none!important;
+  font-size:0!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
