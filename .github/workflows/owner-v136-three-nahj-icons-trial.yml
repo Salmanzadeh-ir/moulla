@@ -55,11 +55,11 @@ jobs:
           assert 'grid-template-columns:minmax(0,1fr)!important' in html
           assert 'background-size:contain!important' in html
           for group in ["sermons","letters","wisdoms"]:
-           assert ('data-nahj-group="'+group+'"') in html
+           assert ('[data-nahj-group="'+group+'"]') in html
           assert 'button.addEventListener(\'click\',()=>setState(\'list\',\'nahj\'' in html
           for asset in ["images/pmm_owner_nahj_sermons_v136.png","images/pmm_owner_nahj_letters_v136.png","images/pmm_owner_nahj_wisdom_v136.png"]:
            data=(root/asset).read_bytes()
-           assert data[:8] == b"\\x89PNG\\r\\n\\x1a\\n"
+           assert data[:8] == b"\x89PNG\r\n\x1a\n"
            import struct
            assert struct.unpack(">II",data[16:24]) == (160,160)
           assert 'document.getElementById(\'nahj-find-button\').addEventListener(\'click\'' in html
