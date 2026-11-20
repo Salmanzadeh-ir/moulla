@@ -21,7 +21,22 @@ const SPEEDS=[0.75,1,1.25,1.5,2];
 const SPEED_KEY='pmm_nahj_audio_speed_v1';
 let speed=1;
 try{const saved=Number(localStorage.getItem(SPEED_KEY));if(SPEEDS.includes(saved))speed=saved}catch(_){}
+// The validator MUST be initialized before loadState() reads any existing saved plan.
+const COURSE_REMINDER_TIME=/^(?:00:00|(?:0[5-9]|1[0-9]|2[0-3]):[0-5][0-9])$/;
 let state=loadState(),courseOpen=false,draftMode='daily1',draftWeekday=null;
+function validCourseReminderTime(value){return typeof value==='string'&&COURSE_REMINDER_TIME.test(value)}
+function syncNativeCourseReminder(){
+ const bridge=window.PMMNative;
+ if(!bridge||typeof bridge.setCourseReminderSchedule!=='function')return;
+ if(state.completedCount>=tracks.length||!state.accepted||!state.plan){
+  try{bridge.clearCourseReminderSchedule?.()}catch(_){}
+  return;
+ }
+ if(validCourseReminderTime(state.plan.reminderTime)){
+  try{bridge.setCourseReminderSchedule(state.plan.mode,state.plan.weekday??-1,state.plan.reminderTime)}catch(_){}
+ }
+}
+
 let activeTrack=null,activeTrackIndex=-1,activeTrackId='',activeIsRevisit=false,lastObservedTime=null,lastObservedWall=null,lastPersistedAt=0,switchingTrack=false;
 let pendingRestoreId='',restorePosition=0;
 function blankState(){return {accepted:false,plan:null,completedCount:0,extras:{},positions:{},notes:{},pendingAdvance:false}}
@@ -34,7 +49,8 @@ function loadState(){
   if(raw.plan&&['daily1','daily2','weekly'].includes(raw.plan.mode)&&logic.parseDateKey(raw.plan.startDate)){
    value.plan={mode:raw.plan.mode,startDate:raw.plan.startDate,
     weekday:Number.isInteger(raw.plan.weekday)&&raw.plan.weekday>=0&&raw.plan.weekday<=6?raw.plan.weekday:null,
-    baseCompleted:Number.isInteger(raw.plan.baseCompleted)&&raw.plan.baseCompleted>=0?raw.plan.baseCompleted:0};
+    baseCompleted:Number.isInteger(raw.plan.baseCompleted)&&raw.plan.baseCompleted>=0?raw.plan.baseCompleted:0,
+    reminderTime:validCourseReminderTime(raw.plan.reminderTime)?raw.plan.reminderTime:null};
   }
   value.completedCount=Math.max(0,Math.min(tracks.length,Number.isInteger(raw.completedCount)?raw.completedCount:0));
   value.extras=raw.extras&&typeof raw.extras==='object'&&!Array.isArray(raw.extras)?raw.extras:{};
@@ -102,6 +118,7 @@ $('course-accept-check').addEventListener('change',event=>{
 function renderSetup(){
  draftMode=state.plan?.mode||'daily1';
  draftWeekday=state.plan?.weekday??null;
+ $('course-reminder-time').value=validCourseReminderTime(state.plan?.reminderTime)?state.plan.reminderTime:'09:00';
  document.querySelectorAll('[data-course-plan]').forEach(button=>{
   const selected=button.dataset.coursePlan===draftMode;
   button.classList.toggle('is-selected',selected);button.setAttribute('aria-pressed',String(selected));
@@ -129,8 +146,30 @@ document.querySelectorAll('[data-course-weekday]').forEach(button=>button.addEve
 }));
 $('course-save-plan').addEventListener('click',()=>{
  if(draftMode==='weekly'&&!Number.isInteger(draftWeekday)){showToast('لطفاً روز هفتگی خود را انتخاب کنید.');return;}
- state.plan={mode:draftMode,weekday:draftMode==='weekly'?draftWeekday:null,startDate:todayKey(),baseCompleted:state.completedCount};
- state.extras={};state.pendingAdvance=false;saveState();renderDashboard();
+ const time=$('course-reminder-time').value;
+ if(!validCourseReminderTime(time)){
+  showToast('ساعت یادآوری باید از ۵ صبح تا ۱۲ شب باشد. فقط ۰۰:۰۰ برای نیمه‌شب مجاز است.');
+  $('course-reminder-time').focus();return;
+ }
+ const priorPlan=state.plan,priorExtras=state.extras,priorAdvance=state.pendingAdvance;
+ state.plan={mode:draftMode,weekday:draftMode==='weekly'?draftWeekday:null,
+  startDate:todayKey(),baseCompleted:state.completedCount,reminderTime:time};
+ state.extras={};state.pendingAdvance=false;
+ if(!saveState()){
+  state.plan=priorPlan;state.extras=priorExtras;state.pendingAdvance=priorAdvance;
+  return;
+ }
+ syncNativeCourseReminder();
+ // On older Android there is no OS-level POST_NOTIFICATIONS runtime dialog.
+ // The native bridge uses an explicit app consent dialog on these devices.
+ try{
+  if(window.PMMNative&&typeof window.PMMNative.getReminderSettings==='function'){
+   const status=JSON.parse(window.PMMNative.getReminderSettings());
+   if((!status.consent||!status.allowed)&&typeof window.PMMNative.askReminderPermission==='function')
+    window.PMMNative.askReminderPermission();
+  }
+ }catch(_){}
+ renderDashboard();
 });
 $('course-setup-back').addEventListener('click',()=>{if(state.plan)renderDashboard()});
 $('course-settings-open').addEventListener('click',()=>{savePlayback(true);audio.pause();renderSetup()});
@@ -336,6 +375,7 @@ $('course-heard').addEventListener('click',()=>{
  if(!logic.canMarkHeard(pos.listened,duration)){showToast('برای ثبت شنیدن، باید دست‌کم دو سوم صوت را واقعاً گوش کنید.');return;}
  audio.pause();setPosition(activeTrack.id,{position:0});
  state.completedCount=Math.min(tracks.length,state.completedCount+1);state.pendingAdvance=true;saveState();
+ if(state.completedCount>=tracks.length)syncNativeCourseReminder();
  activeTrack=null;activeTrackIndex=-1;activeIsRevisit=false;activeTrackId='';
  renderDashboard();
 });
@@ -426,4 +466,6 @@ window.PMM_OFFLINE_COURSE=Object.freeze({
   current:activeTrack?{id:activeTrack.id,title:activeTrack.displayTitle,index:activeTrackIndex}:null}),
  getTrackCount:()=>tracks.length
 });
+// After app updates/restarts restore the native alarm from the previously user-selected time.
+syncNativeCourseReminder();
 })();

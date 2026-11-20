@@ -55,6 +55,7 @@ public final class MainActivity extends Activity {
     private boolean pendingSaveMediaVideo = false;
     private boolean visibleToUser = false;
     private boolean pendingWisdomOpen = false;
+    private boolean pendingCourseOpen = false;
 
     /** Only exposes validated link opening. Never accepts arbitrary intents or URLs. */
     private final class NativeMediaBridge {
@@ -132,7 +133,8 @@ public final class MainActivity extends Activity {
                 status.put("frequency", WisdomReminderScheduler.frequency(MainActivity.this));
                 status.put("consent", WisdomReminderScheduler.hasConsent(MainActivity.this));
                 status.put("allowed", WisdomReminderScheduler.hasSystemPermission(MainActivity.this));
-                status.put("minutesAfterFirstOpen", 5);
+                status.put("clockBasis", "initial_opt_in_local_clock");
+                status.put("quietHours", "00:00-07:00");
                 status.put("silent", true);
             } catch (Exception ignored) { }
             return status.toString();
@@ -149,6 +151,28 @@ public final class MainActivity extends Activity {
                     (!WisdomReminderScheduler.hasConsent(MainActivity.this) ||
                      !WisdomReminderScheduler.hasSystemPermission(MainActivity.this)))
                     requestReminderPermission();
+            });
+        }
+
+        /** Schedule only an owner-approved, fully validated local course reminder. */
+        @JavascriptInterface
+        public void setCourseReminderSchedule(final String mode,final int weekday,final String time) {
+            if (!PmmReminderClock.validCourseTime(time) ||
+                !("daily1".equals(mode) || "daily2".equals(mode) ||
+                  ("weekly".equals(mode) && weekday>=0 && weekday<=6))) return;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || web==null ||
+                    !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                CourseReminderScheduler.setPlan(MainActivity.this,mode,weekday,time);
+            });
+        }
+
+        @JavascriptInterface
+        public void clearCourseReminderSchedule() {
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || web==null ||
+                    !"file:///android_asset/index.html".equals(web.getUrl())) return;
+                CourseReminderScheduler.clearPlan(MainActivity.this);
             });
         }
 
@@ -273,8 +297,11 @@ public final class MainActivity extends Activity {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         WisdomReminderScheduler.initialize(this);
+        CourseReminderScheduler.initialize(this);
         pendingWisdomOpen = getIntent() != null &&
                 getIntent().getBooleanExtra(WisdomReminderScheduler.EXTRA_OPEN_WISDOM, false);
+        pendingCourseOpen = getIntent() != null &&
+                getIntent().getBooleanExtra(CourseReminderScheduler.EXTRA_OPEN_COURSE, false);
         getWindow().setStatusBarColor(Color.rgb(18, 23, 29));
         getWindow().setNavigationBarColor(Color.rgb(18, 23, 29));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -319,6 +346,7 @@ public final class MainActivity extends Activity {
                     // v113 strict zero-background-network trial: no automatic manifest fetch.
                     // The updater remains in the code but is not polled at startup.
                     openWisdomIfPending();
+                    openCourseIfPending();
                 }
             }
         });
@@ -552,12 +580,26 @@ public final class MainActivity extends Activity {
         if (!visibleToUser || isFinishing() || isDestroyed()) return;
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // Android 13+: genuine system permission. It can only be granted by the user.
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
                     REMINDER_PERMISSION_REQUEST);
         } else {
-            // On Android 12 or earlier the system has no runtime permission.
-            // A pre-granted Android 13+ install is also handled here.
-            WisdomReminderScheduler.consent(this, true);
+            // Android 12 and earlier have no runtime POST_NOTIFICATIONS dialog.
+            // A first-run, user-visible app consent dialog is required instead.
+            // Also used for an Android 13+ app that already has system permission.
+            new android.app.AlertDialog.Builder(this)
+                .setTitle("اجازه اعلان‌های پای منبر مولا")
+                .setMessage("مایلید یادآوری‌های بی‌صدای تفأل و زمان همراهی دوره آفلاین در نوار اعلان گوشی نمایش داده شوند؟ می‌توانید بعداً یادآور تفأل را خاموش کنید.")
+                .setPositiveButton("اجازه می‌دهم", (dialog, which) -> {
+                    WisdomReminderScheduler.consent(MainActivity.this, true);
+                    CourseReminderScheduler.sync(MainActivity.this);
+                })
+                .setNegativeButton("فعلاً نه", (dialog, which) -> {
+                    WisdomReminderScheduler.consent(MainActivity.this, false);
+                    CourseReminderScheduler.sync(MainActivity.this);
+                })
+                .setCancelable(false)
+                .show();
         }
     }
 
@@ -598,7 +640,8 @@ public final class MainActivity extends Activity {
             boolean granted = grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED;
             WisdomReminderScheduler.consent(this, granted);
-            // If declined, never send a hidden background notification.
+            CourseReminderScheduler.sync(this);
+            // A denial deactivates both reminder streams; no hidden background notice.
         }
     }
 
@@ -610,12 +653,23 @@ public final class MainActivity extends Activity {
                 "window.PMM_WISDOM_PROTOTYPE.open();})()", null);
     }
 
+    private void openCourseIfPending() {
+        if (!pendingCourseOpen || web == null ||
+            !"file:///android_asset/index.html".equals(web.getUrl())) return;
+        pendingCourseOpen=false;
+        web.evaluateJavascript("(function(){if(window.PMM_OFFLINE_COURSE)" +
+                "window.PMM_OFFLINE_COURSE.open();})()",null);
+    }
+
     @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         pendingWisdomOpen = intent != null &&
                 intent.getBooleanExtra(WisdomReminderScheduler.EXTRA_OPEN_WISDOM, false);
+        pendingCourseOpen = intent != null &&
+                intent.getBooleanExtra(CourseReminderScheduler.EXTRA_OPEN_COURSE, false);
         openWisdomIfPending();
+        openCourseIfPending();
     }
 
     @Override public void onBackPressed() { handleBackNavigation(); }
@@ -630,6 +684,7 @@ public final class MainActivity extends Activity {
         if (web != null) web.onResume();
         restoreAfterEitaaIfFocused();
         WisdomReminderScheduler.sync(this);
+        CourseReminderScheduler.sync(this);
         // Reset only the visual × dismissals; keep stored audio progress.
         if (web != null && "file:///android_asset/index.html".equals(web.getUrl()))
             web.evaluateJavascript("window.dispatchEvent(new Event('pmm:app-foreground'))", null);
