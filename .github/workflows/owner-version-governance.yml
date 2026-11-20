@@ -56,7 +56,7 @@ jobs:
           set -euo pipefail
           python3 scripts/owner_version_inventory.py --output-dir audit-output
           python3 scripts/owner_cleanup_plan.py --inventory audit-output/owner-version-inventory.json --output-dir audit-output
-          sha256sum --check audit-output/SHA256SUMS.txt --ignore-missing
+          (cd audit-output && sha256sum --check SHA256SUMS.txt)
           echo 'No delete operations performed or authorized.' >> "$GITHUB_STEP_SUMMARY"
           cat audit-output/owner-version-inventory.md >> "$GITHUB_STEP_SUMMARY"
           cat audit-output/owner-cleanup-plan-NO-DELETE.md >> "$GITHUB_STEP_SUMMARY"
