@@ -98,7 +98,7 @@ jobs:
           if unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_owner_wisdom_tools_v121.js'; then
             echo 'FAIL: unrequested Tafal wisdom module has returned'; exit 1
           fi
-          cp "$apk" dist/PayeMenbareMola-v127-FINAL-OWNER-TEST-OWNER-TEST-DEBUG.apk
+          cp "$apk" dist/PayeMenbareMola-v127-FINAL-OWNER-TEST-DEBUG.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
           # Full immutable Git source archive includes ALL app/java/assets/scripts/docs/locks,
           # never release signing keys, built APKs, Gradle outputs or external secrets.
@@ -123,26 +123,39 @@ jobs:
           compression-level: 0
           retention-days: 30
           if-no-files-found: error
-      - name: Publish and verify a DIRECT download APK (no ZIP)
+      - name: Preserve public APK and complete source in 40 MiB parts with SHA verification
         shell: bash
         run: |
           set -euo pipefail
-          apk="${{ github.workspace }}/dist/PayeMenbareMola-v127-FINAL-OWNER-TEST-OWNER-TEST-DEBUG.apk"
+          apk="${{ github.workspace }}/dist/PayeMenbareMola-v127-FINAL-OWNER-TEST-DEBUG.apk"
+          zip="${{ github.workspace }}/dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip"
           sums="${{ github.workspace }}/dist/SHA256SUMS.txt"
           dir="$(mktemp -d)"
           mkdir -p "$dir/downloads/v127"
-          cp "$apk" "$sums" "${{ github.workspace }}/dist/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip" "$dir/downloads/v127/"
+          cp "$apk" "$sums" "$dir/downloads/v127/"
+          # Never push a Git blob larger than GitHub's 100 MiB limit.
+          split -b 40m -d -a 2 "$zip" \
+            "$dir/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part"
+          (
+            cd "$dir/downloads/v127"
+            sha256sum PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part* > SHA256SUMS-SOURCE-PARTS.txt
+            sha256sum -c SHA256SUMS-SOURCE-PARTS.txt
+            cat PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part* > "$dir/rejoined.zip"
+            cmp "$zip" "$dir/rejoined.zip"
+            unzip -tq "$dir/rejoined.zip"
+          )
           cd "$dir"
           git init -q
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -q -b "download/owner-v127-final-owner-test-${{ github.run_id }}"
           git add downloads/v127/
-          git commit -qm "test(v127): direct independently signed Lalezar owner review APK"
+          git commit -qm "archive(v127): signed Debug APK and three exact-hash source parts"
           git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git push origin "HEAD:refs/heads/download/owner-v127-final-owner-test-${{ github.run_id }}"
-          url="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v127-final-owner-test-${{ github.run_id }}/downloads/v127/PayeMenbareMola-v127-FINAL-OWNER-TEST-OWNER-TEST-DEBUG.apk"
-          expected="$(cut -d' ' -f1 "$sums")"
+          base="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v127-final-owner-test-${{ github.run_id }}/downloads/v127"
+          url="$base/PayeMenbareMola-v127-FINAL-OWNER-TEST-DEBUG.apk"
+          expected="$(awk '/FINAL-OWNER-TEST-DEBUG.apk/{print $1}' "$sums")"
           verified=no
           for i in 1 2 3 4 5 6; do
             if curl --fail --location --silent --show-error --max-time 90 "$url" -o /tmp/pmm-v127-direct.apk; then
@@ -152,13 +165,22 @@ jobs:
             sleep 4
           done
           test "$verified" = yes
-          echo "Verified direct downloadable APK: $url" >> "$GITHUB_STEP_SUMMARY"
-          echo "SHA-256: $expected" >> "$GITHUB_STEP_SUMMARY"
-          source_url="https://raw.githubusercontent.com/${{ github.repository }}/download/owner-v127-final-owner-test-${{ github.run_id }}/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip"
+          echo "PASS: Verified public direct APK: $url" >> "$GITHUB_STEP_SUMMARY"
+          echo "APK SHA-256: $expected" >> "$GITHUB_STEP_SUMMARY"
           expected_source="$(awk '/COMPLETE-TESTED-SOURCE.zip/{print $1}' "$sums")"
-          curl --fail --location --silent --show-error --max-time 120 "$source_url" -o /tmp/pmm-v127-complete-source.zip
-          test "$(sha256sum /tmp/pmm-v127-complete-source.zip | cut -d' ' -f1)" = "$expected_source"
-          unzip -tq /tmp/pmm-v127-complete-source.zip
-          echo "Verified independently hosted full-source ZIP: $source_url" >> "$GITHUB_STEP_SUMMARY"
+          rm -f /tmp/pmm-v127-verified-source.zip
+          for part in "$dir"/downloads/v127/PayeMenbareMola-v127-COMPLETE-TESTED-SOURCE.zip.part*; do
+            filename="$(basename "$part")"
+            echo "Checking public chunk: $filename"
+            curl --fail --retry 4 --retry-delay 3 --location --silent --show-error --max-time 120 \
+              "$base/$filename" -o /tmp/pmm-v127-part.bin
+            cmp "$part" /tmp/pmm-v127-part.bin
+            cat /tmp/pmm-v127-part.bin >> /tmp/pmm-v127-verified-source.zip
+          done
+          actual_source="$(sha256sum /tmp/pmm-v127-verified-source.zip | cut -d' ' -f1)"
+          test "$actual_source" = "$expected_source"
+          unzip -tq /tmp/pmm-v127-verified-source.zip
+          echo "PASS: Public source parts rejoined byte-for-byte; complete source SHA-256 verified." >> "$GITHUB_STEP_SUMMARY"
           echo "Full source SHA-256: $expected_source" >> "$GITHUB_STEP_SUMMARY"
+          echo "A single-ZIP source download is available via GitHub's commit archive route." >> "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$url" > "${{ github.workspace }}/dist/DIRECT-APK-VERIFIED.txt"
