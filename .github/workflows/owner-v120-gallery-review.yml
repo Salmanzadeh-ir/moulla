@@ -32,6 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo 'Historical gallery source is now checked byte-for-byte including original trailing newline.'
           python3 scripts/prepare_owner_v120_gallery.py apply
           python3 scripts/prepare_owner_v120_gallery.py verify
           python3 - <<'PY'
