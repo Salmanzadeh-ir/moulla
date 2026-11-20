@@ -1,0 +1,59 @@
+name: Owner content service/public panel status (READ ONLY, no login)
+on:
+  push:
+    branches: [feature/owner-v122-home-exit-only-back-navigation-20261120]
+    paths: [.github/workflows/v122-verify-content-portal.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-read-only-status:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check owner's fixed HTTPS manifest and public admin login-page status
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p portal-audit
+          origin='https://pmm-content-updates.kazeminia-mohamad110.workers.dev'
+          for path in /api/manifest /admin /api/admin/state; do
+            name="$(printf '%s' "$path" | tr '/' '_')"
+            code="$(curl -sS --location --max-time 17 --connect-timeout 8 \
+              -o "portal-audit/${name}.body" \
+              -w '%{http_code}' "${origin}${path}")" || code='NETWORK_ERROR'
+            printf '%s: %s\n' "$path" "$code" | tee -a portal-audit/PUBLIC-STATUS.txt
+            if test "$code" = NETWORK_ERROR; then continue; fi
+            if test "$path" = /api/manifest && test "$code" = 200; then
+              if jq -e '.schema == 1 and (.revision|type=="number") and (.items|type=="array")' \
+                 "portal-audit/${name}.body" >/dev/null; then
+                 echo 'PUBLIC_MANIFEST_VALID_SCHEMA=YES' | tee -a portal-audit/PUBLIC-STATUS.txt
+                 jq -r '"CURRENT_REVISION="+(.revision|tostring)+" ITEMS="+(.items|length|tostring)' \
+                    "portal-audit/${name}.body" | tee -a portal-audit/PUBLIC-STATUS.txt
+              else
+                 echo 'PUBLIC_MANIFEST_VALID_SCHEMA=NO' | tee -a portal-audit/PUBLIC-STATUS.txt
+              fi
+            fi
+            if test "$path" = /admin && test "$code" = 200; then
+               if grep -Fq 'پنل مدیریت' "portal-audit/${name}.body"; then
+                  echo 'PUBLIC_ADMIN_LOGIN_PAGE=YES' | tee -a portal-audit/PUBLIC-STATUS.txt
+               else echo 'PUBLIC_ADMIN_LOGIN_PAGE=UNKNOWN' | tee -a portal-audit/PUBLIC-STATUS.txt;fi
+            fi
+            if test "$path" = /api/admin/state; then
+               if test "$code" = 401 || test "$code" = 403; then
+                   echo 'UNAUTHENTICATED_ADMIN_STATE_DENIED=YES' | tee -a portal-audit/PUBLIC-STATUS.txt
+               else echo 'UNAUTHENTICATED_ADMIN_STATE_DENIED=CHECK' | tee -a portal-audit/PUBLIC-STATUS.txt;fi
+            fi
+          done
+          rm -f portal-audit/*.body
+          cat portal-audit/PUBLIC-STATUS.txt >> "$GITHUB_STEP_SUMMARY"
+          echo 'No admin passwords, login attempts, uploads or content writes performed.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v122-owner-panel-public-status-${{ github.run_id }}
+          path: portal-audit/PUBLIC-STATUS.txt
+          retention-days: 14
+          if-no-files-found: error

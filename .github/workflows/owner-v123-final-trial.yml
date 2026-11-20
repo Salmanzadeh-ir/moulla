@@ -1,0 +1,141 @@
+name: Owner v123 final unified performance trial (independent DEBUG, owner approval required)
+on:
+  push:
+    branches: [feature/owner-v123-final-unified-speed-review-20261120]
+    paths:
+      - .github/workflows/owner-v123-final-trial.yml
+      - scripts/prepare_owner_v123_trial.py
+      - scripts/test_v16_back_navigation.js
+      - scripts/test_owner_v118_back_notes.cjs
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-and-verify-owner-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    steps:
+      - name: Checkout owner trial branch with original references
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install verified source-patching and image/font validation tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow requests fonttools opencv-python-headless numpy beautifulsoup4
+          python3 -m py_compile scripts/prepare_owner_v123_trial.py
+          rm -rf scripts/__pycache__
+          git diff --exit-code
+      - name: Apply guarded image/font/Exit/performance patch ONLY if not already committed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test ! -f design/owner-v123-test-app-lock.json; then
+            python3 scripts/prepare_owner_v123_trial.py apply
+            git diff --check --cached
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "feat(v123-trial): source-locked exit-free Back, Shablon six titles, faster gallery and consented updates"
+            git push origin HEAD:refs/heads/feature/owner-v123-final-unified-speed-review-20261120
+          fi
+          python3 scripts/prepare_owner_v123_trial.py verify
+      - name: Run navigation, course, wisdom, reminder, content-manager and file-lock regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/src/main/assets/pmm_online_updates.js
+          node --check app/src/main/assets/pmm_owner_wisdom_tools_v121.js
+          node scripts/test_owner_v121_wisdom_tools.cjs
+          node scripts/test_owner_v122_content_startup.cjs
+          node scripts/test_pmm_content_server.mjs
+          node scripts/test_pmm_content_server.mjs --single-file
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_course_state_compat.js
+          node scripts/test_v16_back_navigation.js
+          mkdir -p "$RUNNER_TEMP/pmm-reminders"
+          javac -d "$RUNNER_TEMP/pmm-reminders" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-reminders" TestReminderClock
+          bash scripts/test_native_compile.sh
+          python3 scripts/prepare_owner_v123_trial.py verify
+      - name: Install Android Java 17 and Gradle 8.7
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Install Android API 35 and SDK build tools
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Set ONLY runner's independent v123 DEBUG package and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          s=p.read_text(encoding='utf-8')
+          for a,b in {
+            "applicationIdSuffix '.newiwanv16'":"applicationIdSuffix '.ownerfinalreview123'",
+            "versionCode 16":"versionCode 123",
+            "versionName '10.5.4-v16-preview'":"versionName '10.5.15-owner-finalreview123'",
+          }.items():
+            assert s.count(a)==1,('Unexpected approved Gradle config',a)
+            s=s.replace(a,b,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          test "$(git diff --name-only)" = "app/build.gradle"
+          git diff --check
+      - name: Build a real independent trial APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          env -u PMM_KEYSTORE_PATH -u PMM_KEYSTORE_PASSWORD gradle --no-daemon :app:assembleDebug
+      - name: Verify real APK signature, exact identity, font/artwork, ZIP and SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$ANDROID_HOME/build-tools/35.0.0"
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$apk"
+          "$sdk/apksigner" verify --verbose --print-certs "$apk"
+          "$sdk/zipalign" -c -v 4 "$apk"
+          mkdir -p dist
+          "$sdk/aapt" dump badging "$apk" > dist/APK-ID-PACKAGE.txt
+          grep -F "name='ir.nahj.towhidkarbordi.ownerfinalreview123'" dist/APK-ID-PACKAGE.txt
+          grep -F "versionCode='123'" dist/APK-ID-PACKAGE.txt
+          grep -F "versionName='10.5.15-owner-finalreview123-debug'" dist/APK-ID-PACKAGE.txt
+          unzip -Z1 "$apk" | grep -Fqx 'assets/images/new_ui_bg_no_exit.png'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/fonts/A-Shablon-Cut.ttf'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/images/photo_quotes/quote_105.jpg'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_owner_wisdom_tools_v121.js'
+          unzip -Z1 "$apk" | grep -Fqx 'assets/pmm_online_updates.js'
+          cp "$apk" dist/PayeMenbareMola-v123-FINAL-OWNER-TEST-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          git restore -- app/build.gradle
+          python3 scripts/prepare_owner_v123_trial.py verify
+          git diff --exit-code -- app/
+          test -z "$(git ls-files --others --exclude-standard -- app/src/)"
+          git rev-parse HEAD > dist/EXACT-SOURCE-COMMIT.txt
+          cat > dist/README-FA.txt <<'EOF'
+          نسخه آزمایشی v123: خروج فقط صفحه اصلی، بازگشت صفحات فرعی، فونت محلی شابلون
+          برای شش عنوان صفحه اصلی با یک خط و اندازه متناسب، گالری ۱۰۵ عکس با ساخت سریع،
+          امکانات یادداشت و نشانک حکمت، اعلان‌ها و به‌روزرسانی داخلی با رضایت کاربر.
+          شناسه نصب مستقل و امضای Debug؛ این APK جای نسخه رسمی بازار نمی‌نشیند.
+          ادغام main و پاکسازی نسخه‌های قبلی تا تأیید صریح مالک ممنوع است.
+          EOF
+          echo "Independent owner test signed and verified; no market signing or app/main files changed." >> "$GITHUB_STEP_SUMMARY"
+          cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
+          echo "Source commit $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload APK plus actual SHA and package metadata (owner trial only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PayeMenbareMola-v123-FINAL-OWNER-TEST-${{ github.run_id }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

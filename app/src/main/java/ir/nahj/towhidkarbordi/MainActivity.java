@@ -51,6 +51,14 @@ public final class MainActivity extends Activity {
     private android.window.OnBackInvokedCallback platformBackCallback;
     private static final int REMINDER_PERMISSION_REQUEST = 9031;
     private static final int MEDIA_STORAGE_PERMISSION_REQUEST = 9032;
+    // Optional owner-approved consent for startup manifest check; Android INTERNET does not require runtime permission.
+    private static final String CONTENT_OPT_IN_PREFS = "pmm_content_startup_consent_v1";
+    private static final String CONTENT_ALLOWED = "allowed";
+    private boolean contentPageReady = false;
+    private boolean contentCheckStarted = false;
+    private boolean contentConsentPromptOpen = false;
+    private boolean contentConsentDeclinedThisLaunch = false;
+    private boolean notificationPermissionFlowOpen = false;
     private String pendingSaveMediaSource = null;
     private boolean pendingSaveMediaVideo = false;
     private boolean visibleToUser = false;
@@ -80,7 +88,7 @@ public final class MainActivity extends Activity {
                     "(function(){try{var s=document.getElementById('scene');"
                     + "var t=document.getElementById('stage');var now=Date.now();"
                     + "var home=typeof screen==='string'&&screen==='home'&&s&&t&&"
-                    + "((!s.hidden&&s.dataset.screen==='home'&&t.hidden)||(s.hidden&&!t.hidden));"
+                    + "((!s.hidden&&s.dataset.screen==='home'&&s.dataset.navMode==='home-root'&&t.hidden&&document.getElementById('home-main-menu')&&!document.getElementById('home-main-menu').hidden)||(s.hidden&&!t.hidden&&document.getElementById('home-pane')&&!document.getElementById('home-pane').classList.contains('gone')));"
                     + "return !!home&&window.PMM_EXIT_AUTHORIZED_AT>0&&"
                     + "now-window.PMM_EXIT_AUTHORIZED_AT>=0&&now-window.PMM_EXIT_AUTHORIZED_AT<1700&&"
                     + "now-(window.PMM_LAST_BACK_NAV_AT||0)>1000;"
@@ -216,6 +224,36 @@ public final class MainActivity extends Activity {
             });
         }
 
+        /**
+         * One foreground native media service for every approved first-party
+         * Kafi, Nahj and offline-course MP3. Called ONLY in user Play handlers.
+         * No background prefetch or automatic new-track playback.
+         */
+        @JavascriptInterface
+        public void pmmAudioStart(final String url,final String title,
+                                  final float rate,final int resumeSecond) {
+            if(!PmmKafiAudioService.approved(url)||
+               resumeSecond<0||resumeSecond>86400||
+               !Float.isFinite(rate)||rate<0.75f||rate>2f)return;
+            runOnUiThread(()->{
+                if(isFinishing()||isDestroyed()||!visibleToUser||web==null||
+                   !"file:///android_asset/index.html".equals(web.getUrl()))return;
+                Intent start=new Intent(MainActivity.this,PmmKafiAudioService.class)
+                    .setAction(PmmKafiAudioService.ACTION_PLAY);
+                start.putExtra("url",url);
+                start.putExtra("title",title==null?"صوت پای منبر مولا":title);
+                start.putExtra("rate",rate);
+                start.putExtra("resumeSeconds",resumeSecond);
+                try{
+                    if(Build.VERSION.SDK_INT>=26)startForegroundService(start);
+                    else startService(start);
+                }catch(Exception e){
+                    Toast.makeText(MainActivity.this,
+                        "پخش صوت در پس‌زمینه برقرار نشد.",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
         @JavascriptInterface
         public void kafiToggle(final String url) {
             if(!PmmKafiAudioService.approved(url))return;
@@ -343,10 +381,11 @@ public final class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if ("file:///android_asset/index.html".equals(url)) {
                     view.evaluateJavascript("window.PMM_ANDROID=true", null);
-                    // v113 strict zero-background-network trial: no automatic manifest fetch.
-                    // The updater remains in the code but is not polled at startup.
+                    contentPageReady = true;
                     openWisdomIfPending();
                     openCourseIfPending();
+                    // v122: ask owner-approved content permission after the OS notification flow.
+                    maybeStartContentUpdates();
                 }
             }
         });
@@ -388,6 +427,41 @@ public final class MainActivity extends Activity {
      * JavaScript universal network access or exposing a generic URL-fetch bridge.
      * The manifest is held in memory; no remote media or JSON is written to disk.
      */
+    /**
+     * Owner-approved one-time opt-in for a READ-ONLY content manifest check.
+     * The full app, course and historical audio remain offline until user action.
+     * INTERNET is a normal Android permission and has no OS runtime prompt.
+     */
+    private void maybeStartContentUpdates() {
+        if (!contentPageReady || !visibleToUser || contentCheckStarted ||
+            contentConsentDeclinedThisLaunch || notificationPermissionFlowOpen || contentConsentPromptOpen ||
+            isFinishing() || isDestroyed() || web == null ||
+            !"file:///android_asset/index.html".equals(web.getUrl())) return;
+        if (getSharedPreferences(CONTENT_OPT_IN_PREFS, MODE_PRIVATE)
+                .getBoolean(CONTENT_ALLOWED, false)) {
+            contentCheckStarted = true;
+            checkContentUpdates();
+            return;
+        }
+        contentConsentPromptOpen = true;
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("اجازه بررسی مطالب جدید")
+            .setMessage("همراه گرامی!\n\nاز آنجا که مطالب «پای منبر مولا» همواره به‌روزرسانی می‌شوند، لطفاً اجازه دهید پس از بارگذاری مطالب تازه، هنگام ورود شما به برنامه وجود آن‌ها بررسی شود تا بتوانید با انتخاب «دریافت مطالب جدید»، محتوا را در نرم‌افزار خود مشاهده کنید.\n\nهیچ فایل صوتی یا تصویری بدون درخواست شما دانلود یا پخش نخواهد شد. این اجازه از مجوز اعلان‌ها مستقل است.")
+            .setPositiveButton("اجازه می‌دهم", (dialog, which) -> {
+                contentConsentPromptOpen = false;
+                getSharedPreferences(CONTENT_OPT_IN_PREFS, MODE_PRIVATE).edit()
+                    .putBoolean(CONTENT_ALLOWED, true).apply();
+                maybeStartContentUpdates();
+            })
+            .setNegativeButton("فعلاً نه", (dialog, which) -> {
+                contentConsentPromptOpen = false;
+                contentConsentDeclinedThisLaunch = true;
+                // No network request, no saved denial; the user can choose next time.
+            })
+            .setCancelable(false)
+            .show();
+    }
+
     private void checkContentUpdates() {
         if (PMM_CONTENT_MANIFEST_URL.isEmpty() || web == null) return;
         final URL endpoint;
@@ -534,9 +608,30 @@ public final class MainActivity extends Activity {
         web.post(() -> {
             if (!eitaaReturnPending || !hasWindowFocus() || isFinishing() || isDestroyed() || web == null) return;
             eitaaReturnPending = false;
-            web.requestFocus();
+            // After returning from Eitaa, clear the stale focused external-link
+            // element BEFORE allowing the first Back tap. Android sometimes
+            // consumes that first touch solely to restore WebView focus.
+            web.setFocusable(true);
+            web.setFocusableInTouchMode(true);
+            web.requestFocusFromTouch();
             if ("file:///android_asset/index.html".equals(web.getUrl())) {
-                web.evaluateJavascript("window.dispatchEvent(new Event('pmm:external-return'))", null);
+                web.evaluateJavascript(
+                    "(function(){try{document.activeElement?.blur?.();"
+                    + "window.dispatchEvent(new Event('pmm:external-return'));"
+                    + "window.PMM_LAST_BACK_NAV_AT=0;"
+                    + "document.getElementById('legacy-back-top')?.removeAttribute('disabled');"
+                    + "document.getElementById('back-top')?.removeAttribute('disabled');"
+                    + "}catch(e){}})()",null);
+                // Repeat after Android transition/focus animation completes;
+                // no navigation is triggered until the user taps Back.
+                web.postDelayed(() -> {
+                    if (!isFinishing() && !isDestroyed() && web != null &&
+                        "file:///android_asset/index.html".equals(web.getUrl())) {
+                        web.requestFocusFromTouch();
+                        web.evaluateJavascript(
+                            "window.dispatchEvent(new Event('pmm:external-return'))", null);
+                    }
+                }, 100L);
             }
         });
     }
@@ -578,6 +673,7 @@ public final class MainActivity extends Activity {
 
     private void requestReminderPermission() {
         if (!visibleToUser || isFinishing() || isDestroyed()) return;
+        notificationPermissionFlowOpen = true;
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // Android 13+: genuine system permission. It can only be granted by the user.
@@ -593,10 +689,14 @@ public final class MainActivity extends Activity {
                 .setPositiveButton("اجازه می‌دهم", (dialog, which) -> {
                     WisdomReminderScheduler.consent(MainActivity.this, true);
                     CourseReminderScheduler.sync(MainActivity.this);
+                    notificationPermissionFlowOpen = false;
+                    maybeStartContentUpdates();
                 })
                 .setNegativeButton("فعلاً نه", (dialog, which) -> {
                     WisdomReminderScheduler.consent(MainActivity.this, false);
                     CourseReminderScheduler.sync(MainActivity.this);
+                    notificationPermissionFlowOpen = false;
+                    maybeStartContentUpdates();
                 })
                 .setCancelable(false)
                 .show();
@@ -641,6 +741,8 @@ public final class MainActivity extends Activity {
                     grantResults[0] == PackageManager.PERMISSION_GRANTED;
             WisdomReminderScheduler.consent(this, granted);
             CourseReminderScheduler.sync(this);
+            notificationPermissionFlowOpen = false;
+            maybeStartContentUpdates();
             // A denial deactivates both reminder streams; no hidden background notice.
         }
     }
@@ -683,12 +785,15 @@ public final class MainActivity extends Activity {
         visibleToUser = true;
         if (web != null) web.onResume();
         restoreAfterEitaaIfFocused();
+        // Focus may arrive AFTER onResume; onWindowFocusChanged will run
+        // restoration again only if Eitaa-return remains pending.
         WisdomReminderScheduler.sync(this);
         CourseReminderScheduler.sync(this);
         // Reset only the visual × dismissals; keep stored audio progress.
         if (web != null && "file:///android_asset/index.html".equals(web.getUrl()))
             web.evaluateJavascript("window.dispatchEvent(new Event('pmm:app-foreground'))", null);
         initializeReminderPermissionIfNeeded();
+        maybeStartContentUpdates();
     }
     @Override protected void onDestroy() {
         contentExecutor.shutdownNow();

@@ -1,0 +1,151 @@
+name: v120 guarded historical photo preservation and independent DEBUG (OWNER TRIAL ONLY)
+on:
+  push:
+    branches: [feature/owner-v120-restore-12-historical-photos-20261120]
+    paths:
+      - .github/workflows/owner-v120-gallery-review.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore-lock-test-and-build:
+    name: Preserve 93+12 photos, lock 194 app files and build isolated APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - name: Checkout only candidate branch with original historical tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ensure base and source v119 remain unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin refs/heads/main:refs/remotes/origin/main
+          test "$(git rev-parse refs/remotes/origin/main)" = "12016838e98d8c1eadadbb0a96321f4855f1c5cd"
+          test -n "$(git rev-parse v10.4.9)"
+          test -z "$(git status --porcelain)"
+          python3 -m py_compile scripts/prepare_owner_v120_gallery.py
+          rm -rf scripts/__pycache__
+          test -z "$(git status --porcelain)"
+      - name: Safely restore only twelve historical originals on candidate branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'Historical gallery source is checked byte-for-byte including trailing newline.'
+          if test ! -f design/owner-v120-gallery-review-app-lock.json; then
+            python3 scripts/prepare_owner_v120_gallery.py apply
+          python3 scripts/prepare_owner_v120_gallery.py verify
+          python3 - <<'PY'
+          import subprocess
+          files=subprocess.check_output(["git","diff","--cached","--name-only"],text=True).splitlines()
+          expected={"app/src/main/assets/photo_quotes_manifest.js","design/owner-v120-gallery-review-app-lock.json"}
+          expected |= {"app/src/main/assets/images/photo_quotes/quote_%03d.jpg"%i for i in range(94,106)}
+          assert set(files)==expected,("Unexpected modification path",files)
+          print("PASS exact allowlist:",len(files),"paths")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat(v120-candidate): append 12 original historical posters, freeze 194 app files"
+          git push origin HEAD:refs/heads/feature/owner-v120-restore-12-historical-photos-20261120
+          fi
+          python3 scripts/prepare_owner_v120_gallery.py verify
+          test -z "$(git status --porcelain)"
+      - name: Verify v120 194-file lock and old v119 lock preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/prepare_owner_v120_gallery.py verify
+          node --check app/src/main/assets/photo_quotes_manifest.js
+          node --check app/src/main/assets/pmm_offline_course.js
+          node - <<'JS'
+          const fs=require('fs'),vm=require('vm');
+          const context={window:{}};
+          vm.runInNewContext(fs.readFileSync('app/src/main/assets/photo_quotes_manifest.js','utf8'),context);
+          const paths=Array.from(context.window.PMM_PHOTO_QUOTES);
+          if(paths.length!==105)throw new Error('Gallery expected exactly 105 photos, got '+paths.length);
+          for(let i=0;i<105;i++)if(!fs.existsSync('app/src/main/assets/'+paths[i]))throw new Error('Missing photo '+paths[i]);
+          if(new Set(paths).size!==105)throw new Error('Duplicated photo path');
+          console.log('PASS 105 approved+historic gallery paths resolve locally');
+          JS
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_course_state_compat.js
+          mkdir -p "$RUNNER_TEMP/pmm-clock"
+          javac -d "$RUNNER_TEMP/pmm-clock" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-clock" TestReminderClock
+          bash scripts/test_native_compile.sh
+      - name: Install Java 17 and Gradle 8.7
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Android platform 35 and build tools
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: 'false'
+      - name: Runner-only installation ID (never modifies official source)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          p=Path("app/build.gradle")
+          s=p.read_text(encoding="utf-8")
+          changes={
+              "applicationIdSuffix '.newiwanv16'":"applicationIdSuffix '.ownerphotoreview120'",
+              "versionCode 16":"versionCode 120",
+              "versionName '10.5.4-v16-preview'":"versionName '10.5.12-owner-gallery-120'",
+          }
+          for orig,dest in changes.items():
+              assert s.count(orig)==1,('Gradle file unexpectedly changed',orig)
+              s=s.replace(orig,dest,1)
+          p.write_text(s,encoding="utf-8")
+          PY
+          test "$(git diff --name-only)" = app/build.gradle
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+      - name: Build real isolated DEBUG APK without release signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          env -u PMM_KEYSTORE_PATH -u PMM_KEYSTORE_PASSWORD gradle --no-daemon :app:assembleDebug
+      - name: Verify real APK, signature, package, ZIP alignment and hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$apk"
+          sdk="$ANDROID_HOME/build-tools/35.0.0"
+          "$sdk/apksigner" verify --verbose --print-certs "$apk"
+          "$sdk/zipalign" -c -v 4 "$apk"
+          mkdir -p dist
+          "$sdk/aapt" dump badging "$apk" > dist/ANDROID-PACKAGE.txt
+          grep -F "name='ir.nahj.towhidkarbordi.ownerphotoreview120'" dist/ANDROID-PACKAGE.txt
+          grep -F "versionCode='120'" dist/ANDROID-PACKAGE.txt
+          grep -F "versionName='10.5.12-owner-gallery-120-debug'" dist/ANDROID-PACKAGE.txt
+          cp "$apk" dist/PayeMenbareMola-v120-GALLERY105-OWNER-TRIAL-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          git restore -- app/build.gradle
+          python3 scripts/prepare_owner_v120_gallery.py verify
+          git diff --quiet -- app/
+          # Gradle outputs are untracked under app/build; never treat generated APK files as app source changes.
+          test -z "$(git ls-files --others --exclude-standard -- app/src/)"
+          echo "PASS: every tracked app file remains byte-locked and no untracked app/src files exist."
+          git rev-parse HEAD > dist/EXACT-SOURCE-COMMIT.txt
+          echo "Owner review candidate only; main remains v119. No official release or signing changes." > dist/READ-ME.txt
+          cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
+          echo "Candidate commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Candidate app files: 194; 93 current gallery images kept byte-identical; 12 original historical images appended." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload signed DEBUG and SHA for owner's review
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v120-105photos-OWNER-TRIAL-${{ github.run_id }}
+          path: dist/
+          retention-days: 30
+          compression-level: 0
+          if-no-files-found: error

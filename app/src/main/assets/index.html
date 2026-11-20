@@ -715,7 +715,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;flex-direction:row!important}
 #stage{width:min(100vw,calc(100dvh * 941 / 1672),941px)!important;aspect-ratio:941/1672!important;
  height:auto!important;border-radius:0!important;box-shadow:none!important;border:0!important;
- padding:0!important;margin:0!important;background:#ead393 url('images/new_ui_bg.png') center/100% 100% no-repeat!important;}
+ padding:0!important;margin:0!important;background:#ead393 url('images/new_ui_bg_no_exit.png') center/100% 100% no-repeat!important;}
 #stage[hidden],#scene[hidden]{display:none!important}
 #stage>.backdrop,#stage #home-pane,#stage .inner-gold-panel,
 #stage .list-title,#stage .clip-title,#stage #back-button{display:none!important}
@@ -1345,26 +1345,47 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   line-height:1.3!important;
   letter-spacing:0!important;
 }
-/* Both category submenus have exactly one Back control: replace Home Exit in-place. */
-#scene .home-submenu-header{display:flex;justify-content:center;align-items:center}
-#scene #exit.is-submenu-back{
-  z-index:10;
-  border:2px solid #efc67c;
-  border-radius:46% / 49%;
-  background:linear-gradient(180deg,#10639c 0%,#094575 50%,#06335b 100%);
-  box-shadow:0 0 0 2px #9b672b,inset 0 1px 3px #fff4c340,0 3px 7px #39241170;
-  color:transparent;
-  touch-action:manipulation;
+/* v125 OWNER: only SIX main Home titles, bold genuine OFL Lalezar.
+   All other titles, text, Back/Exit, reminder panels and audio remain unchanged. */
+@font-face {
+  font-family:'PMM Lalezar';
+  src:url('fonts/Lalezar-Regular.ttf') format('truetype');
+  font-style:normal;font-weight:400;font-display:swap;
 }
-#scene #exit.is-submenu-back::after{
-  content:"";position:absolute;inset:4% 19%;
-  display:block;background:transparent url('images/back_v1043_approved.png') center / contain no-repeat;
-  pointer-events:none;
+#home-main-menu > .home-menu-card {
+  text-align:center!important; /* never inherit right alignment */
 }
-#scene #exit.is-submenu-back:active{filter:brightness(1.08);transform:scale(.96)}
+#home-main-menu > .home-menu-card > .home-menu-title {
+  font-family:'PMM Lalezar',Tahoma,Arial,sans-serif!important;
+  font-weight:400!important;
+  -webkit-text-stroke:0!important; /* Lalezar is already a heavy display face */
+  text-shadow:none!important;
+  display:block;flex:1 1 0%;width:auto;min-width:0;max-width:100%;
+  text-align:center!important;direction:rtl!important;
+  font-size:var(--pmm-home-six-uniform-size,22px)!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;word-break:keep-all!important;
+  text-overflow:clip;overflow:visible;
+  transform-origin:center center; /* allow a scaled long title to paint fully before horizontal scaling */
+}
+
+/* v124: native audio controls deliberately mirror existing navy/gold buttons;
+   no new home icon, no autoplay and no unrequested Tafal feature. */
+.pmm-native-wisdom-controls,.pmm-native-direct-controls{
+  direction:rtl;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  border:1px solid #bd944c;border-radius:10px;padding:8px;margin:8px 0;
+}
+.pmm-native-wisdom-controls button{min-height:44px;padding:7px 12px;cursor:pointer}
+.pmm-native-wisdom-controls input,.pmm-native-direct-controls input{
+  flex:1 1 120px;min-width:90px;accent-color:#104b79;
+}
+.pmm-native-direct-controls span{font-variant-numeric:tabular-nums}
+.pmm-native-wisdom-controls p{margin:0;width:100%;font-size:clamp(12px,2cqw,16px)}
+/* v122: Home submenus use #back-top; Exit remains home-root only. */
 /* v117: unified Back appearance, hit area, location and native navigation target.
    Exact approved Nahj image is used; page-specific routing stays in goBack(). */
-#scene #back-top, #stage #legacy-back-top, #scene #exit.is-submenu-back {
+#scene #back-top, #stage #legacy-back-top {
   position:absolute!important;left:78.65%!important;right:auto!important;
   top:33.54%!important;width:11.75%!important;height:auto!important;
   aspect-ratio:1/1!important;min-height:0!important;max-height:none!important;
@@ -1376,14 +1397,13 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 }
 #scene #back-top[hidden],#stage #legacy-back-top[hidden]{display:none!important}
 #scene #back-top::before,#scene #back-top::after,
-#stage #legacy-back-top::before,#stage #legacy-back-top::after,
-#scene #exit.is-submenu-back::before,#scene #exit.is-submenu-back::after{
+#stage #legacy-back-top::before,#stage #legacy-back-top::after{
   display:none!important;content:none!important;background:none!important;
 }
-#scene #back-top:active,#stage #legacy-back-top:active,#scene #exit.is-submenu-back:active{
+#scene #back-top:active,#stage #legacy-back-top:active{
   transform:scale(.94)!important;filter:brightness(1.08)!important;
 }
-#scene #back-top:focus-visible,#stage #legacy-back-top:focus-visible,#scene #exit.is-submenu-back:focus-visible{
+#scene #back-top:focus-visible,#stage #legacy-back-top:focus-visible{
   outline:3px solid #f8d16c!important;outline-offset:3px!important;
 }
 /* No second Back action under course toolbar; the standard top Back handles nested route. */
@@ -1427,7 +1447,7 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 
 /* Owner review v118: visible Persian Back text in every route, original Estedad font.
    Preserve the original Back locations and event handlers; suppress prior image skins. */
-#scene #back-top, #stage #legacy-back-top, #scene #exit.is-submenu-back, #stage #guest-return {
+#scene #back-top, #stage #legacy-back-top, #stage #guest-return {
   position:absolute!important;left:73.0%!important;right:auto!important;
   top:33.54%!important;width:17.4%!important;height:5.1%!important;
   aspect-ratio:auto!important;min-height:0!important;max-height:none!important;
@@ -1448,13 +1468,17 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
 }
 #scene #back-top::before,#scene #back-top::after,
 #stage #legacy-back-top::before,#stage #legacy-back-top::after,
-#scene #exit.is-submenu-back::before,#scene #exit.is-submenu-back::after,
 #stage #guest-return::before,#stage #guest-return::after{
   content:none!important;display:none!important;background:none!important;
 }
 #stage #guest-return{top:33.54%!important;}
+/* v122: hidden Exit cannot be displayed or interacted with through legacy CSS. */
+#scene #exit[hidden],#stage #home-pane.gone #home-exit{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+#scene #exit.is-submenu-back{display:none!important;pointer-events:none!important;}
 #scene #back-top:focus-visible,#stage #legacy-back-top:focus-visible,
-#scene #exit.is-submenu-back:focus-visible,#stage #guest-return:focus-visible{
+#stage #guest-return:focus-visible{
   outline:3px solid #f8d16c!important;outline-offset:2px!important;
 }
 /* The editor and full notes list stay behind the existing small note icon. */
@@ -1484,6 +1508,36 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
  background:#fffdf3;color:#07376f;font:800 17px/1.4 Tahoma,sans-serif}
 #offline-course-scroll .course-reminder-setting p{margin:7px 0 0;
  font:600 clamp(10px,1.5cqw,13px)/1.9 'PMM Estedad',Tahoma,sans-serif}
+
+/* Owner trial TOUCH-97: all visibly operable controls, no resting-state changes.
+   Individual scale/translate compose with preserved base transforms, including 3D wheel boards.
+   The selectors below neutralize *only prior :active scaling* to avoid 0.97 * older scales. */
+.pmm-owner-touch97 {
+  scale:.97!important;
+  translate:0 1px;
+}
+/* Old active transforms are retained where they implement a nudge, but their old
+   scale is removed so the complete press is 97%, not 97% of a second scale. */
+.gold-button.pmm-owner-touch97:active,.navy-button.pmm-owner-touch97:active,
+.top-action.pmm-owner-touch97:active,.action.pmm-owner-touch97:active,
+.photo-controls button.pmm-owner-touch97:active,
+#stage .nahj-audio-group.pmm-owner-touch97:active,
+#wisdom-scroll .wisdom-utility-button.pmm-owner-touch97:active,
+.home-menu-card.pmm-owner-touch97:active { translate:none; }
+.home-hit.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.session.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.about-home-button.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.about-entry.pmm-owner-touch97:active {transform:translateY(1px);translate:none}
+.gallery-tile.pmm-owner-touch97:active,.guest-mola-card.pmm-owner-touch97:active,
+.home-door.pmm-owner-touch97:active {transform:none}
+#home-pane .home-door.pmm-owner-touch97:active {transform:translateY(1px)!important;translate:none}
+#home-pane #home-about.pmm-owner-touch97:active {transform:translateY(2px)!important;translate:none}
+#home-pane #home-exit.pmm-owner-touch97:active {transform:none!important}
+#scene #back-top.pmm-owner-touch97:active,#stage #legacy-back-top.pmm-owner-touch97:active {transform:none!important}
+#stage .nahj-part-play.pmm-owner-touch97:active {transform:none}
+.home-menu-card.pmm-owner-touch97:active {transform:translateY(1px)}
+/* No paint/motion when the OS requests reduced motion. */
+@media (prefers-reduced-motion:reduce){.pmm-owner-touch97{scale:none!important;translate:none!important}}
 </style>
 <link rel="stylesheet" href="pmm_online_updates.css">
 </head>
@@ -1837,6 +1891,13 @@ const wisdoms=bankReport.valid?sourceBank:[];
 const wisdomLookup=new Map(wisdoms.map(w=>[w.id,w]));
 const STORAGE_KEY='pmm_hikmat_489_drawbag_v1';
 const scene=document.getElementById('scene');
+const sceneBackdrop=scene.querySelector('img.scene-bg');
+const HOME_EXIT_ART='images/new_ui_bg.png';
+const INNER_NO_EXIT_ART='images/new_ui_bg_no_exit.png';
+function showSceneArtwork(showHomeExit){
+  const src=showHomeExit?HOME_EXIT_ART:INNER_NO_EXIT_ART;
+  if(sceneBackdrop&&sceneBackdrop.getAttribute('src')!==src)sceneBackdrop.setAttribute('src',src);
+}
 const mainScroll=document.getElementById('main-scroll');
 const wisdomScroll=document.getElementById('wisdom-scroll');
 const thumb=document.getElementById('scroll-thumb');
@@ -2053,45 +2114,78 @@ const homeSubmenus=Array.from(document.querySelectorAll('.home-submenu'));
 const homeSubmenuTriggers=Array.from(document.querySelectorAll('[data-home-submenu]'));
 let activeHomeSubmenu='',homeSubmenuTrigger=null;
 function syncHomeSubmenuReturn(){
-  const button=document.getElementById('exit');
+  const exit=document.getElementById('exit');
+  const back=document.getElementById('back-top');
   const isBack=Boolean(activeHomeSubmenu);
-  button.classList.toggle('is-submenu-back',isBack);
-  // Keep Home Exit untouched; show the approved Persian word in the same slot for submenu Back.
-  button.textContent=isBack?'بازگشت':'';
-  button.setAttribute('aria-label',isBack?'بازگشت به منوی اصلی':'خروج از برنامه');
-  button.title=isBack?'بازگشت به منوی اصلی':'خروج از برنامه';
+  // The true Exit is physically absent and disabled on ALL submenus.
+  exit.classList.remove('is-submenu-back');
+  exit.textContent='';
+  exit.hidden=isBack;
+  exit.disabled=isBack;
+  exit.setAttribute('aria-label','خروج از برنامه');
+  exit.title='خروج از برنامه';
+  back.hidden=!isBack;
+  back.disabled=!isBack;
+  back.textContent='بازگشت';
+  back.setAttribute('aria-label',isBack?'بازگشت به منوی اصلی':'بازگشت به صفحه قبل');
+  scene.dataset.navMode=isBack?'submenu':'home-root';
+  // The original approved backdrop itself has a BAKED-IN blue Exit plaque.
+  // Only root Home may display that artwork.
+  showSceneArtwork(!isBack);
 }
-// Measure the actual loaded Estedad text at the available title width. All six
-// labels share ONE maximized size, bounded by the longest label (no wrapping).
+// v126: all SIX captions use exactly the same Lalezar font-size and weight.
+// The owner-approved FIRST caption «شرح جامع صوتی نهج‌البلاغه» determines
+// the size. Other captions never receive an independently smaller font-size.
+let homeTitleFitFrame=0;
+const homeTitleMeasure=document.createElement('canvas').getContext('2d');
 function fitHomeMainMenuTitles(){
-  if(!homeMenuRoot||homeMenuRoot.hidden||!homeMenuRoot.clientWidth)return;
+  if(!homeMenuRoot||homeMenuRoot.hidden||!homeMenuRoot.clientWidth||!homeTitleMeasure)return;
   const titles=Array.from(homeMenuRoot.querySelectorAll(':scope > .home-menu-card > .home-menu-title'));
   if(titles.length!==6)return;
-  const canvas=document.createElement('canvas');
-  const context=canvas.getContext('2d');
-  if(!context)return;
-  const reference=30;
-  context.font=`900 ${reference}px "PMM Estedad",Tahoma,Arial,sans-serif`;
-  let size=reference;
-  for(const title of titles){
-    const width=title.getBoundingClientRect().width;
-    const textWidth=context.measureText(title.textContent.trim()).width;
-    if(width>0&&textWidth>0)size=Math.min(size,(width-7)*reference/textWidth);
-  }
-  // Canvas can slightly underestimate Arabic shaping/stroke; verify against
-  // the actual rendered, single-line widths and shrink every label together.
-  size=Math.max(9,Math.floor(Math.min(reference,size)*10)/10);
-  for(let attempt=0;attempt<4;attempt++){
-    homeMenuRoot.style.setProperty('--pmm-home-six-title-size',`${size}px`);
-    const overflowRatio=Math.max(1,...titles.map(t=>t.scrollWidth/Math.max(1,t.clientWidth-3)));
-    if(overflowRatio<=1.001)break;
-    size=Math.max(9,Math.floor((size/overflowRatio)*9.7)/10);
-  }
+  const model=titles[0];
+  if(!model.textContent.includes('شرح جامع صوتی'))return;
+  const reference=48;
+  homeTitleMeasure.font='400 '+reference+'px "PMM Lalezar",Tahoma,Arial,sans-serif';
+  const modelCard=model.closest('.home-menu-card');
+  const modelSpace=Math.max(1,model.clientWidth-6);
+  const modelWidth=homeTitleMeasure.measureText(model.textContent.trim()).width;
+  if(modelWidth<=0)return;
+  const maxSize=Math.min(48,Math.max(9,(modelCard?.clientHeight||70)*0.70));
+  // Owner v127: shrink the identical font-size of ALL six captions by
+  // precisely one sixth (five sixths of the former v126 reference size).
+  // Keep the first «شرح جامع صوتی» as the size reference.
+  const previousUniformSize=Math.max(3,Math.floor(Math.min(maxSize,modelSpace*reference/modelWidth*0.985)*10)/10);
+  const uniformSize=Math.max(3,previousUniformSize*(5/6));
+  // One shared value on parent: identically sized / weighted glyphs in all tiles.
+  homeMenuRoot.style.setProperty('--pmm-home-six-uniform-size',uniformSize.toFixed(1)+'px');
+  homeTitleMeasure.font='400 '+uniformSize+'px "PMM Lalezar",Tahoma,Arial,sans-serif';
+  titles.forEach(title=>{
+    title.style.removeProperty('--pmm-home-title-individual');
+    const available=Math.max(1,title.clientWidth-6);
+    const needed=homeTitleMeasure.measureText(title.textContent.trim()).width;
+    // Longer captions remain ONE line without reducing their CSS font size.
+    // Horizontal adjustment, only if essential, keeps all six at the same
+    // vertical size and typeface weight and avoids clipping on narrow phones.
+    const scale=needed>available?Math.max(0.55,available/needed*0.985):1;
+    title.style.transform=scale<1?'scaleX('+scale.toFixed(4)+')':'none';
+    title.style.textAlign='center';
+  });
 }
-function queueHomeTitleFit(){requestAnimationFrame(fitHomeMainMenuTitles)}
+function queueHomeTitleFit(){
+  if(homeTitleFitFrame)return;
+  homeTitleFitFrame=requestAnimationFrame(()=>{
+    homeTitleFitFrame=0;
+    fitHomeMainMenuTitles();
+  });
+}
 if(document.fonts?.ready)document.fonts.ready.then(queueHomeTitleFit);
-window.addEventListener('resize',queueHomeTitleFit);
-window.addEventListener('load',queueHomeTitleFit);
+if(document.fonts?.load)document.fonts.load('24px "PMM Lalezar"').then(queueHomeTitleFit).catch(()=>{});
+window.addEventListener('resize',queueHomeTitleFit,{passive:true});
+window.addEventListener('load',queueHomeTitleFit,{once:true});
+if(typeof ResizeObserver==='function'&&homeMenuRoot){
+  const homeTitleObserver=new ResizeObserver(queueHomeTitleFit);
+  homeTitleObserver.observe(homeMenuRoot);
+}
 queueHomeTitleFit();
 function resetHomeMenu(restoreFocus=false){
   const previous=homeSubmenuTrigger;
@@ -2147,7 +2241,9 @@ function enterWisdom(){
   originalFocus=document.activeElement;
   mainScroll.hidden=true;wisdomScroll.hidden=false;
   document.getElementById('exit').hidden=true;document.getElementById('about').hidden=true;
-  document.getElementById('back-top').hidden=false;document.getElementById('wisdom-floor-cover').hidden=false;
+  document.getElementById('back-top').hidden=false;document.getElementById('back-top').disabled=false;
+  document.getElementById('wisdom-floor-cover').hidden=false;
+  scene.dataset.navMode='inner';showSceneArtwork(false);
   scene.dataset.screen='wisdom';window.PMM_V7&&window.PMM_V7.markWisdom();toast.hidden=true;
   showInvitation();
   if(!bankReport.valid)showToast('بانک آفلاین کامل نیست: '+bankReport.errors[0]);
@@ -2205,6 +2301,27 @@ function playExplanation(){
    const seconds=last&&last.entryId===record.id&&last.part===index&&!last.finished?last.seconds:0;
    selectedExplanation={record,index};
    PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,seconds,false);
+   if(window.PMM_GLOBAL_AUDIO?.available?.()&&
+      window.PMM_GLOBAL_AUDIO.approved(urls[index])){
+     // Only the user-pressed "شرح این جمله را بشنوید" (or part button)
+     // starts native playback; no WebView MP3 request is made in parallel.
+     audioPlayer.removeAttribute('src');audioPlayer.load();
+     selector.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+     audioBox.hidden=false;
+     window.PMM_GLOBAL_AUDIO.startWisdom({
+       url:urls[index],title:record.title||'شرح حکمت',
+       container:audioBox,resume:seconds,
+       onProgress:state=>{
+         if(selectedExplanation?.record.id===record.id&&
+            selectedExplanation.index===index&&state.active){
+           PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,
+             Math.floor(state.position||0),false);
+         }
+       }
+     });
+     return;
+   }
+   audioPlayer.hidden=false;
    audioPlayer.src=encodeURI(urls[index]);audioPlayer.load();
    if(seconds>0)audioPlayer.addEventListener('loadedmetadata',function restore(){
       if(selectedExplanation?.record.id===record.id&&selectedExplanation.index===index&&
@@ -2286,7 +2403,9 @@ window.PMM_NEW_UI=Object.freeze({
    document.getElementById('exit').hidden=true;
    document.getElementById('about').hidden=true;
    document.getElementById('back-top').hidden=false;
+   document.getElementById('back-top').disabled=false;
    document.getElementById('wisdom-floor-cover').hidden=false;
+   scene.dataset.navMode='inner';showSceneArtwork(false);
    scene.dataset.screen='gallery';
    document.getElementById('gallery-scroll').scrollTop=0;
    requestAnimationFrame(updateScrollbar);
@@ -2439,6 +2558,16 @@ function stopNahjInlineAudio(){
 }
 function attachNahjInlineAudio(groupId,entryId){
  const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
+ // Android: one foreground native service survives Back, other screens,
+ // screen lock and app background. Browser fallback retains old HTML5 audio.
+ if(window.PMM_GLOBAL_AUDIO?.attachNahjCards?.(cards,groupId,entryId,{
+   getProgress:group=>PMM_LEARNING_PROGRESS.getNahj(group),
+   setProgress:(group,id,index,seconds,finished)=>
+     PMM_LEARNING_PROGRESS.setNahj(group,id,index,seconds,finished),
+   getSpeed:()=>nahjAudioSpeed,
+   setSpeed:value=>{nahjAudioSpeed=value;try{localStorage.setItem(NAHJ_AUDIO_SPEED_KEY,String(value))}catch(_){}},
+   format:nahjAudioTime,playIcon:NAHJ_SVG_PLAY,pauseIcon:NAHJ_SVG_PAUSE
+ }))return;
  const players=cards.map(card=>card.querySelector('audio.nahj-part-media'));
  function updateRateButtons(){
    contents.querySelectorAll('[data-nahj-speed]').forEach(button=>{
@@ -2786,39 +2915,32 @@ function renderReminderSettings(){
   ['daily','هر روز (پیش‌فرض)'],['weekly','هفته‌ای یک‌بار'],
   ['monthly','ماهی یک‌بار'],['off','خاموش']
  ];
-  panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم یادآوری مولا">'+
- '<h2>یادآور مهمانی مولا</h2>'+
- '<p class="pmm-reminder-note">اعلان در نوار هشدار گوشی، کاملاً بی‌صدا و بدون لرزش است. در اندروید ۱۳ به بالا، مجوز سیستمی اعلان هنگام اولین ورود درخواست می‌شود؛ در صورت تأیید، ساعت تأیید اولیه، مبنای اعلان‌های روزانه، هفتگی یا ماهانه است. در صورت تأیید بین ۱۲ شب و ۷ صبح، ساعت ۷ صبح ملاک می‌شود. اعلان تفأل هرگز از ۰۰:۰۰ تا قبل از ۷:۰۰ نمایش داده نمی‌شود. محدودیت باتری می‌تواند اعلان را با تأخیر نمایش دهد.</p>'+
- '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
- '<select id="pmm-reminder-frequency">'+options.map(option=>
-  '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select>'+
- '<p class="pmm-reminder-note" id="pmm-reminder-status">'+
- (current.consent?(current.allowed?'یادآوری‌ها مجاز هستند.':'برای نمایش اعلان، اجازهٔ اندروید لازم است.'):'هنوز اجازهٔ یادآوری دریافت نشده است.')+'</p>'+
- '<div class="pmm-reminder-actions"><button type="button" id="pmm-reminder-permission">اجازهٔ نمایش اعلان</button>'+
- '<button type="button" id="pmm-reminder-back">بازگشت به تفال</button></div></section>';
+  // Owner v124: ONLY this label and exactly four frequency choices belong
+  // inside the Tafal settings view; the fixed global Back icon remains outside.
+  panel.innerHTML='<section class="pmm-reminder-settings" aria-label="تنظیم تکرار یادآوری">'+
+    '<label for="pmm-reminder-frequency">تکرار یادآوری</label>'+
+    '<select id="pmm-reminder-frequency" aria-label="تکرار یادآوری">'+options.map(option=>
+    '<option value="'+option[0]+'"'+(option[0]===frequency?' selected':'')+'>'+option[1]+'</option>').join('')+'</select></section>';
   panel.hidden=false;
   wisdom.classList.add('reminder-open');
   document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','true');
+  document.getElementById('wisdom-reminder-gear').hidden=true;
+  const back=document.getElementById('back-top');
+  back.hidden=false;back.disabled=false;back.style.pointerEvents='auto';
   wisdom.scrollTop=0;
  document.getElementById('pmm-reminder-frequency').addEventListener('change',event=>{
-  const value=event.target.value;
-  if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
-   window.PMMNative.setReminderFrequency(value);
-  document.getElementById('pmm-reminder-status').textContent=
-   value==='off'?'یادآوری خاموش شد.':'تکرار انتخابی ذخیره شد. در صورت لزوم اجازهٔ اعلان را تأیید کنید.';
+   const value=event.target.value;
+   if(window.PMMNative&&typeof window.PMMNative.setReminderFrequency==='function')
+     window.PMMNative.setReminderFrequency(value);
  });
- document.getElementById('pmm-reminder-permission').addEventListener('click',()=>{
-  if(window.PMMNative&&typeof window.PMMNative.askReminderPermission==='function')
-   window.PMMNative.askReminderPermission();
-  else document.getElementById('pmm-reminder-status').textContent='این تنظیم در نسخهٔ اندروید قابل فعال‌سازی است.';
- });
-  document.getElementById('pmm-reminder-back').addEventListener('click',closeWisdomReminderSettings);
+
 }
 function closeWisdomReminderSettings(){
   const panel=document.getElementById('wisdom-reminder-panel');
   panel.hidden=true;
   document.getElementById('wisdom-scroll').classList.remove('reminder-open');
   document.getElementById('wisdom-reminder-gear').setAttribute('aria-expanded','false');
+  document.getElementById('wisdom-reminder-gear').hidden=false;
   document.getElementById('wisdom-scroll').scrollTop=0;
 }
 document.getElementById('wisdom-reminder-gear').addEventListener('click',()=>{
@@ -2991,6 +3113,10 @@ function renderPlayer(){
    const player=contents.querySelector('audio.nahj-audio-player');
    const start=contents.querySelector('#nahj-direct-start');
    if(player&&start){
+    if(window.PMM_GLOBAL_AUDIO?.attachDirect?.(
+       player,start,contents.querySelector('.nahj-stream-status'),link,x.title)){
+       // Native player retains its audio outside this screen.
+    }else{
      const stream=window.PMM_STREAM_HELPER.attach(player,contents.querySelector('.nahj-stream-status'));
      start.addEventListener('click',()=>{
        // User action is the only place where src is ever assigned.
@@ -3001,6 +3127,7 @@ function renderPlayer(){
      });
      player.addEventListener('playing',()=>{start.hidden=true});
      player.addEventListener('error',()=>{start.hidden=false});
+    }
    }
  }
  document.getElementById('player-back').addEventListener('click',()=>goBack());
@@ -3343,6 +3470,7 @@ function mountWheel(key,items,rotorId,canvasId,posId,onSelect){
  if(!rotor||!area||!counter)return;
  rotor.textContent='';
  const boards=[];
+ const wheelFragment=document.createDocumentFragment();
  let index=0,step=0,swiped=false,suppressClickUntil=0;
  items.forEach((item,i)=>{
   const board=document.createElement('button');board.type='button';board.className='pmm-wheel-board';
@@ -3359,8 +3487,9 @@ function mountWheel(key,items,rotorId,canvasId,posId,onSelect){
    panel.innerHTML='<span class="pmm-wheel-clip-icon" aria-hidden="true">▶</span><span class="pmm-wheel-clip-title"></span><span class="pmm-wheel-clip-caption">در انتظار دریافت لینک کلیپ</span>';
    panel.querySelector('.pmm-wheel-clip-title').textContent=item.title;board.appendChild(panel);}
   board.addEventListener('click',()=>{if(swiped||Date.now()<suppressClickUntil)return;if(key==='photos'||i===index)onSelect(i);else spin(closest(i))});
-  rotor.appendChild(board);boards.push(board);
+  wheelFragment.appendChild(board);boards.push(board);
  });
+ rotor.appendChild(wheelFragment); // one layout insertion, not 105 reflows
  function closest(to){const n=items.length;return ((to-index+n+n/2)%n)-n/2}
  function update(){
   const n=items.length;
@@ -3614,7 +3743,12 @@ function resumed(){
  requestAnimationFrame(()=>{
   displayReturn();
   const top=stage.hidden?document.getElementById('back-top'):document.getElementById('legacy-back-top');
-  if(top&&!top.hidden){top.disabled=false;top.style.pointerEvents='auto';top.style.visibility='visible';top.style.zIndex='100';}
+  if(top&&!top.hidden){
+   top.disabled=false;top.style.pointerEvents='auto';top.style.visibility='visible';top.style.zIndex='100';
+   // On Eitaa return, focus the actual Back before the first user touch;
+   // otherwise some Android WebViews consume that touch just to regain focus.
+   if(openedAt||screen==='about')top.focus({preventScroll:true});
+  }
   const legacy=document.getElementById('back-button');if(legacy){legacy.disabled=false;legacy.style.pointerEvents='auto';}
  });
  if(openedAt){openedAt=0;try{localStorage.removeItem(STAMP)}catch(_){}}
@@ -3646,6 +3780,14 @@ function handleOnScreenBack(e){
  const btn=e.target instanceof Element?e.target.closest('#back-top,#legacy-back-top,#back-button'):null;
  if(!btn||btn.hidden)return;
  e.preventDefault();e.stopImmediatePropagation();
+ // Course Welcome Back is available BEFORE accepting any rules. Prefer its
+ // direct owner route instead of relying on stale Home/Back transition state.
+ const course=document.getElementById('offline-course-scroll');
+ if(course&&!course.hidden&&window.PMM_OFFLINE_COURSE?.back){
+   window.PMM_LAST_BACK_NAV_AT=Date.now();
+   window.PMM_OFFLINE_COURSE.back();
+   return;
+ }
  const now=performance.now();
  if(now-lastBackClick<350)return;
  lastBackClick=now;
@@ -3662,8 +3804,10 @@ function exitButton(e){
 }
 function exitOnHome(btn){
  if(!btn||btn.disabled||btn.hidden||screen!=='home')return false;
- if(btn.id==='exit')return !scene.hidden&&stage.hidden&&scene.dataset.screen==='home';
- return !stage.hidden&&scene.hidden;
+ if(btn.id==='exit')return !scene.hidden&&stage.hidden&&scene.dataset.screen==='home'&&
+   scene.dataset.navMode==='home-root'&&document.getElementById('home-main-menu')?.hidden===false;
+ return !stage.hidden&&scene.hidden&&
+   !document.getElementById('home-pane')?.classList?.contains('gone');
 }
 function armExit(e){
  const btn=exitButton(e);
@@ -3683,13 +3827,6 @@ document.addEventListener('click',e=>{
  if(!btn)return;
  // No other listener may send Exit: this capture handler owns authorization.
  e.preventDefault();e.stopImmediatePropagation();
- if(btn.id==='exit'&&btn.classList?.contains('is-submenu-back')&&
-    !scene.hidden&&stage.hidden&&scene.dataset.screen==='home'){
-   exitStart=null;exitStartAt=0;
-   if(window.PMM_NEW_UI&&window.PMM_NEW_UI.closeSubmenu())
-     window.PMM_LAST_BACK_NAV_AT=Date.now();
-   return;
- }
  const now=Date.now();
  const deliberate=exitStart===btn&&now-exitStartAt>=0&&now-exitStartAt<1600;
  const accessible=e.detail===0&&e.isTrusted===true&&document.activeElement===btn;
@@ -3706,7 +3843,9 @@ document.addEventListener('click',e=>{
 window.addEventListener('focus',resumed);
 window.addEventListener('pageshow',resumed);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')resumed()});
-window.addEventListener('pmm:external-return',resumed); // app test hook
+window.addEventListener('pmm:external-return',()=>{
+  lastBackClick=-1000;lastResume=0;resumed();
+}); // Android Eitaa return must not consume the first Back
 recoverReload();
 window.PMM_V9=Object.freeze({
  version:'9',getRoute:()=>({screen,section,stageVisible:!stage.hidden,sceneVisible:!scene.hidden}),
@@ -3794,7 +3933,123 @@ window.PMM_V9=Object.freeze({
 })();
 </script>
 <script src="pmm_online_updates.js"></script>
+<!-- Native foreground playback is started only by explicit Play buttons. -->
+<script src="pmm_unified_background_audio_v124.js"></script>
 <script src="pmm_offline_course_logic.js"></script>
 <script src="pmm_offline_course.js"></script>
-</body>
+<!-- Owner v124: removed unrequested wisdom-bookmarks-and-notes module entirely. -->
+<script id="pmm-owner-touch97-trial">
+/* Visual-only, delegated, future-proof. No synthetic clicks, navigation, or event cancellation. */
+(()=>{
+  'use strict';
+  const CONTROL='button,a[href],select,summary,input[type="button"],input[type="submit"],'+
+     'input[type="reset"],input[type="time"],[role="button"],[role="link"],'+
+     'label.course-accept-row,#photo-fullscreen img';
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+  if(!window.CSS?.supports?.('scale','0.97'))return; // Preserve transforms on older WebViews.
+  const originals=new WeakMap(), timers=new WeakMap();
+  let active=null;
+  const DURATION_DOWN=100,DURATION_UP=145;
+  const easing='cubic-bezier(.2,.7,.3,1)';
+  function eligible(node){
+    const el=node instanceof Element?node.closest(CONTROL):null;
+    if(!el||el.matches(':disabled,[disabled],[aria-disabled="true"]'))return null;
+    if(el.closest('[inert],[aria-hidden="true"],fieldset[disabled]'))return null;
+    if(el.isContentEditable||el.closest('[contenteditable="true"]'))return null;
+    if(!el.isConnected||!el.getClientRects().length)return null;
+    const s=getComputedStyle(el);
+    if(s.pointerEvents==='none'||s.visibility!=='visible')return null;
+    return el;
+  }
+  function cancelRestore(el){
+    const id=timers.get(el);
+    if(id!==undefined){clearTimeout(id);timers.delete(el);}
+  }
+  function transition(el,phase){
+    const saved=originals.get(el);
+    const duration=phase==='down'?DURATION_DOWN:DURATION_UP;
+    // Preserve the exact previous inline transition for restoration, and all
+    // computed existing transitions (including the wheel's transform timing).
+    el.style.setProperty('transition',saved.computed+', scale '+duration+'ms '+easing+
+      ', translate '+duration+'ms '+easing);
+  }
+  function begin(el,id,x,y,mode){
+    if(reduced?.matches)return;
+    if(active)finish();
+    cancelRestore(el);
+    if(!originals.has(el))originals.set(el,{
+      inline:el.style.getPropertyValue('transition'),
+      priority:el.style.getPropertyPriority('transition'),
+      computed:getComputedStyle(el).transition
+    });
+    transition(el,'down');
+    el.classList.add('pmm-owner-touch97');
+    active={el,id,x,y,mode};
+  }
+  function finish(){
+    if(!active)return;
+    const {el}=active;
+    active=null;
+    if(!el.isConnected){originals.delete(el);return;}
+    transition(el,'up');
+    el.classList.remove('pmm-owner-touch97');
+    cancelRestore(el);
+    const timer=setTimeout(()=>{
+      if(active?.el===el)return;
+      const saved=originals.get(el);
+      if(!saved)return;
+      if(saved.inline)el.style.setProperty('transition',saved.inline,saved.priority);
+      else el.style.removeProperty('transition');
+      originals.delete(el);timers.delete(el);
+    },DURATION_UP+30);
+    timers.set(el,timer);
+  }
+  document.addEventListener('pointerdown',e=>{
+    if(e.button!==0||active)return;
+    const el=eligible(e.target);
+    if(el)begin(el,e.pointerId,e.clientX,e.clientY,'pointer');
+  },{capture:true,passive:true});
+  document.addEventListener('pointermove',e=>{
+    if(!active||active.mode!=='pointer'||active.id!==e.pointerId)return;
+    const dx=e.clientX-active.x,dy=e.clientY-active.y;
+    const box=active.el.getBoundingClientRect();
+    if(dx*dx+dy*dy>225||e.clientX<box.left-10||e.clientX>box.right+10||
+       e.clientY<box.top-10||e.clientY>box.bottom+10)finish();
+  },{capture:true,passive:true});
+  document.addEventListener('pointerup',e=>{
+    if(active?.mode==='pointer'&&active.id===e.pointerId)finish();
+  },{capture:true,passive:true});
+  document.addEventListener('pointercancel',finish,{capture:true,passive:true});
+  document.addEventListener('dragstart',finish,{capture:true,passive:true});
+  document.addEventListener('scroll',finish,{capture:true,passive:true});
+  document.addEventListener('keydown',e=>{
+    if(e.repeat||active||!['Enter',' '].includes(e.key))return;
+    const el=eligible(e.target);
+    if(el&&el.matches('button,a[href],select,summary,[role="button"],[role="link"]'))
+       begin(el,e.key,0,0,'keyboard');
+  },true);
+  document.addEventListener('keyup',e=>{
+    if(active?.mode==='keyboard'&&active.id===e.key)finish();
+  },true);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)finish()});
+  window.addEventListener('blur',finish);
+  // WebView without PointerEvent: touch fallback; no duplicates on modern Android.
+  if(!window.PointerEvent){
+    document.addEventListener('touchstart',e=>{
+      if(active||e.touches.length!==1)return;
+      const touch=e.touches[0],el=eligible(e.target);
+      if(el)begin(el,touch.identifier,touch.clientX,touch.clientY,'touch');
+    },{capture:true,passive:true});
+    document.addEventListener('touchmove',e=>{
+      if(!active||active.mode!=='touch')return;
+      const touch=Array.from(e.touches).find(t=>t.identifier===active.id);
+      if(!touch)return finish();
+      const dx=touch.clientX-active.x,dy=touch.clientY-active.y;
+      if(dx*dx+dy*dy>225)finish();
+    },{capture:true,passive:true});
+    document.addEventListener('touchend',finish,{capture:true,passive:true});
+    document.addEventListener('touchcancel',finish,{capture:true,passive:true});
+  }
+})();
+</script></body>
 </html>

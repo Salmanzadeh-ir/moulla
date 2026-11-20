@@ -15,9 +15,10 @@ for(const route of ['gallery','wisdom','list','about','biography','photo','playe
  const listeners={},back=new Element('back-top'),oldBack=new Element('legacy-back-top'),
        exit=new Element('exit'),oldExit=new Element('home-exit');
  const stage={hidden:['gallery','wisdom'].includes(route)};
- const scene={hidden:!stage.hidden,dataset:{screen:route}};
+ const scene={hidden:!stage.hidden,dataset:{screen:route,navMode:'inner'}};
  back.hidden=!stage.hidden;oldBack.hidden=stage.hidden;exit.hidden=true;
- const elements={'back-top':back,'legacy-back-top':oldBack,'exit':exit,'home-exit':oldExit};
+ const menu=new Element('home-main-menu');menu.hidden=true;
+ const elements={'back-top':back,'legacy-back-top':oldBack,'exit':exit,'home-exit':oldExit,'home-main-menu':menu};
  let t=10000,nav=0,exits=0;
  const timers=[];
  const window={PMM_EXIT_AUTHORIZED_AT:0,PMM_LAST_BACK_NAV_AT:0,
@@ -29,7 +30,7 @@ for(const route of ['gallery','wisdom','list','about','biography','photo','playe
    goBack(){nav++;window.PMM_LAST_BACK_NAV_AT=t;window.PMM_EXIT_AUTHORIZED_AT=0;
      exit.disabled=true;oldExit.disabled=true;
      timers.push({at:t+1000,fn(){exit.disabled=false;oldExit.disabled=false}});
-     ctx.screen='home';scene.hidden=false;stage.hidden=true;scene.dataset.screen='home';
+     ctx.screen='home';scene.hidden=false;stage.hidden=true;scene.dataset.screen='home';scene.dataset.navMode='home-root';menu.hidden=false;
      back.hidden=true;oldBack.hidden=true;exit.hidden=false;}};
  vm.runInNewContext(code,ctx);
  function emit(type,target,detail=1,trusted=true){
@@ -40,6 +41,8 @@ for(const route of ['gallery','wisdom','list','about','biography','photo','playe
  }
  function advance(ms){t+=ms;for(const task of timers.slice()){if(task.at<=t){task.fn();timers.splice(timers.indexOf(task),1)}}}
  const original=stage.hidden?back:oldBack;
+ emit('pointerdown',exit);emit('click',exit,1,true);
+ assert.equal(exits,0,route+': Exit MUST NOT work while any inner page is active');
  emit('pointerdown',original);emit('touchstart',original);
  assert.equal(nav,0,route+': Back must not route on pointerdown');
  emit('click',original);
@@ -51,6 +54,10 @@ for(const route of ['gallery','wisdom','list','about','biography','photo','playe
  emit('click',exit,0,true);
  assert.equal(exits,0,route+': delayed ghost click without focus blocked');
  emit('pointerdown',exit);emit('touchstart',exit);emit('click',exit,1,true);
+ if(exits!==1){
+   const debug=vm.runInNewContext("({screen,stageHidden:stage.hidden,sceneHidden:scene.hidden,sceneNavMode:scene.dataset.navMode,sceneScreen:scene.dataset.screen,menuHidden:document.getElementById('home-main-menu').hidden,exitHidden:document.getElementById('exit').hidden,exitDisabled:document.getElementById('exit').disabled,hasExitGesture:exitStart===document.getElementById('exit'),exitStartAt,now:Date.now(),lastBackAt:window.PMM_LAST_BACK_NAV_AT,exitOnHome:exitOnHome(document.getElementById('exit'))})",ctx);
+   console.log('HOME_EXIT_DIAGNOSTIC',route,debug);
+ }
  assert.equal(exits,1,route+': deliberate NEW Exit gesture allowed');
 }
 assert(!html.includes("document.getElementById('exit').addEventListener('click'"),
