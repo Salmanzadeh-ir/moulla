@@ -191,7 +191,10 @@ queueHomeTitleFit();
     }
     LOCK.write_text(json.dumps(report,ensure_ascii=False,indent=2,sort_keys=True)+"\n")
     subprocess.check_call(["git","add","--",str(LOCK.relative_to(ROOT))],cwd=ROOT)
-    subprocess.check_call(["git","diff","--check","--cached"],cwd=ROOT)
+    # Google Fonts distributes a verbatim OFL license with upstream trailing spaces.
+    # Preserve legally supplied bytes; still reject whitespace errors in our app code.
+    subprocess.check_call(["git","diff","--check","--cached","--",
+                           "app/src/main/assets/index.html"],cwd=ROOT)
     names=set(git("diff","--cached","--name-only").splitlines())
     if names!=added|{"app/src/main/assets/index.html",str(LOCK.relative_to(ROOT))}:
         raise RuntimeError("Unexpected staged content "+repr(names))
