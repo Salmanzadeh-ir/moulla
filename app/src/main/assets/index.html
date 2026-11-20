@@ -1358,6 +1358,18 @@ html,body{height:100%;margin:0;padding:0!important;overflow:hidden;background:#1
   text-overflow:clip;overflow:hidden;min-width:0;max-width:100%;
 }
 
+/* v124: native audio controls deliberately mirror existing navy/gold buttons;
+   no new home icon, no autoplay and no unrequested Tafal feature. */
+.pmm-native-wisdom-controls,.pmm-native-direct-controls{
+  direction:rtl;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  border:1px solid #bd944c;border-radius:10px;padding:8px;margin:8px 0;
+}
+.pmm-native-wisdom-controls button{min-height:44px;padding:7px 12px;cursor:pointer}
+.pmm-native-wisdom-controls input,.pmm-native-direct-controls input{
+  flex:1 1 120px;min-width:90px;accent-color:#104b79;
+}
+.pmm-native-direct-controls span{font-variant-numeric:tabular-nums}
+.pmm-native-wisdom-controls p{margin:0;width:100%;font-size:clamp(12px,2cqw,16px)}
 /* v122: Home submenus use #back-top; Exit remains home-root only. */
 /* v117: unified Back appearance, hit area, location and native navigation target.
    Exact approved Nahj image is used; page-specific routing stays in goBack(). */
@@ -2235,6 +2247,27 @@ function playExplanation(){
    const seconds=last&&last.entryId===record.id&&last.part===index&&!last.finished?last.seconds:0;
    selectedExplanation={record,index};
    PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,seconds,false);
+   if(window.PMM_GLOBAL_AUDIO?.available?.()&&
+      window.PMM_GLOBAL_AUDIO.approved(urls[index])){
+     // Only the user-pressed "شرح این جمله را بشنوید" (or part button)
+     // starts native playback; no WebView MP3 request is made in parallel.
+     audioPlayer.removeAttribute('src');audioPlayer.load();
+     selector.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+     audioBox.hidden=false;
+     window.PMM_GLOBAL_AUDIO.startWisdom({
+       url:urls[index],title:record.title||'شرح حکمت',
+       container:audioBox,resume:seconds,
+       onProgress:state=>{
+         if(selectedExplanation?.record.id===record.id&&
+            selectedExplanation.index===index&&state.active){
+           PMM_LEARNING_PROGRESS.setNahj('wisdoms',record.id,index,
+             Math.floor(state.position||0),false);
+         }
+       }
+     });
+     return;
+   }
+   audioPlayer.hidden=false;
    audioPlayer.src=encodeURI(urls[index]);audioPlayer.load();
    if(seconds>0)audioPlayer.addEventListener('loadedmetadata',function restore(){
       if(selectedExplanation?.record.id===record.id&&selectedExplanation.index===index&&
@@ -2471,6 +2504,16 @@ function stopNahjInlineAudio(){
 }
 function attachNahjInlineAudio(groupId,entryId){
  const cards=Array.from(contents.querySelectorAll('.nahj-part-card'));
+ // Android: one foreground native service survives Back, other screens,
+ // screen lock and app background. Browser fallback retains old HTML5 audio.
+ if(window.PMM_GLOBAL_AUDIO?.attachNahjCards?.(cards,groupId,entryId,{
+   getProgress:group=>PMM_LEARNING_PROGRESS.getNahj(group),
+   setProgress:(group,id,index,seconds,finished)=>
+     PMM_LEARNING_PROGRESS.setNahj(group,id,index,seconds,finished),
+   getSpeed:()=>nahjAudioSpeed,
+   setSpeed:value=>{nahjAudioSpeed=value;try{localStorage.setItem(NAHJ_AUDIO_SPEED_KEY,String(value))}catch(_){}},
+   format:nahjAudioTime,playIcon:NAHJ_SVG_PLAY,pauseIcon:NAHJ_SVG_PAUSE
+ }))return;
  const players=cards.map(card=>card.querySelector('audio.nahj-part-media'));
  function updateRateButtons(){
    contents.querySelectorAll('[data-nahj-speed]').forEach(button=>{
@@ -3016,6 +3059,10 @@ function renderPlayer(){
    const player=contents.querySelector('audio.nahj-audio-player');
    const start=contents.querySelector('#nahj-direct-start');
    if(player&&start){
+    if(window.PMM_GLOBAL_AUDIO?.attachDirect?.(
+       player,start,contents.querySelector('.nahj-stream-status'),link,x.title)){
+       // Native player retains its audio outside this screen.
+    }else{
      const stream=window.PMM_STREAM_HELPER.attach(player,contents.querySelector('.nahj-stream-status'));
      start.addEventListener('click',()=>{
        // User action is the only place where src is ever assigned.
@@ -3026,6 +3073,7 @@ function renderPlayer(){
      });
      player.addEventListener('playing',()=>{start.hidden=true});
      player.addEventListener('error',()=>{start.hidden=false});
+    }
    }
  }
  document.getElementById('player-back').addEventListener('click',()=>goBack());
@@ -3831,6 +3879,8 @@ window.PMM_V9=Object.freeze({
 })();
 </script>
 <script src="pmm_online_updates.js"></script>
+<!-- Native foreground playback is started only by explicit Play buttons. -->
+<script src="pmm_unified_background_audio_v124.js"></script>
 <script src="pmm_offline_course_logic.js"></script>
 <script src="pmm_offline_course.js"></script>
 <!-- Owner v124: removed unrequested wisdom-bookmarks-and-notes module entirely. -->
