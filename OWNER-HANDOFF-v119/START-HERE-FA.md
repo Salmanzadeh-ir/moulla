@@ -2,6 +2,21 @@
 
 > **یک لینک برای انتقال کامل اطلاعات:** همین صفحه را به چت جدید بدهید. چت جدید باید سه فایل پایین و متن دستور را از همین مخزن بخواند؛ نیازی به بارگذاری مجدد فایل از گوشی نیست.
 
+## وضعیت نهایی رسمی v119 — ادغام در main و CI موفق (۲۰ نوامبر ۲۰۲۶)
+
+> **جدیدترین وضعیت — مقدم بر تمام گزارش‌های قدیمی در پایین صفحه.** مالک آزمایش نسخه v119 روی گوشی را صریحاً تأیید کرد و درخواست تکمیل ادغام داد. PR شماره ۱۵ در GitHub ادغام شد؛ این دیگر «فقط بسته آماده یا PR باز» نیست.
+
+- **Commit نهایی فعلی main، مستقیماً تأییدشده:** [`ca1dd669f181e328071567b3e41b4bf06744895b`](https://github.com/Salmanzadeh-ir/moulla/commit/ca1dd669f181e328071567b3e41b4bf06744895b).
+- **PR ادغام‌شده:** [#15](https://github.com/Salmanzadeh-ir/moulla/pull/15)، وضعیت `merged: true` و `closed`، Merge عادی برای حفظ تاریخچه.
+- **CI خودکار بعد از ادغام در main:** [Actions Run 44671672004](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44671672004)، نتیجه نهایی **success** با job `verify-ui-lock`. پیش از ادغام نیز [Run 44670904838](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44670904838) **success** بوده است.
+- **قفل فعال:** [`design/owner-v119-main-app-lock.json`](https://github.com/Salmanzadeh-ir/moulla/blob/main/design/owner-v119-main-app-lock.json) با دقیقاً **۱۸۲** entry فایل app؛ فایل قفل تاریخی v118 با ۱۸۰ entry و قفل تاریخی v117 نسبت به Commit مبنا SHA ثابت دارند. `app/build.gradle` رسمی نیز blob SHA ثابت `7a0961e43a670c6914a6f65809daa9594669b478` دارد.
+- **تغییرات سورس main نسبت به v118:** فقط ۱۶ فایل مجاز v119، شامل ۵ فایل app و ۲ کلاس تازه، اسناد، قفل و آزمون‌ها. نسخه رسمی بازار و امضا/Secrets/تگ‌های تاریخی دست‌نخورده‌اند.
+- **[دانلود ZIP سورس کامل main نسخه ادغام‌شده v119](https://github.com/Salmanzadeh-ir/moulla/archive/ca1dd669f181e328071567b3e41b4bf06744895b.zip)**.
+- **[دانلود مستقیم APK آزمایشی v119](https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v119-review-44670627786-1/downloads/v119/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk)**، package آزمایشی مستقل `ir.nahj.towhidkarbordi.ownerreview119` و SHA-256 واقعی و کنترل‌شده `94702d41e292a8d84f7cdc0ad4af8e5ce5ae1727c68cc0cfb568d03d99e438e2`. [ساخت موفق Run 44670627786](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44670627786)؛ [تأیید دانلود عمومی و SHA Run 44671078072](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44671078072).
+- **نکته:** موفقیت CI به‌معنای انتشار رسمی در بازار نیست و این ادغام فقط سورس `main` را به v119 رسانده است. قفل سمت فایل/آزمون فعال است، اما Rulesets اجباری سمت سرور پیش‌تر خالی مشاهده شده‌اند؛ چنین حفاظتی را فعال‌شده ادعا نکنید.
+
+---
+
 ## به‌روزرسانی راستی‌آزمایی‌شده پس از انتقال — ۲۰ نوامبر ۲۰۲۶
 
 > **این بخش جدیدتر از «وضعیت تأییدشده» پایین صفحه است.** مطالب پایین تاریخچه لحظه انتقال‌اند؛ اکنون v119 در شاخه مستقل اعمال و APK آزمایشی ساخته شده، اما هنوز در main ادغام نشده است.
