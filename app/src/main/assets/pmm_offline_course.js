@@ -10,7 +10,11 @@ const KEY='pmm_offline_nahj_course_v111';
 const tracks=logic.buildTracks(window.PMM_NAHJ_AUDIO_DATA);
 const trackById=new Map(tracks.map((track,index)=>[track.id,{track,index}]));
 const audio=$('course-audio');
+const nativeAudio=window.PMM_GLOBAL_AUDIO;
 const courseStream=window.PMM_STREAM_HELPER.attach(audio,$('course-audio-status'));
+function usingNativeAudio(){
+ return !!(nativeAudio?.available?.()&&activeTrack&&nativeAudio.approved(activeTrack.url));
+}
 const mainScroll=$('main-scroll'),wisdomScroll=$('wisdom-scroll'),galleryScroll=$('gallery-scroll');
 const scene=$('scene'),backTop=$('back-top'),exit=$('exit'),about=$('about'),floor=$('wisdom-floor-cover');
 const weekdays=[
@@ -282,11 +286,15 @@ function playIcon(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d=
 function pauseIcon(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/><rect x="13.5" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/></svg>'}
 function updateAudioUI(){
  if(!activeTrack)return;
- const playing=!audio.paused;
+ const native=usingNativeAudio()?syncNativePlayback():null;
+ const playing=native?!!(native.active&&native.playing):!audio.paused;
  $('course-audio-toggle').innerHTML=playing?pauseIcon():playIcon();
  $('course-audio-toggle').setAttribute('aria-label',(playing?'توقف':'پخش')+' '+activeTrack.displayTitle);
- const duration=Number.isFinite(audio.duration)?audio.duration:getPosition(activeTrack.id).duration;
- const current=Number.isFinite(audio.currentTime)?audio.currentTime:getPosition(activeTrack.id).position;
+ const stored=getPosition(activeTrack.id);
+ const duration=native?(Number(native.duration)||stored.duration):
+    Number.isFinite(audio.duration)?audio.duration:stored.duration;
+ const current=native?(native.active?Number(native.position)||0:stored.position):
+    Number.isFinite(audio.currentTime)?audio.currentTime:stored.position;
  $('course-current-time').textContent=formatTime(current);
  $('course-duration-time').textContent=duration>0?formatTime(duration):'--:--';
  $('course-seek').disabled=!(duration>0);$('course-seek').value=duration>0?String(Math.min(100,current/duration*100)):'0';
@@ -296,11 +304,38 @@ function updateAudioUI(){
 }
 function updateHeardButton(){
  const button=$('course-heard'),mini=$('course-mini-heard');if(!activeTrack||activeIsRevisit){button.disabled=true;mini.disabled=true;return;}
- const pos=getPosition(activeTrack.id),duration=Number.isFinite(audio.duration)&&audio.duration>0?audio.duration:pos.duration;
+ const pos=getPosition(activeTrack.id);
+ const native=usingNativeAudio()?nativeAudio.status(activeTrack.url):null;
+ const duration=native&&native.duration>0?Number(native.duration):pos.duration;
  button.disabled=!logic.canMarkHeard(pos.listened,duration);mini.disabled=button.disabled;
+}
+function syncNativePlayback(){
+ if(!usingNativeAudio())return null;
+ const snapshot=nativeAudio.status(activeTrack.url);
+ if(!snapshot.valid)return null;
+ const before=getPosition(activeTrack.id);
+ const duration=Math.max(before.duration,Number(snapshot.duration)||0);
+ // The service counts ACTUAL playing wall time, even when the user leaves
+ // this page/the app. Seeking does not increase its listened counter.
+ const listened=Math.max(before.listened,Math.max(0,Number(snapshot.listened)||0));
+ const position=snapshot.active?Math.max(0,Number(snapshot.position)||0):
+   snapshot.finished?0:
+   Number(snapshot.saved)>0?Math.max(0,Number(snapshot.saved)):before.position;
+ if(Math.abs(before.position-position)>.2||
+    Math.abs(before.duration-duration)>.2||
+    Math.abs(before.listened-listened)>.2){
+   setPosition(activeTrack.id,{position,duration,listened});
+   if(Date.now()-lastPersistedAt>1600){
+     saveState();lastPersistedAt=Date.now();
+   }
+ }
+ return snapshot;
 }
 function persistPosition(){
  if(!activeTrack)return;
+ if(usingNativeAudio()){
+   syncNativePlayback();saveState();return;
+ }
  const old=getPosition(activeTrack.id);
  setPosition(activeTrack.id,{
   position:Number.isFinite(audio.currentTime)?Math.max(0,Math.round(audio.currentTime*1000)/1000):old.position,
@@ -349,6 +384,22 @@ audio.addEventListener('ended',()=>{
 audio.addEventListener('error',()=>{updateAudioUI()});
 $('course-audio-toggle').addEventListener('click',()=>{
  if(!activeTrack)return;
+ if(usingNativeAudio()){
+   const source=activeTrack.url;
+   const status=nativeAudio.status(source);
+   if(status.active){
+     nativeAudio.toggle(source);
+   }else{
+     pauseOtherPlayers();
+     const startingAt=getPosition(activeTrack.id).position;
+     // Native bridge starts ONLY in this physical Play click.
+     if(!nativeAudio.start(source,formatTrack(activeTrack),speed,startingAt))
+       $('course-audio-status').textContent='پخش برقرار نشد؛ اتصال را بررسی کنید.';
+   }
+   setTimeout(updateAudioUI,350);
+   updateAudioUI();
+   return;
+ }
  if(!audio.paused){audio.pause();return;}
  pauseOtherPlayers();
  if(!audio.getAttribute('src'))audio.src=encodeURI(activeTrack.url);
@@ -357,6 +408,17 @@ $('course-audio-toggle').addEventListener('click',()=>{
  const request=audio.play();if(request&&typeof request.catch==='function')request.catch(()=>{$('course-audio-status').textContent='پخش شروع نشد؛ اتصال اینترنت را بررسی کنید و دوباره بزنید.';updateAudioUI()});
 });
 $('course-seek').addEventListener('input',()=>{
+ if(usingNativeAudio()){
+   const status=nativeAudio.status(activeTrack.url);
+   const total=Number(status.duration)||getPosition(activeTrack.id).duration;
+   if(status.active&&total>0){
+     const point=Math.min(Math.max(0,total-1),total*Number($('course-seek').value)/100);
+     nativeAudio.seek(activeTrack.url,Math.floor(point));
+     setPosition(activeTrack.id,{position:point});saveState();
+     updateAudioUI();
+   }
+   return;
+ }
  if(Number.isFinite(audio.duration)&&audio.duration>0){audio.currentTime=audio.duration*Number($('course-seek').value)/100;lastObservedTime=audio.currentTime;persistPosition();updateAudioUI()}
 });
 document.querySelectorAll('[data-course-speed]').forEach(button=>{
@@ -364,6 +426,7 @@ document.querySelectorAll('[data-course-speed]').forEach(button=>{
  const selected=value===speed;button.classList.toggle('is-selected',selected);button.setAttribute('aria-pressed',String(selected));
  button.addEventListener('click',()=>{
   if(!SPEEDS.includes(value))return;speed=value;audio.playbackRate=value;
+  if(usingNativeAudio())nativeAudio.speed(activeTrack.url,value);
   try{localStorage.setItem(SPEED_KEY,String(value));if(typeof nahjAudioSpeed!=='undefined')nahjAudioSpeed=value}catch(_){}
   document.querySelectorAll('[data-course-speed]').forEach(other=>{const active=Number(other.dataset.courseSpeed)===speed;other.classList.toggle('is-selected',active);other.setAttribute('aria-pressed',String(active))});
   $('course-speed-toggle').setAttribute('aria-label','انتخاب سرعت پخش، سرعت فعلی '+String(value).replace('.', '٫').replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[Number(d)])+' برابر');$('course-speed-options').hidden=true;$('course-speed-toggle').setAttribute('aria-expanded','false');
@@ -381,6 +444,10 @@ $('course-heard').addEventListener('click',()=>{
  if(!activeTrack||activeIsRevisit)return;
  const pos=getPosition(activeTrack.id),duration=Number.isFinite(audio.duration)&&audio.duration>0?audio.duration:pos.duration;
  if(!logic.canMarkHeard(pos.listened,duration)){showToast('برای ثبت شنیدن، باید دست‌کم دو سوم صوت را واقعاً گوش کنید.');return;}
+ if(usingNativeAudio()){
+   const native=nativeAudio.status(activeTrack.url);
+   if(native.active&&native.playing)nativeAudio.toggle(activeTrack.url);
+ }
  audio.pause();setPosition(activeTrack.id,{position:0});
  state.completedCount=Math.min(tracks.length,state.completedCount+1);state.pendingAdvance=true;saveState();
  if(state.completedCount>=tracks.length)syncNativeCourseReminder();
@@ -457,6 +524,10 @@ const courseButton=document.querySelector('[data-open-course]');
 if(courseButton)courseButton.addEventListener('click',openCourse);
 course.addEventListener('scroll',updateCourseScrollbar,{passive:true});
 window.addEventListener('resize',updateCourseScrollbar);
+// Poll only locally; no timer ever initiates a network request or starts audio.
+setInterval(()=>{
+ if(courseOpen&&usingNativeAudio())updateAudioUI();
+},950);
 window.addEventListener('pagehide',()=>{savePlayback(true)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')savePlayback(true)});
 const previousGoBack=goBack;
