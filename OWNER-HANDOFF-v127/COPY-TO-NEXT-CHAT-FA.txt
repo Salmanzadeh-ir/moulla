@@ -1,0 +1,22 @@
+# متن آماده برای چت بعدی — پای منبر مولا v127
+
+این پیام را کامل در چت جدید کپی کنید:
+
+من مالک پروژه اندرویدی «پای منبر مولا» هستم؛ مخزن رسمی:
+https://github.com/Salmanzadeh-ir/moulla
+
+**اول فایل انتقالِ کامل و به‌روز را واقعاً از GitHub بخوان**:
+https://github.com/Salmanzadeh-ir/moulla/blob/owner-v127-handoff-20261120/OWNER-HANDOFF-v127/START-HERE-FA.md
+
+مدارک اصلی برای بررسی:
+- سورس کامل دانلود یک‌جا: https://github.com/Salmanzadeh-ir/moulla/archive/c4ae9dc21900851a33869b9a58fa73a9f6ac71b2.zip
+- سورس آنلاین در شاخه آرشیو: https://github.com/Salmanzadeh-ir/moulla/tree/archive/owner-v127-full-tested-source-20261120
+- APK آزمایشی v127: https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/download/owner-v127-final-owner-test-44732228717/downloads/v127/PayeMenbareMola-v127-FINAL-OWNER-TEST-DEBUG.apk
+- SHA-256 APK: a575bc7c18f4d737ed32e5a2d6f7c0d8227f68dcc9df126abb430746785f4f3b
+- PR آزمایشی: https://github.com/Salmanzadeh-ir/moulla/pull/22
+- CI موفق: https://github.com/Salmanzadeh-ir/moulla/actions/runs/44732228717
+- قفل ۱۹۹ فایل: https://github.com/Salmanzadeh-ir/moulla/blob/feature/owner-v127-uniform-six-minus-one-sixth-20261120/design/owner-v127-test-app-lock.json
+
+آخرین نسخه تأییدشده فعال main = v119، commit c38804038eebd8bc62a36d9fc37cd305bdab1207؛ v127 آزمایشی است و صرف ساخت/CI هنوز تأیید گوشی من نیست. شش عنوان اصلی لاله‌زار با یک وزن و یک سایز، همگی ۵/۶ نسخه قبل شده‌اند؛ کد و تست و قفل در GitHub ثبت شده.
+
+از من درباره چیزهایی که در این فایل‌ها موجودند دوباره سؤال نکن؛ ابتدا GitHub را با ابزار متصل/وب بررسی و وضعیت لحظه‌ای را به دست بیاور. فرایند دائمی من: یک نسخه فعال تأییدشده، شاخه آزمایشی، سورس و APK جدا، آزمون گوشی و تأیید صریح قبل از تغییر main، قفل واقعی تمام فایل‌های app، عدم افشای امضا یا حذف اطلاعات، و پاک‌سازی نسخه‌های قدیمی فقط پس از پشتیبان مستقل قابل بازیابی و تأیید موردی فهرست حذف‌ها. هیچ نسخه نامطمئنی را به بازار یا main نبر.
