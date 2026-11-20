@@ -63,9 +63,9 @@ def patch():
     # Owner's new policy: never overwrite any existing photo, and make no changes
     # to the original 93 images or unrelated app screens/audio/manifest/Gradle.
     prior=verify_original_v119()
-    before=git("show","12016838e98d8c1eadadbb0a96321f4855f1c5cd:app/src/main/assets/photo_quotes_manifest.js")
-    original=before
-    if git_blob(original.encode()) != prior["files"]["app/src/main/assets/photo_quotes_manifest.js"]:
+    before=git("show","12016838e98d8c1eadadbb0a96321f4855f1c5cd:app/src/main/assets/photo_quotes_manifest.js",raw=True)
+    original=before.decode("utf-8")
+    if git_blob(before) != prior["files"]["app/src/main/assets/photo_quotes_manifest.js"]:
         raise RuntimeError("The original approved gallery manifest does not match v119 lock")
     old_paths=current_gallery_paths(original)
     if len(old_paths)!=93 or len(set(old_paths))!=93:
