@@ -1,0 +1,215 @@
+name: PMM v119 guarded source apply and independent Android trial
+on:
+  push:
+    branches:
+      - automation/owner-v119-apply-20261120
+    paths:
+      - .github/workflows/owner-v119-apply-and-build.yml
+permissions:
+  contents: write
+concurrency:
+  group: pmm-v119-owner-apply-once
+  cancel-in-progress: false
+jobs:
+  apply-test-build-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout immutable owner-approved v118 in a clean directory
+        uses: actions/checkout@v4
+        with:
+          ref: 0fce031b91ffd90893482dba664a8bd0704fac98
+          path: source
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Verify original SHA, clean checkout and historical v118 lock
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 0fce031b91ffd90893482dba664a8bd0704fac98
+          test -z "$(git status --porcelain)"
+          python3 scripts/verify_owner_v118_lock.py
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+      - name: Retrieve exact owner handoff ZIP and validate archive before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 4 --retry-all-errors --silent --show-error \
+            'https://raw.githubusercontent.com/Salmanzadeh-ir/moulla/owner-v119-handoff-20261120/OWNER-HANDOFF-v119/PMM-v119-OWNER-SOURCE-DELTA-NOT-MERGED.zip' \
+            --output "$RUNNER_TEMP/pmm-v119-delta.zip"
+          echo "208aaa74911663ff54848db0a29c78f4acc82dfafdcea0dacac3255a2ba603a4  $RUNNER_TEMP/pmm-v119-delta.zip" | sha256sum --check
+          test "$(stat -c %s "$RUNNER_TEMP/pmm-v119-delta.zip")" = 139024
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          import os
+          p = os.path.join(os.environ['RUNNER_TEMP'],'pmm-v119-delta.zip')
+          with ZipFile(p) as z:
+              names=z.namelist()
+              assert len(names)==18, f"unexpected entry count: {len(names)}"
+              for name in names:
+                  parts=name.replace('\\','/').split('/')
+                  assert name and not name.startswith('/') and '..' not in parts, f"unsafe ZIP entry: {name}"
+              assert z.testzip() is None
+              print("Validated ZIP entries:",len(names))
+          PY
+          mkdir -p "$RUNNER_TEMP/pmm119"
+          unzip -q "$RUNNER_TEMP/pmm-v119-delta.zip" -d "$RUNNER_TEMP/pmm119"
+          find "$RUNNER_TEMP/pmm119" -path '*/scripts/apply_to_checkout.py' -print
+      - name: Run the supplied protected apply script ONLY on v118
+        shell: bash
+        run: |
+          set -euo pipefail
+          entry="$(find "$RUNNER_TEMP/pmm119" -path '*/scripts/apply_to_checkout.py' -type f -print -quit)"
+          test -n "$entry"
+          package="$(dirname "$(dirname "$entry")")"
+          python3 "$package/scripts/apply_to_checkout.py" "$GITHUB_WORKSPACE/source"
+          cd "$GITHUB_WORKSPACE/source"
+          git add -A
+          python3 - <<'PY'
+          import subprocess
+          allowed=set("""AGENTS.md
+          OWNER_LOCK.md
+          .github/workflows/verify-layout-lock.yml
+          app/src/main/assets/index.html
+          app/src/main/assets/pmm_offline_course.js
+          app/src/main/java/ir/nahj/towhidkarbordi/MainActivity.java
+          app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderScheduler.java
+          app/src/main/java/ir/nahj/towhidkarbordi/WisdomReminderReceiver.java
+          app/src/main/java/ir/nahj/towhidkarbordi/CourseReminderScheduler.java
+          app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java
+          design/owner-v119-main-app-lock.json
+          design/OWNER_V119_REMINDERS_FA.md
+          scripts/verify_owner_v119_lock.py
+          scripts/TestReminderClock.java
+          scripts/test_course_state_compat.js
+          scripts/test_native_compile.sh""".splitlines())
+          actual=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          print('Changed paths:',sorted(actual))
+          assert actual==allowed, f"Unauthorized or missing changed paths. Extra={actual-allowed}; Missing={allowed-actual}"
+          PY
+          git diff --cached --check
+          test -z "$(git diff --cached --name-only -- app/build.gradle app/src/main/AndroidManifest.xml design/owner-v118-main-app-lock.json design/owner-v117-main-app-lock.json)"
+      - name: Run v119 182-file lock and regression tests before build
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_owner_v119_lock.py
+          node --check app/src/main/assets/pmm_offline_course.js
+          node scripts/test_v16_back_navigation.js
+          node scripts/test_owner_v118_back_notes.cjs
+          node scripts/test_course_state_compat.js
+          mkdir -p "$RUNNER_TEMP/pmm-clock"
+          javac -d "$RUNNER_TEMP/pmm-clock" app/src/main/java/ir/nahj/towhidkarbordi/PmmReminderClock.java scripts/TestReminderClock.java
+          java -cp "$RUNNER_TEMP/pmm-clock" TestReminderClock
+          bash scripts/test_native_compile.sh
+          git diff --cached --check
+      - name: Prepare Java 17 and Android SDK 35
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android platform 35 and tools 35.0.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Set runner-only DEBUG identity without changing official source
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/build.gradle')
+          s=p.read_text()
+          repl={
+            "applicationIdSuffix '.newiwanv16'": "applicationIdSuffix '.ownerreview119'",
+            "versionCode 16": "versionCode 119",
+            "versionName '10.5.4-v16-preview'": "versionName '10.5.11-owner-review-119'"
+          }
+          for old,new in repl.items():
+              assert s.count(old)==1, f"Unexpected official Gradle declaration: {old}"
+              s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+          test "$(git diff --name-only)" = app/build.gradle
+          git diff --check
+      - name: Compile full Android DEBUG APK with no release Secrets
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          env -u PMM_KEYSTORE_PATH -u PMM_KEYSTORE_PASSWORD gradle --no-daemon :app:assembleDebug
+      - name: Validate APK signature, package identity, alignment, SHA-256
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$apk"
+          bt="$ANDROID_HOME/build-tools/35.0.0"
+          "$bt/apksigner" verify --verbose "$apk"
+          "$bt/zipalign" -c -v 4 "$apk"
+          mkdir -p dist
+          "$bt/aapt" dump badging "$apk" > dist/badging.txt
+          grep -F "name='ir.nahj.towhidkarbordi.ownerreview119'" dist/badging.txt
+          grep -F "versionCode='119'" dist/badging.txt
+          grep -F "versionName='10.5.11-owner-review-119-debug'" dist/badging.txt
+          cp "$apk" dist/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && sha256sum --check SHA256SUMS.txt)
+          sha256sum "$apk"
+      - name: Upload verified trial APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-v119-OWNER-REVIEW-DEBUG
+          path: source/dist/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Restore build-only identity, reverify lock, and push approved v119 source branch
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          git restore -- app/build.gradle
+          python3 scripts/verify_owner_v119_lock.py
+          test -z "$(git diff --name-only)"
+          test -z "$(git diff --cached --name-only -- app/build.gradle app/src/main/AndroidManifest.xml design/owner-v118-main-app-lock.json)"
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "feat(v119): owner-approved Tafal and offline course reminder fixes with 182-file lock"
+          test "$(git rev-parse HEAD^)" = 0fce031b91ffd90893482dba664a8bd0704fac98
+          expected="$(git ls-remote origin refs/heads/feature/owner-v119-tafal-course-reminders | cut -f1)"
+          test "$expected" = 0fce031b91ffd90893482dba664a8bd0704fac98
+          git push origin HEAD:refs/heads/feature/owner-v119-tafal-course-reminders
+          echo "v119 source commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish verified APK to NEW download-only branch
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          branch="download/owner-v119-review-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          if git ls-remote --exit-code --heads origin "refs/heads/$branch" >/dev/null; then
+            echo "Download branch collision; refusing overwrite"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/pmm119-verified"
+          cp dist/PayeMenbareMola-v119-OWNER-REVIEW-DEBUG.apk dist/SHA256SUMS.txt dist/badging.txt "$RUNNER_TEMP/pmm119-verified/"
+          git switch --orphan "$branch"
+          git ls-files -z | xargs -0 -r git rm -rf --
+          mkdir -p downloads/v119
+          cp "$RUNNER_TEMP/pmm119-verified/"* downloads/v119/
+          git add downloads/v119/
+          git commit -m "Publish independent verified owner v119 DEBUG trial from run $GITHUB_RUN_ID"
+          git push origin "HEAD:refs/heads/$branch"
+          echo "Download branch: $branch" >> "$GITHUB_STEP_SUMMARY"
