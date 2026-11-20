@@ -1,5 +1,18 @@
 # پای منبر مولا — نقطه شروع واحد چت جدید (v119)
 
+## مرحله آزمایشی بعدی — v120 با ۱۰۵ عکس و بدون تغییر main (۲۰ نوامبر ۲۰۲۶)
+
+> **جدیدترین گزارش در این صفحه؛ مقدم بر همه وضعیت‌های قدیمی:** پس از دستور مالک برای شروع ادغام همه نسخه‌ها، شاخه آزمایشی جدا `feature/owner-v120-restore-12-historical-photos-20261120` ساخته شد. **`main` هنوز v119 تأییدشده و Commit `12016838e98d8c1eadadbb0a96321f4855f1c5cd` است.** v120 فقط نام نسخه آزمایشی جدید است و هنوز تأیید گوشی یا اجازه ادغام ندارد.
+
+- در [گزارش آزمون موفق v120 Run 44682609679](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44682609679)، ۱۲ فایل JPEG تاریخی اصلی v10.4.9 که تطابق بایتی در گالری فعلی نداشتند، بدون تغییر در عکس‌های ۱–۹۳، به شماره‌های ۹۴–۱۰۵ اضافه شدند. ۱۰۵ تصویر یکتا با SHAهای Git متمایز کنترل شد.
+- قفل آزمایشی دقیق `design/owner-v120-gallery-review-app-lock.json` برای **۱۹۴ فایل** ساخته شد؛ ۱۸۲ فایل v119 بجز `photo_quotes_manifest.js` بایت‌به‌بایت بدون تغییر. آزمون‌های Back، یادداشت، صوت فقط با Play، دوره ۱۰۱۹ صوت، اعلان و Java native همگی Pass.
+- [دانلود APK آزمایشی v120 از GitHub Actions Artifact](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44682609679/artifacts/14604239144)، فایل `PayeMenbareMola-v120-GALLERY105-OWNER-TRIAL-DEBUG.apk`، **۳۰٬۱۱۴٬۶۶۳ بایت**، **SHA-256 `54e957ea408492c17dce029a79a6016ba2ac07ea129076913a4a17a9b77578e1`**. applicationId آزمایشی مستقل `ir.nahj.towhidkarbordi.ownerphotoreview120`، versionCode=120، امضای Debug معتبر. [Commit دقیق سورس APK `21bc344cafd41a6c4144235a54c63f9f94d5fec8`](https://github.com/Salmanzadeh-ir/moulla/commit/21bc344cafd41a6c4144235a54c63f9f94d5fec8).
+- [راهنمای دقیق آزمون گوشی و محدوده این نسخه آزمایشی](https://github.com/Salmanzadeh-ir/moulla/blob/feature/owner-v120-restore-12-historical-photos-20261120/docs/OWNER_V120_GALLERY105_TRIAL_FA.md).
+- **این نسخه فقط ۱۲ تصویر تاریخی را بازمی‌گرداند**؛ ماژول‌های optional آموزشی/صوتی v108 هنوز بررسی و انتقال نشده‌اند. این نسخه را «ادغام تمام نسخه‌ها» یا «نسخه نهایی تأییدشده مالک» ننامید.
+- پشتیبان قبلی کامل در [Run 44678498751](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44678498751/artifacts/14603476394) ساخته و بازیابی شد، مالک هنوز در حال دانلود روی گوشی بود. تأیید نگهداری مستقل و SHA روی گوشی دریافت نشده. **هیچ شاخه، تگ، Release، APK قدیمی یا تاریخچه حذف نشده‌اند.**
+
+---
+
 ## وضعیت رسمی پس از ممیزی عمیق همه نسخه‌ها — ۲۰ نوامبر ۲۰۲۶
 
 > **مقدم بر تمام بخش‌های تاریخی این صفحه.** نسخه فعال پروژه **فقط `main` با کد v119** است و *نه* ادعای ادغام بدون بررسی همه شاخه‌های قدیمی. آخرین Commit `main`: [`12016838e98d8c1eadadbb0a96321f4855f1c5cd`](https://github.com/Salmanzadeh-ir/moulla/commit/12016838e98d8c1eadadbb0a96321f4855f1c5cd). PR ابزار ممیزی [#18](https://github.com/Salmanzadeh-ir/moulla/pull/18) با **صفر تغییر در `app/`** ادغام شده و [CI قفل‌های تاریخی](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44680874855) و [CI سیاست نسخه واحد](https://github.com/Salmanzadeh-ir/moulla/actions/runs/44680874908) پس از Merge هر دو **success** هستند.
