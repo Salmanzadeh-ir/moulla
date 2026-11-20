@@ -1,0 +1,42 @@
+name: Make full OWNER phone backup (ALL Git refs, release assets, verified)
+on:
+  push:
+    branches:
+      - automation/owner-phone-backup-20261120
+    paths:
+      - .github/workflows/owner-phone-backup.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  create-tested-phone-archive:
+    name: Full history and release assets, checksum and restore test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Read temporary backup script without modifying main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Confirm backup dependencies
+        run: |
+          set -euo pipefail
+          gh --version
+          git --version
+          zip -v | head -2
+          unzip -v | head -2
+          jq --version
+          test -f scripts/create_phone_backup.sh
+      - name: Generate all refs and APK asset backup, SHA-256 and TWO restore tests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/create_phone_backup.sh
+      - name: Upload ZIP for downloading to owner's phone
+        uses: actions/upload-artifact@v4
+        with:
+          name: PMM-OWNER-PHONE-FULL-BACKUP-${{ github.run_id }}
+          path: ${{ env.PMM_BACKUP_DELIVERY }}/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
